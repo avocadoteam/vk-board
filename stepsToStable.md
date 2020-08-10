@@ -1,0 +1,4 @@
+- [ ] disable eruda console for client
+- [ ] revert in main package.json to yarn build:client && 
+- [ ] delete public files from server dir
+- [ ] create new branch stable-%NEW_VERSION%
