@@ -1,4 +1,4 @@
-import { AppState, ClientTheme } from 'core/models';
+import { AppState, ClientTheme, MainView } from 'core/models';
 import { createSelector } from 'reselect';
 import { RouterState } from 'connected-react-router';
 
@@ -11,3 +11,13 @@ export const isThemeDrak = createSelector(getTheme, (theme) => theme === ClientT
 
 export const isAppUser = createSelector(getStateUi, (ui) => ui.isAppUser);
 
+export const getActiveMainView = createSelector(
+  getStateUi,
+  ui => {
+    if (!ui.online) {
+      return MainView.Offline;
+    }
+
+    return MainView.Board;
+  }
+)
