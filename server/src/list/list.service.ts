@@ -51,7 +51,20 @@ export class ListService {
     }
   }
 
-  getList(listId: number) {
-    return this.tableList.findOne(listId);
+  async isListExists(listId: number, createdBy: number) {
+    return (
+      (await this.tableList.count({
+        where: [
+          {
+            id: listId,
+            createdBy,
+          },
+          {
+            id: listId,
+            createdBy: null,
+          },
+        ],
+      })) > 0
+    );
   }
 }

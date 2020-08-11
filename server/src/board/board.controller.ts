@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Post,
   Body,
+  NotFoundException,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
@@ -41,7 +42,7 @@ export class BoardController {
   }
 
   @Post('/task')
-  createTask(
+  async createTask(
     @Query(
       'vk_user_id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
@@ -50,6 +51,9 @@ export class BoardController {
     @Body()
     model: NewTaskModel,
   ) {
+    if (!(await this.listService.isListExists(model.listId, vkUserId))) {
+      throw new NotFoundException('List not found');
+    }
     return this.tasksService.createTask(model, vkUserId);
   }
 

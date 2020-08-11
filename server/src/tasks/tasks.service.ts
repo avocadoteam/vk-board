@@ -23,7 +23,7 @@ export class TasksService {
       const list = await queryRunner.manager.findOne<List>(List, model.listId);
 
       if (!list) {
-        throw Error(`List doesn't exist ${model.listId}`);
+        throw new Error(`List doesn't exist ${model.listId}`);
       }
 
       const newTask = new Task(model.name, vkUserId, list, model.dueDate);
@@ -31,7 +31,7 @@ export class TasksService {
 
       const taskMembership = new TaskMembership(vkUserId, newTask);
       await queryRunner.manager.save(taskMembership);
-      
+
       await queryRunner.commitTransaction();
 
       return newTask.id;
