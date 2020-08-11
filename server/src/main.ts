@@ -14,6 +14,8 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import * as logger from 'morgan';
 
+// TODO: add seeds
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,

@@ -9,19 +9,26 @@ export class List {
   @Column({
     length: 512,
   })
-  name!: string;
+  name: string;
 
   @Column({
     type: 'timestamp',
   })
-  created!: string;
+  created: Date;
 
   @Column({
     type: 'int8',
     name: 'created_by',
+    nullable: true,
   })
-  createdBy!: number;
+  createdBy: number | null;
 
   @OneToMany((type) => Task, (task) => task.list)
   tasks!: Task[];
+
+  constructor(name: string, createdBy: number) {
+    this.name = name;
+    this.createdBy = createdBy;
+    this.created = new Date();
+  }
 }

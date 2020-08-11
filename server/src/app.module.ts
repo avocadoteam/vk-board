@@ -6,6 +6,9 @@ import cacheConfig from 'src/config/cache.config';
 import coreConfig from 'src/config/core.config';
 import integrationConfig from 'src/config/integration.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ListModule } from './list/list.module';
+import { BoardModule } from './board/board.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
+    ListModule,
+    BoardModule,
+    TasksModule,
   ],
   controllers: [AppController],
 })

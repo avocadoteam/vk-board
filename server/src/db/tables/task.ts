@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { List } from './list';
 import { TaskMembership } from './taskMembership';
+import { v4 } from 'uuid';
 
 @Entity()
 export class Task {
@@ -18,42 +19,42 @@ export class Task {
   @Column({
     type: 'uuid',
   })
-  taskGUID!: string;
+  taskGUID: string;
 
   @Column({
     length: 1024,
   })
-  name!: string;
+  name: string;
 
   @Column({
     type: 'timestamp',
   })
-  created!: string;
+  created: Date;
 
   @Column({
     type: 'int8',
     name: 'created_by',
   })
-  createdBy!: number;
+  createdBy: number;
 
   @Column({
     type: 'timestamp',
     nullable: true,
   })
-  finished!: string;
+  finished!: Date | null;
 
   @Column({
     type: 'timestamp',
     nullable: true,
   })
-  deleted!: string;
+  deleted!: Date | null;
 
   @Column({
-    type: 'interval',
+    type: 'timestamp',
     nullable: true,
     name: 'due_date',
   })
-  dueDate!: string;
+  dueDate: Date | null;
 
   @OneToMany((type) => TaskMembership, (tm) => tm.task)
   memberships!: TaskMembership[];
@@ -63,5 +64,19 @@ export class Task {
     name: 'list_id',
   })
   @Index()
-  list!: List;
+  list: List;
+
+  constructor(
+    name: string,
+    createdBy: number,
+    list: List,
+    dueDate: string | null = null,
+  ) {
+    this.name = name;
+    this.createdBy = createdBy;
+    this.created = new Date();
+    this.dueDate = dueDate ? new Date(dueDate) : null;
+    this.list = list;
+    this.taskGUID = v4();
+  }
 }

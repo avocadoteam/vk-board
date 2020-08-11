@@ -16,18 +16,24 @@ export class TaskMembership {
   @Column({
     type: 'timestamp',
   })
-  joined!: string;
+  joined: Date;
 
   @Column({
     type: 'int8',
-    name: 'joined_by',
+    name: 'joined_id',
   })
-  joinedBy!: number;
+  joinedId: number;
 
   @ManyToOne((type) => Task, (task) => task.memberships)
   @JoinColumn({
     name: 'task_id',
   })
   @Index()
-  task!: Task;
+  task: Task;
+
+  constructor(joinedBy: number, task: Task) {
+    this.joinedId = joinedBy;
+    this.task = task;
+    this.joined = new Date();
+  }
 }
