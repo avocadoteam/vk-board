@@ -1,8 +1,5 @@
 import * as models from 'core/models';
-import {
-  FetchingStatus,
-  ClientTheme,
-} from 'core/models';
+import { FetchingStatus, ClientTheme } from 'core/models';
 
 const hashValue = window.location.hash ? Number(window.location.hash.split('#').pop()) : null;
 
@@ -15,7 +12,11 @@ export const initialState: models.AppState['ui'] = {
   online: true,
   initialQuery: '',
   isAppUser: true,
-  onlineHandleActivate: true
+  onlineHandleActivate: true,
+  activeModal: null,
+  board: {
+    selectedBoardListId: 1,
+  },
 };
 
 export const reducer = (
@@ -23,7 +24,6 @@ export const reducer = (
   dispatch: models.AppDispatch
 ): models.AppState['ui'] => {
   switch (dispatch.type) {
-
     case 'SET_THEME': {
       return {
         ...state,
@@ -110,6 +110,22 @@ export const reducer = (
       return {
         ...state,
         onlineHandleActivate: dispatch.payload,
+      };
+    }
+
+    case 'SET_MODAL': {
+      return {
+        ...state,
+        activeModal: dispatch.payload,
+      };
+    }
+    case 'SELECT_BOARD_LIST': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          selectedBoardListId: dispatch.payload,
+        },
       };
     }
 

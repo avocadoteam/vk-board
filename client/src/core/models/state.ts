@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
+import { BoardState } from './board';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -22,6 +23,8 @@ export type AppState = {
     onlineHandleActivate: boolean;
     initialQuery: string;
     isAppUser: boolean;
+    activeModal: ActiveModal | null;
+    board: BoardState
   };
   router: RouterState;
 };
@@ -41,6 +44,8 @@ export type AppDispatch =
   | { type: 'SET_INIT_QUERY'; payload: string }
   | { type: 'SET_APP_USER'; payload: boolean }
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
+  | { type: 'SET_MODAL'; payload: ActiveModal | null }
+  | { type: 'SELECT_BOARD_LIST'; payload: number }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -50,10 +55,16 @@ export enum AppUser {
   No = 'no',
 }
 
+export enum ActiveModal {
+  SelectedTask = 'selected_task',
+  Lists = 'lists',
+  NewTask = 'new_task',
+}
 
 export enum FetchingStateName {
   User = 'user',
   Ads = 'ads',
+  Board = 'board'
 }
 
 export enum FetchingStatus {

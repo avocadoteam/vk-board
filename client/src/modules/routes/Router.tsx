@@ -10,6 +10,7 @@ export const Router = React.memo(() => {
   React.useEffect(() => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.User });
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Ads });
+    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Board });
   }, []);
 
   return (
