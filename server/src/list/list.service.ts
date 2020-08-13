@@ -15,7 +15,6 @@ export class ListService {
   getLists(vkUserId: number) {
     return this.tableList
       .createQueryBuilder('list')
-      .leftJoinAndSelect('list.tasks', 'task', 'task.deleted is null')
       .where([
         {
           createdBy: null,
@@ -26,9 +25,8 @@ export class ListService {
       ])
       .orderBy({
         'list.created': 'ASC',
-        'task.created': 'DESC',
       })
-      .select(['list.name', 'list.id', 'list.created', 'task'])
+      .select(['list.name', 'list.id', 'list.created'])
       .getMany();
   }
 

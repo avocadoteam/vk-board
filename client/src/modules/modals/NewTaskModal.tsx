@@ -38,7 +38,12 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const showError = hasError && <FormStatus header={error} mode="error" />;
 
   return (
-    <ModalPage id={id} onClose={closeModal} header={<ModalPageHeader />}>
+    <ModalPage
+      id={id}
+      onClose={closeModal}
+      header={<ModalPageHeader />}
+      className={css({ '>div': { height: 'auto !important' } } as any)}
+    >
       <FormLayout>
         {showError}
         <Input
@@ -55,7 +60,6 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
           autoFocus
           name="name"
           onChange={onChange}
-          status={formValues.name ? 'valid' : 'error'}
         />
         <span className={css({ display: 'flex' })}>
           <Icon20ArticleOutline
@@ -98,6 +102,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             onChange={onChange}
           />
         </span>
+
         <Button
           mode="primary"
           size="xl"

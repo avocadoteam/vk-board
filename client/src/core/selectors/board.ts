@@ -6,6 +6,7 @@ import {
   BoardListIiem,
   FetchingStatus,
   AppState,
+  BoardTaskItem,
 } from 'core/models';
 
 const getBoardListsDataState = createSelector(
@@ -15,6 +16,10 @@ const getBoardListsDataState = createSelector(
 const getPostNewTaskDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.NewTask] ?? {}) as FetchingDataType<number>
+);
+const getTasksDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.Tasks] ?? {}) as FetchingDataType<BoardTaskItem[]>
 );
 
 export const isBoardUpdating = createSelector(
@@ -26,6 +31,12 @@ export const getBoardListData = createSelector(
   getBoardListsDataState,
   (dataState) => dataState.data ?? []
 );
+export const isTasksUpdating = createSelector(
+  getTasksDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
+
+export const getTasksData = createSelector(getTasksDataState, (dataState) => dataState.data ?? []);
 
 export const isNewTaskUpdating = createSelector(
   getPostNewTaskDataState,
@@ -69,13 +80,22 @@ export const getBoardLists = createSelector(getBoardListData, (data) =>
 export const selectedBoardListInfo = createSelector(
   getStateUi,
   getBoardListData,
-  (ui, data): BoardListIiem =>
-    data.find((bl) => bl.id === ui.board.selectedBoardListId) ?? {
+  getTasksData,
+  (ui, data, tasks): BoardListIiem => {
+    const currentList = data.find((bl) => bl.id === ui.board.selectedBoardListId);
+    if (!!currentList) {
+      return {
+        ...currentList,
+        tasks,
+      };
+    }
+    return {
       id: 0,
       created: '',
       name: '',
       tasks: [],
-    }
+    };
+  }
 );
 
 export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);

@@ -48,4 +48,25 @@ export class TasksService {
       await queryRunner.release();
     }
   }
+
+  async getTasks(listId: number, vkUserId: number) {
+    return this.tableTask
+      .createQueryBuilder('task')
+      .innerJoin('task.list', 'list', `list.id = ${listId}`)
+      .innerJoin(
+        'task.memberships',
+        'membership',
+        `membership.joinedId = ${vkUserId}`,
+      )
+      .where([
+        {
+          createdBy: vkUserId,
+          deleted: null,
+        },
+      ])
+      .orderBy({
+        'task.created': 'DESC',
+      })
+      .getMany();
+  }
 }

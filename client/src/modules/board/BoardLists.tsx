@@ -20,7 +20,7 @@ export const BoardLists = React.memo(() => {
         >
           {info.name}
         </Header>
-        {info.tasks.map((t) => (
+        {info.tasks?.map((t) => (
           <CardGrid
             key={t.id}
             className={css({

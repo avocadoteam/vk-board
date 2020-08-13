@@ -57,16 +57,17 @@ export enum AppUser {
 }
 
 export enum ActiveModal {
-  SelectedTask = 'selected_task',
+  SelectedTask = 'selectedtask',
   Lists = 'lists',
-  NewTask = 'new_task',
+  NewTask = 'newtask',
 }
 
 export enum FetchingStateName {
   User = 'user',
   Ads = 'ads',
   Board = 'board',
-  NewTask = 'new_task'
+  NewTask = 'new_task',
+  Tasks = 'tasks',
 }
 
 export enum FetchingStatus {
