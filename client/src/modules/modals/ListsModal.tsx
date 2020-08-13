@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions } from 'core/models';
+import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { ModalPage, ModalPageHeader, List, Separator } from '@vkontakte/vkui';
 import { CellButton } from 'atoms/CellButton';
 import { NewList } from './NewList';
@@ -20,6 +20,7 @@ export const ListsModal = React.memo<{ id: string }>(({ id }) => {
   const selectList = React.useCallback(
     (id: number) => {
       dispatch({ type: 'SELECT_BOARD_LIST', payload: id });
+      dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
     },
     [dispatch]
   );
