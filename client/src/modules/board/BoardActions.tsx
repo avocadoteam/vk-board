@@ -1,5 +1,5 @@
 import React from 'react';
-import { Div, Group, Separator } from '@vkontakte/vkui';
+import { Div, Group, Separator, FixedLayout } from '@vkontakte/vkui';
 import Icon24List from '@vkontakte/icons/dist/24/list';
 import Icon24Add from '@vkontakte/icons/dist/24/add';
 import { useFela } from 'react-fela';
@@ -18,7 +18,7 @@ export const BoardActions = React.memo(() => {
   }, [dispatch]);
 
   return (
-    <>
+    <FixedLayout vertical="bottom" filled>
       <Separator wide />
       <Div>
         <Group>
@@ -32,6 +32,6 @@ export const BoardActions = React.memo(() => {
           </span>
         </Group>
       </Div>
-    </>
+    </FixedLayout>
   );
 });

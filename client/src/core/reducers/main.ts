@@ -15,7 +15,7 @@ export const initialState: models.AppState['ui'] = {
   onlineHandleActivate: true,
   activeModal: null,
   board: {
-    selectedBoardListId: 1,
+    selectedBoardListId: 12,
   },
 };
 
