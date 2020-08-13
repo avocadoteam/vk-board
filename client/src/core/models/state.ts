@@ -24,7 +24,7 @@ export type AppState = {
     initialQuery: string;
     isAppUser: boolean;
     activeModal: ActiveModal | null;
-    board: BoardState
+    board: BoardState;
   };
   router: RouterState;
 };
@@ -46,6 +46,7 @@ export type AppDispatch =
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
   | { type: 'SELECT_BOARD_LIST'; payload: number }
+  | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -64,7 +65,8 @@ export enum ActiveModal {
 export enum FetchingStateName {
   User = 'user',
   Ads = 'ads',
-  Board = 'board'
+  Board = 'board',
+  NewTask = 'new_task'
 }
 
 export enum FetchingStatus {

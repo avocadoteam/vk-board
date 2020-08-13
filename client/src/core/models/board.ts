@@ -7,6 +7,7 @@ export type BoardListIiem = {
 
 export type BoardTaskItem = {
   name: string;
+  description: string;
   id: number;
   created: string;
   dueDate: string | null;
@@ -17,4 +18,16 @@ export type BoardTaskItem = {
 
 export type BoardState = {
   selectedBoardListId: number;
+  newTask: {
+    name: string;
+    description: string;
+    dueDate: string | null;
+  };
+};
+
+export type NewTaskModel = {
+  name: string;
+  description: string;
+  dueDate: string | null;
+  listId: number
 }

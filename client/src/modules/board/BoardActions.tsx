@@ -16,6 +16,12 @@ export const BoardActions = React.memo(() => {
       payload: ActiveModal.Lists,
     });
   }, [dispatch]);
+  const openNewTaskModal = React.useCallback(() => {
+    dispatch({
+      type: 'SET_MODAL',
+      payload: ActiveModal.NewTask,
+    });
+  }, [dispatch]);
 
   return (
     <FixedLayout vertical="bottom" filled>
@@ -23,7 +29,13 @@ export const BoardActions = React.memo(() => {
       <Div>
         <Group>
           <span className={css({ display: 'flex' })}>
-            <Button mode="primary" size="xl" stretched before={<Icon24Add />}>
+            <Button
+              mode="primary"
+              size="xl"
+              stretched
+              before={<Icon24Add />}
+              onClick={openNewTaskModal}
+            >
               Новая задача
             </Button>
             <Button mode="tertiary" onClick={openListsModal}>

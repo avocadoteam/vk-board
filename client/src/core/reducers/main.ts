@@ -16,6 +16,11 @@ export const initialState: models.AppState['ui'] = {
   activeModal: null,
   board: {
     selectedBoardListId: 12,
+    newTask: {
+      description: '',
+      dueDate: '',
+      name: '',
+    },
   },
 };
 
@@ -125,6 +130,18 @@ export const reducer = (
         board: {
           ...state.board,
           selectedBoardListId: dispatch.payload,
+        },
+      };
+    }
+    case 'UPDATE_NEW_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          newTask: {
+            ...state.board.newTask,
+            [dispatch.payload.name]: dispatch.payload.value
+          },
         },
       };
     }

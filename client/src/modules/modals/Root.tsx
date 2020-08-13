@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
 import { getActiveModal } from 'core/selectors/common';
 import { ListsModal } from './ListsModal';
+import { NewTaskModal } from './NewTaskModal';
 
 export const RootModals = React.memo(() => {
   const activeModal = useSelector(getActiveModal);
@@ -16,6 +17,7 @@ export const RootModals = React.memo(() => {
   return (
     <ModalRoot activeModal={activeModal} onClose={closeModal}>
       <ListsModal id={ActiveModal.Lists} />
+      <NewTaskModal id={ActiveModal.NewTask} />
     </ModalRoot>
   );
 });

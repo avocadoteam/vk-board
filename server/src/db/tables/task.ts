@@ -27,6 +27,11 @@ export class Task {
   name: string;
 
   @Column({
+    length: 2048,
+  })
+  description: string;
+
+  @Column({
     type: 'timestamp',
   })
   created: Date;
@@ -68,6 +73,7 @@ export class Task {
 
   constructor(
     name: string,
+    description: string,
     createdBy: number,
     list: List,
     dueDate: string | null = null,
@@ -78,5 +84,6 @@ export class Task {
     this.dueDate = dueDate ? new Date(dueDate) : null;
     this.list = list;
     this.taskGUID = v4();
+    this.description = description;
   }
 }

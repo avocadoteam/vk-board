@@ -26,7 +26,13 @@ export class TasksService {
         throw new Error(`List doesn't exist ${model.listId}`);
       }
 
-      const newTask = new Task(model.name, vkUserId, list, model.dueDate);
+      const newTask = new Task(
+        model.name,
+        model.description,
+        vkUserId,
+        list,
+        model.dueDate,
+      );
       await queryRunner.manager.save(newTask);
 
       const taskMembership = new TaskMembership(vkUserId, newTask);

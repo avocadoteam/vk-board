@@ -12,6 +12,11 @@ export class NewTaskModel {
   @Length(1, 1024)
   name!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @Length(1, 2048)
+  description!: string;
+
   @IsNumber()
   listId!: number;
 

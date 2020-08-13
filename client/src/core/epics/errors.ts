@@ -38,3 +38,16 @@ export const captureErrorFallbackActions = (context: string, ...actions: AppDisp
     captureUrlEvent(`Error in ${context} ${errMap(error)}`);
     return concat(...actions.map((a) => of(a)));
   });
+
+export const captureFetchErrorUserErr = (name: FetchingStateName, err: string) =>
+  catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
+    console.error('Error in', name, errMap(error));
+    captureUrlEvent(`Error in ${name} ${errMap(error)}`);
+    return of({
+      type: 'SET_ERROR_DATA',
+      payload: {
+        name,
+        error: err,
+      },
+    });
+  });
