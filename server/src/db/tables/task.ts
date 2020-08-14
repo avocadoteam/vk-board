@@ -10,6 +10,7 @@ import {
 import { List } from './list';
 import { TaskMembership } from './taskMembership';
 import { v4 } from 'uuid';
+import { ColumnNumericTransformer } from '../transform/int8';
 
 @Entity()
 export class Task {
@@ -39,6 +40,7 @@ export class Task {
   @Column({
     type: 'int8',
     name: 'created_by',
+    transformer: new ColumnNumericTransformer()
   })
   createdBy: number;
 

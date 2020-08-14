@@ -7,11 +7,15 @@ import {
   ParseIntPipe,
   HttpStatus,
   NotFoundException,
+  Put,
+  Body,
+  BadRequestException,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { ListService } from './list.service';
 import { TasksService } from 'src/tasks/tasks.service';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { FinishTasksModel } from 'src/contracts/task';
 
 @Controller('api/list')
 @UseGuards(SignGuard)
@@ -39,5 +43,21 @@ export class ListController {
       throw new NotFoundException('List not found');
     }
     return this.taskService.getTasks(listId, vkUserId);
+  }
+
+  @Put('/tasks')
+  async finishTasks(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Body()
+    model: FinishTasksModel,
+  ) {
+    if (!(await this.taskService.hasTasksMembership(model.taskIds, vkUserId))) {
+      throw new BadRequestException();
+    }
+    return this.taskService.finishTasks(model.taskIds);
   }
 }

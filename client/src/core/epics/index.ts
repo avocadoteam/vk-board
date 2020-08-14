@@ -5,9 +5,15 @@ import { getAdsEpic } from './ads';
 import { captureUrlEvent } from 'core/sentry';
 import { errMap } from 'core/utils';
 import { boardEpics } from './board';
+import { taskEpics } from './tasks';
 
 export const rootEpic: Epic = (action$, store$, dependencies) =>
-  combineEpics(userEpics, getAdsEpic, boardEpics)(action$, store$, dependencies).pipe(
+  combineEpics(
+    userEpics,
+    getAdsEpic,
+    boardEpics,
+    taskEpics
+  )(action$, store$, dependencies).pipe(
     catchError((error, source) => {
       console.error(error);
       captureUrlEvent(`Error in root epic ${errMap(error)}`);

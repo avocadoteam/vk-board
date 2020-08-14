@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Task } from './task';
+import { ColumnNumericTransformer } from '../transform/int8';
 
 @Entity()
 export class List {
@@ -20,6 +21,7 @@ export class List {
     type: 'int8',
     name: 'created_by',
     nullable: true,
+    transformer: new ColumnNumericTransformer()
   })
   createdBy: number | null;
 

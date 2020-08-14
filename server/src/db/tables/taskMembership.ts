@@ -7,6 +7,7 @@ import {
   Index,
 } from 'typeorm';
 import { Task } from './task';
+import { ColumnNumericTransformer } from '../transform/int8';
 
 @Entity()
 export class TaskMembership {
@@ -21,6 +22,7 @@ export class TaskMembership {
   @Column({
     type: 'int8',
     name: 'joined_id',
+    transformer: new ColumnNumericTransformer()
   })
   joinedId: number;
 

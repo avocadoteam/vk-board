@@ -23,6 +23,7 @@ export type BoardState = {
     description: string;
     dueDate: string | null;
   };
+  tasksToBeFinished: number[]
 };
 
 export type NewTaskModel = {

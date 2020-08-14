@@ -47,6 +47,8 @@ export type AppDispatch =
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
   | { type: 'SELECT_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
+  | { type: 'FINISH_TASK'; payload: number }
+  | { type: 'REMOVE_FINISH_TASK'; payload: number }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -68,6 +70,7 @@ export enum FetchingStateName {
   Board = 'board',
   NewTask = 'new_task',
   Tasks = 'tasks',
+  FinishTasks = 'finish_tasks'
 }
 
 export enum FetchingStatus {

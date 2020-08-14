@@ -21,6 +21,7 @@ export const initialState: models.AppState['ui'] = {
       dueDate: '',
       name: '',
     },
+    tasksToBeFinished: [],
   },
 };
 
@@ -140,8 +141,28 @@ export const reducer = (
           ...state.board,
           newTask: {
             ...state.board.newTask,
-            [dispatch.payload.name]: dispatch.payload.value
+            [dispatch.payload.name]: dispatch.payload.value,
           },
+        },
+      };
+    }
+    case 'FINISH_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeFinished: [...state.board.tasksToBeFinished, dispatch.payload],
+        },
+      };
+    }
+    case 'REMOVE_FINISH_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeFinished: state.board.tasksToBeFinished.filter(
+            (tId) => tId !== dispatch.payload
+          ),
         },
       };
     }

@@ -69,4 +69,24 @@ export class TasksService {
       })
       .getMany();
   }
+
+  async finishTasks(taskIds: number[]) {
+    const now = new Date();
+
+    await this.tableTask.update(taskIds, { finished: now });
+  }
+
+  async hasTasksMembership(taskIds: number[], vkUserId: number) {
+    return (
+      (await this.tableTask
+        .createQueryBuilder('task')
+        .innerJoin(
+          'task.memberships',
+          'membership',
+          `membership.joinedId = ${vkUserId}`,
+        )
+        .whereInIds(taskIds)
+        .getCount()) > 0
+    );
+  }
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import './styleCbx.css';
 import { useFela } from 'react-fela';
+import { useDispatch } from 'react-redux';
+import { AppDispatchActions } from 'core/models';
 
 type Props = {
   id: number;
@@ -10,10 +12,31 @@ type Props = {
 export const TaskCheckLabel = React.memo<Props>(({ id, name }) => {
   const { css } = useFela();
   const uniqId = `${id}-${name}`;
+  const dispatch = useDispatch<AppDispatchActions>();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      dispatch({
+        type: 'FINISH_TASK',
+        payload: id,
+      });
+    } else {
+      dispatch({
+        type: 'REMOVE_FINISH_TASK',
+        payload: id,
+      });
+    }
+  };
 
   return (
     <span className={css({ height: '28px' })}>
-      <input id={uniqId} className="inp-cbx" type="checkbox" style={{ display: 'none' }} />
+      <input
+        id={uniqId}
+        className="inp-cbx"
+        type="checkbox"
+        style={{ display: 'none' }}
+        onChange={handleChange}
+      />
       <label htmlFor={uniqId} className="cbx">
         <span>
           <svg width="12px" height="9px" viewBox="0 0 12 9">

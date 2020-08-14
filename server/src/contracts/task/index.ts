@@ -4,6 +4,8 @@ import {
   IsNumber,
   IsNotEmpty,
   ValidateIf,
+  IsArray,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class NewTaskModel {
@@ -25,4 +27,11 @@ export class NewTaskModel {
   @IsString()
   @Length(1, 1024)
   dueDate!: string | null;
+}
+
+export class FinishTasksModel {
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  taskIds!: number[];
 }
