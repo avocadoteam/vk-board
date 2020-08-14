@@ -25,7 +25,7 @@ import { TasksModule } from './tasks/tasks.module';
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.dbName'),
         entities: [__dirname + '/db/tables/*{.ts,.js}'],
-        synchronize: configService.get<boolean>('core.devMode')
+        synchronize: configService.get<boolean>('core.devMode'),
       }),
       inject: [ConfigService],
     }),

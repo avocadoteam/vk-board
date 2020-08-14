@@ -14,6 +14,12 @@ export type BoardTaskItem = {
   taskGUID: string;
   finished: string | null;
   deleted: null;
+  memberships: MembershipItem[];
+};
+
+export type MembershipItem = {
+  avatar: string;
+  userId: number;
 };
 
 export type BoardState = {
@@ -23,12 +29,12 @@ export type BoardState = {
     description: string;
     dueDate: string | null;
   };
-  tasksToBeFinished: number[]
+  tasksToBeFinished: number[];
 };
 
 export type NewTaskModel = {
   name: string;
   description: string;
   dueDate: string | null;
-  listId: number
-}
+  listId: number;
+};
