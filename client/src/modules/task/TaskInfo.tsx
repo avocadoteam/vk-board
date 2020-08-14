@@ -15,7 +15,7 @@ export const TaskInfo = React.memo<Props>(({ dueDate, memberships = [] }) => {
     <span className={css({ height: '32px', display: 'flex', marginTop: '18px', color: '#6A6A6A' })}>
       <Icon20ArticleOutline className={css(iconStyle)} />
       {dueDate !== null && <Icon20RecentOutline className={css(iconStyle)} />}
-      {!!memberships?.length ? (
+      {memberships?.length > 1 ? (
         <UsersStack
           photos={memberships.map((m) => m.avatar)}
           visibleCount={4}

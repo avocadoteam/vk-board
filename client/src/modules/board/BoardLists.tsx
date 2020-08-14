@@ -46,15 +46,17 @@ export const BoardLists = React.memo(() => {
           </CardGrid>
         ))}
       </Group>
-      <Group>
-        <List>
-          <Cell onClick={() => {}} expandable>
-            <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
-              Выполненные {finishedCount}
-            </Text>
-          </Cell>
-        </List>
-      </Group>
+      {finishedCount > 0 && (
+        <Group>
+          <List>
+            <Cell onClick={() => {}} expandable>
+              <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
+                Выполненные {finishedCount}
+              </Text>
+            </Cell>
+          </List>
+        </Group>
+      )}
     </Div>
   );
 });
