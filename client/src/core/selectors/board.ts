@@ -38,6 +38,14 @@ export const isTasksUpdating = createSelector(
 
 export const getTasksData = createSelector(getTasksDataState, (dataState) => dataState.data ?? []);
 
+export const getOpenTasks = createSelector(getTasksData, (tasks) =>
+  tasks.filter((t) => t.finished === null)
+);
+export const getFinishedTasksCount = createSelector(
+  getTasksData,
+  (tasks) => tasks.filter((t) => t.finished !== null).length
+);
+
 export const isNewTaskUpdating = createSelector(
   getPostNewTaskDataState,
   (dataState) => dataState.status === FetchingStatus.Updating
@@ -80,7 +88,7 @@ export const getBoardLists = createSelector(getBoardListData, (data) =>
 export const selectedBoardListInfo = createSelector(
   getStateUi,
   getBoardListData,
-  getTasksData,
+  getOpenTasks,
   (ui, data, tasks): BoardListIiem => {
     const currentList = data.find((bl) => bl.id === ui.board.selectedBoardListId);
     if (!!currentList) {

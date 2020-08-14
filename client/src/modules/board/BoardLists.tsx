@@ -1,16 +1,17 @@
 import React from 'react';
-import { Div, Header, Group, CardGrid, Card } from '@vkontakte/vkui';
+import { Div, Header, Group, CardGrid, Card, List, Cell, Text } from '@vkontakte/vkui';
 import { useSelector } from 'react-redux';
-import { selectedBoardListInfo } from 'core/selectors/board';
+import { selectedBoardListInfo, getFinishedTasksCount } from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
 
 export const BoardLists = React.memo(() => {
   const info = useSelector(selectedBoardListInfo);
+  const finishedCount = useSelector(getFinishedTasksCount);
   const { css } = useFela();
   return (
     <Div className={css({ padding: '12px 18px', paddingBottom: 80 })}>
-      <Group>
+      <Group separator="hide">
         <Header
           className={css({
             padding: 0,
@@ -44,6 +45,15 @@ export const BoardLists = React.memo(() => {
             </Card>
           </CardGrid>
         ))}
+      </Group>
+      <Group>
+        <List>
+          <Cell onClick={() => {}} expandable>
+            <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
+              Выполненные {finishedCount}
+            </Text>
+          </Cell>
+        </List>
       </Group>
     </Div>
   );

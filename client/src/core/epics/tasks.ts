@@ -114,11 +114,8 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
             return from(response.json() as Promise<void>).pipe(
               switchMap(() => {
                 return of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.FinishTasks,
-                    data: true,
-                  },
+                  type: 'SET_UPDATING_DATA',
+                  payload: FetchingStateName.Tasks,
                 } as AppDispatch);
               })
             );
