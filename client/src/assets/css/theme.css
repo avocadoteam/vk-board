@@ -44,3 +44,7 @@ body[scheme='space_gray'] {
   font-size: 21px !important;
   line-height: 52px !important;
 }
+
+.FormLayout__row {
+  padding-bottom: 0;
+}

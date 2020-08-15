@@ -34,7 +34,13 @@ export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
       onClose={closeModal}
       header={
         <Div>
-          <Header className={`useMonrope manropeBold`}>{info.name}</Header>
+          <Header
+            className={`useMonrope manropeBold ${css({
+              '>div>div': { fontSize: '20px !important' },
+            } as any)}`}
+          >
+            {info.name}
+          </Header>
         </Div>
       }
     >

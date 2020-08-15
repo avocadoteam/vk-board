@@ -41,30 +41,35 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
     <ModalPage
       id={id}
       onClose={closeModal}
-      header={<ModalPageHeader />}
-      className={css({ '>div': { height: 'auto !important' } } as any)}
+      header={
+        <FormLayout className={'useMonrope'}>
+          <Input
+            type="text"
+            placeholder="Введите название"
+            minLength={1}
+            maxLength={1024}
+            className={`${css({
+              '>div': {
+                border: 'none !important',
+                background: 'transparent !important',
+              },
+              '>input': {
+                fontSize: '20px',
+                fontWeight: 600,
+              },
+            } as any)} `}
+            name="name"
+            onChange={onChange}
+            disabled={updating}
+          />
+        </FormLayout>
+      }
     >
-      <FormLayout>
+      <FormLayout className={'useMonrope'}>
         {showError}
-        <Input
-          type="text"
-          placeholder="Введите название"
-          minLength={1}
-          maxLength={1024}
-          className={css({
-            '>div': {
-              border: 'none !important',
-              background: 'transparent !important',
-            },
-          } as any)}
-          autoFocus
-          name="name"
-          onChange={onChange}
-          disabled={updating}
-        />
         <span className={css({ display: 'flex' })}>
           <Icon20ArticleOutline
-            className={css({ marginLeft: '22px', marginTop: '14px', color: '#818c99' })}
+            className={css({ marginLeft: '22px', marginTop: '12px', color: '#818c99' })}
           />
           <Input
             type="text"
@@ -87,7 +92,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
         </span>
         <span className={css({ display: 'flex' })}>
           <Icon20RecentOutline
-            className={css({ marginLeft: '22px', marginTop: '14px', color: '#818c99' })}
+            className={css({ marginLeft: '22px', marginTop: '12px', color: '#818c99' })}
           />
           <Input
             type="date"

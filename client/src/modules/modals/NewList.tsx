@@ -19,6 +19,7 @@ export const NewList = React.memo(() => {
         minLength={1}
         maxLength={512}
         className={css({
+          marginTop: '8px',
           '>div': {
             border: 'none !important',
             background: 'transparent !important',
@@ -34,7 +35,11 @@ export const NewList = React.memo(() => {
   }
 
   return (
-    <CellButton onClick={() => setClicked(true)} before={<Icon16Add />}>
+    <CellButton
+      onClick={() => setClicked(true)}
+      before={<Icon16Add />}
+      className={css({ marginTop: '8px' })}
+    >
       Новый список
     </CellButton>
   );

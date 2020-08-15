@@ -31,9 +31,8 @@ export const ListsModal = React.memo<{ id: string }>(({ id }) => {
   };
 
   return (
-    <ModalPage id={id} onClose={closeModal} header={<ModalPageHeader />}>
+    <ModalPage id={id} onClose={closeModal} header={<NewList />}>
       <List>
-        <NewList />
         {listItems.map((i) => (
           <CellButton key={i.id} onClick={() => handleClickList(i.id)}>
             {i.name}
