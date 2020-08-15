@@ -1,5 +1,5 @@
 import * as models from 'core/models';
-import { FetchingStatus, ClientTheme, ActiveModal } from 'core/models';
+import { FetchingStatus, ClientTheme, ActiveModal, appId } from 'core/models';
 
 const hashValue = window.location.hash ? Number(window.location.hash.split('#').pop()) : null;
 
@@ -7,7 +7,7 @@ export const initialState: models.AppState['ui'] = {
   theme: ClientTheme.Light,
   fetchingDatas: {},
   notifications: false,
-  appId: 7511650,
+  appId,
   hash: !hashValue || isNaN(hashValue) ? null : hashValue,
   online: true,
   initialQuery: '',

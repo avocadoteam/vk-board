@@ -1,7 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { getStateRouter } from './common';
 import { matchPath } from 'react-router';
-import { AppState } from 'core/models';
+import { AppState, appId } from 'core/models';
 
 export const getLocationNotificationEnabled = createSelector(
   getStateRouter,
@@ -9,7 +9,7 @@ export const getLocationNotificationEnabled = createSelector(
 );
 export const getLocationVkAppId = createSelector(
   getStateRouter,
-  (router) => Number((router?.location as any).query?.vk_app_id) || 7511650
+  (router) => Number((router?.location as any).query?.vk_app_id) || appId
 );
 export const getLocationIsAppUser = createSelector(
   getStateRouter,
