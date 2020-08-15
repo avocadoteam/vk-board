@@ -9,7 +9,9 @@ import {
 import { Task } from './task';
 import { ColumnNumericTransformer } from '../transform/int8';
 
-@Entity()
+@Entity({
+  name: 'task_membership'
+})
 export class TaskMembership {
   @PrimaryGeneratedColumn('increment', { type: 'int8' })
   id!: number;
