@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
-import { BoardState } from './board';
+import { BoardState, SelectedTask } from './board';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -49,6 +49,7 @@ export type AppDispatch =
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | { type: 'FINISH_TASK'; payload: number }
   | { type: 'REMOVE_FINISH_TASK'; payload: number }
+  | { type: 'SELECT_TASK'; payload: SelectedTask }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -70,7 +71,8 @@ export enum FetchingStateName {
   Board = 'board',
   NewTask = 'new_task',
   Tasks = 'tasks',
-  FinishTasks = 'finish_tasks'
+  FinishTasks = 'finish_tasks',
+  DeleteTask = 'delete_task'
 }
 
 export enum FetchingStatus {

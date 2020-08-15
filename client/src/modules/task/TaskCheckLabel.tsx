@@ -29,7 +29,7 @@ export const TaskCheckLabel = React.memo<Props>(({ id, name }) => {
   };
 
   return (
-    <span className={css({ height: '28px' })}>
+    <span className={css({ height: '28px' })} onClick={(e) => e.stopPropagation()}>
       <input
         id={uniqId}
         className="inp-cbx"

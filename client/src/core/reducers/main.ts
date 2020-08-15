@@ -1,5 +1,5 @@
 import * as models from 'core/models';
-import { FetchingStatus, ClientTheme } from 'core/models';
+import { FetchingStatus, ClientTheme, ActiveModal } from 'core/models';
 
 const hashValue = window.location.hash ? Number(window.location.hash.split('#').pop()) : null;
 
@@ -22,6 +22,13 @@ export const initialState: models.AppState['ui'] = {
       name: '',
     },
     tasksToBeFinished: [],
+    selectedTask: {
+      id: 0,
+      name: '',
+      description: '',
+      dueDate: '',
+      taskGUID: '',
+    },
   },
 };
 
@@ -164,6 +171,16 @@ export const reducer = (
             (tId) => tId !== dispatch.payload
           ),
         },
+      };
+    }
+    case 'SELECT_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          selectedTask: dispatch.payload,
+        },
+        activeModal: ActiveModal.SelectedTask
       };
     }
 

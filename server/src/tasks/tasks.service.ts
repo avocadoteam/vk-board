@@ -96,6 +96,11 @@ export class TasksService {
 
     await this.tableTask.update(taskIds, { finished: now });
   }
+  async deleteTask(taskId: number) {
+    const now = new Date();
+
+    await this.tableTask.update(taskId, { deleted: now });
+  }
 
   async hasTasksMembership(taskIds: number[], vkUserId: number) {
     return (

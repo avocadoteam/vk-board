@@ -13,7 +13,7 @@ import { getQToQuery } from 'core/selectors/user';
 import { from, concat, of } from 'rxjs';
 import { captureFetchErrorUserErr, captureFetchError } from './errors';
 import { safeCombineEpics } from './combine';
-import { postNewTask, getTasks, finishTasks } from 'core/operations/task';
+import { postNewTask, getTasks, finishTasks, deleteTask } from 'core/operations/task';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -111,14 +111,10 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
       finishTasks(taskIds, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return from(response.json() as Promise<void>).pipe(
-              switchMap(() => {
-                return of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Tasks,
-                } as AppDispatch);
-              })
-            );
+            return of({
+              type: 'SET_UPDATING_DATA',
+              payload: FetchingStateName.Tasks,
+            } as AppDispatch);
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
@@ -128,4 +124,47 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
     )
   );
 
-export const taskEpics = safeCombineEpics(postNewTaskEpic, fetchTasksEpic, finishTasksEpic);
+const deleteTaskEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.DeleteTask),
+    map(() => ({
+      q: getQToQuery(state$.value),
+      selectedTaskId: state$.value.ui.board.selectedTask.id,
+    })),
+    switchMap(({ q, selectedTaskId }) =>
+      deleteTask(selectedTaskId, q).pipe(
+        switchMap((response) => {
+          if (response.ok) {
+            return concat(
+              of({
+                type: 'SET_UPDATING_DATA',
+                payload: FetchingStateName.Tasks,
+              } as AppDispatch),
+              of({
+                type: 'SET_READY_DATA',
+                payload: {
+                  name: FetchingStateName.DeleteTask,
+                  data: true,
+                },
+              } as AppDispatch),
+              of({
+                type: 'SET_MODAL',
+                payload: null,
+              } as AppDispatch)
+            );
+          } else {
+            throw new Error(`Http ${response.status} on ${response.url}`);
+          }
+        }),
+        captureFetchError(FetchingStateName.DeleteTask)
+      )
+    )
+  );
+
+export const taskEpics = safeCombineEpics(
+  postNewTaskEpic,
+  fetchTasksEpic,
+  finishTasksEpic,
+  deleteTaskEpic
+);

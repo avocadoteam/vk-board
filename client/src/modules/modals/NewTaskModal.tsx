@@ -60,6 +60,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
           autoFocus
           name="name"
           onChange={onChange}
+          disabled={updating}
         />
         <span className={css({ display: 'flex' })}>
           <Icon20ArticleOutline
@@ -81,6 +82,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             name="description"
             onChange={onChange}
             status={formValues.description ? 'valid' : 'error'}
+            disabled={updating}
           />
         </span>
         <span className={css({ display: 'flex' })}>
@@ -100,6 +102,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             } as any)}
             name="dueDate"
             onChange={onChange}
+            disabled={updating}
           />
         </span>
 

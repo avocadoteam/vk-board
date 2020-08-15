@@ -9,3 +9,6 @@ export const getTasks = (listId: number, q: string) =>
 
 export const finishTasks = (taskIds: number[], q: string) =>
   request(`/list/tasks${q}`, Method.Put, { taskIds });
+
+export const deleteTask = (taskId: number, q: string) =>
+  request(`/list/task${q}&taskId=${taskId}`, Method.Delete);

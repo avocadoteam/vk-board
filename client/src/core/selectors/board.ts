@@ -109,3 +109,5 @@ export const selectedBoardListInfo = createSelector(
 export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
 
 export const getNewTaskValues = createSelector(getBoardUiState, (board) => board.newTask);
+
+export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);

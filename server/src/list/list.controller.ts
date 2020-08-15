@@ -10,6 +10,7 @@ import {
   Put,
   Body,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { ListService } from './list.service';
@@ -58,6 +59,26 @@ export class ListController {
     if (!(await this.taskService.hasTasksMembership(model.taskIds, vkUserId))) {
       throw new BadRequestException();
     }
-    return this.taskService.finishTasks(model.taskIds);
+    await this.taskService.finishTasks(model.taskIds);
+  }
+
+  @Delete('/task')
+  async deleteTask(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Query(
+      'taskId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    taskId: number,
+  ) {
+    if (!(await this.taskService.hasTasksMembership([taskId], vkUserId))) {
+      throw new BadRequestException();
+    }
+
+    await this.taskService.deleteTask(taskId);
   }
 }
