@@ -2,7 +2,7 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { ModalPage, ModalPageHeader, List, Separator } from '@vkontakte/vkui';
+import { ModalPage, List, Separator } from '@vkontakte/vkui';
 import { CellButton } from 'atoms/CellButton';
 import { NewList } from './NewList';
 import Icon16InfoOutline from '@vkontakte/icons/dist/16/info_outline';

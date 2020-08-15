@@ -2,14 +2,7 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import {
-  ModalPage,
-  ModalPageHeader,
-  FormLayout,
-  Input,
-  Spinner,
-  FormStatus,
-} from '@vkontakte/vkui';
+import { ModalPage, FormLayout, Input, Spinner, FormStatus } from '@vkontakte/vkui';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { Button } from 'atoms/Button';
