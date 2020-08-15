@@ -1,5 +1,5 @@
 import React from 'react';
-import { Div, Header, Group, CardGrid, Card, List, Cell, Text, Spinner } from '@vkontakte/vkui';
+import { Div, CardGrid, Card, List, Cell, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   selectedBoardListInfo,
@@ -33,17 +33,13 @@ export const BoardLists = React.memo(() => {
   );
 
   return (
-    <Div className={css({ padding: '12px 18px', paddingBottom: 80 })}>
-      <Group separator="hide">
-        <Header
-          className={`${css({
-            padding: 0,
-            marginBottom: '1rem',
-            '>div>div': { paddingBottom: '0 !important' },
-          } as any)} useMonrope manropeBold`}
-        >
+    <>
+      <PanelHeader separator={false}>
+        <Text weight="semibold" className={`useMonrope ${css({ fontSize: '18px' })}`}>
           {info.name} {boardUpdating ? <Spinner size="small" /> : null}
-        </Header>
+        </Text>
+      </PanelHeader>
+      <Div className={css({ padding: '12px 18px', paddingBottom: 80 })}>
         {!updatingListOfTasks &&
           info.tasks?.map((t) => (
             <CardGrid
@@ -58,9 +54,11 @@ export const BoardLists = React.memo(() => {
                 size="l"
                 className={css({
                   borderRadius: '17px !important',
-                  backgroundColor: '#FBFBFB',
+                  backgroundColor: '#FFF',
                   padding: '18px',
                   width: 'calc(100% - 36px) !important',
+                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.02)',
+                  border: '1px solid #F7F7F7',
                 })}
               >
                 <div style={{ minHeight: 28 }}>
@@ -77,9 +75,7 @@ export const BoardLists = React.memo(() => {
             <LoadingCard height={70} />
           </>
         )}
-      </Group>
-      {showFinished && (
-        <Group>
+        {showFinished && (
           <List>
             <Cell onClick={() => {}} expandable>
               <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
@@ -87,8 +83,8 @@ export const BoardLists = React.memo(() => {
               </Text>
             </Cell>
           </List>
-        </Group>
-      )}
-    </Div>
+        )}
+      </Div>
+    </>
   );
 });

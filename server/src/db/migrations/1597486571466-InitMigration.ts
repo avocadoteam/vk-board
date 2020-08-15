@@ -13,7 +13,7 @@ export class InitMigration1597486571466 implements MigrationInterface {
 
       create table if not exists task (
         id bigserial,
-        taskGUID uuid not null,
+        taskguid uuid not null,
         name varchar(1024) not null,
         description varchar(1024) not null,
         created timestamp not null,

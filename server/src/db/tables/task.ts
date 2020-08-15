@@ -19,6 +19,7 @@ export class Task {
 
   @Column({
     type: 'uuid',
+    name: 'taskguid',
   })
   taskGUID: string;
 
@@ -40,7 +41,7 @@ export class Task {
   @Column({
     type: 'int8',
     name: 'created_by',
-    transformer: new ColumnNumericTransformer()
+    transformer: new ColumnNumericTransformer(),
   })
   createdBy: number;
 
