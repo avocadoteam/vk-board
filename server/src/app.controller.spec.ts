@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import integrationConfig from './config/integration.config';
 
 const mockQ =
-  '?vk_access_token_settings=&vk_app_id=7511650&vk_are_notifications_enabled=1&vk_is_app_user=1&vk_is_favorite=0&vk_language=en&vk_platform=mobile_iphone&vk_ref=super_app&vk_user_id=11437372&sign=AbJvMKh6cNRWaJyjATasbTWimqJWzfyDAbIdLz3lEr8';
+  '?vk_access_token_settings=notify&vk_app_id=7566928&vk_are_notifications_enabled=0&vk_is_app_user=1&vk_is_favorite=0&vk_language=en&vk_platform=mobile_iphone&vk_ref=im_chat&vk_user_id=11437372&sign=VZz-TO1yhgB4BaYLUvQzR3VtNnVKjupipAjCe9VlXcU';
 
 describe('get root file in AppController', () => {
   let app: INestApplication;
