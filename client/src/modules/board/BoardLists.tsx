@@ -1,14 +1,24 @@
 import React from 'react';
-import { Div, Header, Group, CardGrid, Card, List, Cell, Text } from '@vkontakte/vkui';
+import { Div, Header, Group, CardGrid, Card, List, Cell, Text, Spinner } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectedBoardListInfo, getFinishedTasksCount } from 'core/selectors/board';
+import {
+  selectedBoardListInfo,
+  getFinishedTasksCount,
+  isTasksUpdating,
+  isBoardUpdating,
+} from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
 import { AppDispatchActions, BoardTaskItem } from 'core/models';
+import { LoadingCard } from 'atoms/LoadingCard';
 
 export const BoardLists = React.memo(() => {
   const info = useSelector(selectedBoardListInfo);
+  const updatingListOfTasks = useSelector(isTasksUpdating);
+  const boardUpdating = useSelector(isBoardUpdating);
   const finishedCount = useSelector(getFinishedTasksCount);
+  const showFinished = finishedCount > 0 && !updatingListOfTasks;
+
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
 
@@ -32,35 +42,43 @@ export const BoardLists = React.memo(() => {
             '>div>div': { paddingBottom: '0 !important' },
           } as any)} useMonrope manropeBold`}
         >
-          {info.name}
+          {info.name} {boardUpdating ? <Spinner size="small" /> : null}
         </Header>
-        {info.tasks?.map((t) => (
-          <CardGrid
-            key={t.id}
-            className={css({
-              padding: 0,
-              marginBottom: '1rem',
-            })}
-            onClick={() => selectTask(t)}
-          >
-            <Card
-              size="l"
+        {!updatingListOfTasks &&
+          info.tasks?.map((t) => (
+            <CardGrid
+              key={t.id}
               className={css({
-                borderRadius: '17px !important',
-                backgroundColor: '#FBFBFB',
-                padding: '18px',
-                width: 'calc(100% - 36px) !important',
+                padding: 0,
+                marginBottom: '1rem',
               })}
+              onClick={() => selectTask(t)}
             >
-              <div style={{ minHeight: 28 }}>
-                <TaskCheckLabel id={t.id} name={t.name} />
-                <TaskInfo dueDate={t.dueDate} memberships={t.memberships} />
-              </div>
-            </Card>
-          </CardGrid>
-        ))}
+              <Card
+                size="l"
+                className={css({
+                  borderRadius: '17px !important',
+                  backgroundColor: '#FBFBFB',
+                  padding: '18px',
+                  width: 'calc(100% - 36px) !important',
+                })}
+              >
+                <div style={{ minHeight: 28 }}>
+                  <TaskCheckLabel id={t.id} name={t.name} />
+                  <TaskInfo dueDate={t.dueDate} memberships={t.memberships} />
+                </div>
+              </Card>
+            </CardGrid>
+          ))}
+        {updatingListOfTasks && (
+          <>
+            <LoadingCard height={50} />
+            <LoadingCard />
+            <LoadingCard height={70} />
+          </>
+        )}
       </Group>
-      {finishedCount > 0 && (
+      {showFinished && (
         <Group>
           <List>
             <Cell onClick={() => {}} expandable>

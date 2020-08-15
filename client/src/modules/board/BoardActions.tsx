@@ -4,10 +4,12 @@ import Icon24List from '@vkontakte/icons/dist/24/list';
 import Icon24Add from '@vkontakte/icons/dist/24/add';
 import { useFela } from 'react-fela';
 import { Button } from 'atoms/Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
+import { isBoardUpdating } from 'core/selectors/board';
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
+  const boardUpadting = useSelector(isBoardUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
 
   const openListsModal = React.useCallback(() => {
@@ -35,10 +37,11 @@ export const BoardActions = React.memo(() => {
               stretched
               before={<Icon24Add />}
               onClick={openNewTaskModal}
+              disabled={boardUpadting}
             >
               Новая задача
             </Button>
-            <Button mode="tertiary" onClick={openListsModal}>
+            <Button mode="tertiary" onClick={openListsModal} disabled={boardUpadting}>
               <Icon24List />
             </Button>
           </span>

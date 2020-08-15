@@ -85,12 +85,14 @@ export const getBoardLists = createSelector(getBoardListData, (data) =>
   }))
 );
 
+export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
+
 export const selectedBoardListInfo = createSelector(
-  getStateUi,
+  getBoardUiState,
   getBoardListData,
   getOpenTasks,
-  (ui, data, tasks): BoardListIiem => {
-    const currentList = data.find((bl) => bl.id === ui.board.selectedBoardListId);
+  (board, data, tasks): BoardListIiem => {
+    const currentList = data.find((bl) => bl.id === board.selectedBoardListId);
     if (!!currentList) {
       return {
         ...currentList,
@@ -105,8 +107,6 @@ export const selectedBoardListInfo = createSelector(
     };
   }
 );
-
-export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
 
 export const getNewTaskValues = createSelector(getBoardUiState, (board) => board.newTask);
 
