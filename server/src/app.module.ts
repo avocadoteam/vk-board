@@ -19,11 +19,17 @@ import { TasksModule } from './tasks/tasks.module';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.dbName'),
+        ...(configService.get<string>('database.psqlUrl')
+          ? {
+              url: configService.get<string>('database.psqlUrl'),
+            }
+          : {
+              host: configService.get<string>('database.host'),
+              port: configService.get<number>('database.port'),
+              username: configService.get<string>('database.username'),
+              password: configService.get<string>('database.password'),
+              database: configService.get<string>('database.dbName'),
+            }),
         entities: [__dirname + '/db/tables/*{.ts,.js}'],
         synchronize: configService.get<boolean>('core.devMode'),
       }),
