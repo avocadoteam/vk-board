@@ -86,7 +86,7 @@ export const BoardLists = React.memo(() => {
           <List>
             <Cell onClick={() => {}} expandable>
               <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
-                Выполненные{' '}
+                Готово{' '}
                 <span className={`useMonrope ${css({ color: dark ? '#5F5F5F' : '#CFCFCF' })}`}>
                   {finishedCount}
                 </span>
