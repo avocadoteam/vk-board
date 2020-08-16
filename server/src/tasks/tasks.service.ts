@@ -15,6 +15,8 @@ export class TasksService {
   constructor(
     @InjectRepository(Task)
     private tableTask: Repository<Task>,
+    @InjectRepository(List)
+    private tableList: Repository<List>,
     private connection: Connection,
     private vkApiService: VkApiService,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
@@ -62,9 +64,13 @@ export class TasksService {
   }
 
   async getTasks(listId: number, vkUserId: number) {
-    let tasks = await this.tableTask
-      .createQueryBuilder('task')
-      .innerJoin('task.list', 'list', `list.id = ${listId}`)
+    let list = await this.tableList
+      .createQueryBuilder('list')
+      .innerJoinAndSelect(
+        'list.tasks',
+        'task',
+        `task.list_id = ${listId} and task.deleted is null`,
+      )
       .innerJoin(
         'list.memberships',
         'membership',
@@ -72,32 +78,33 @@ export class TasksService {
       )
       .where([
         {
-          createdBy: vkUserId,
           deleted: null,
+          id: listId,
         },
       ])
       .orderBy({
         'task.created': 'DESC',
       })
-      .select(['task', 'membership.joinedId'])
-      .getMany();
+      .getOne();
 
-    const dict: { [taskId: number]: number[] } = {};
+    return list?.tasks ?? [];
 
-    for (const task of tasks) {
-      dict[task.id] = task.memberships.map((m) => m.joinedId);
-    }
+    // const dict: { [taskId: number]: number[] } = {};
 
-    const uniqUserIds = uniq(unnest(Object.values(dict)));
+    // for (const task of tasks) {
+    //   dict[task.id] = task.memberships.map((m) => m.joinedId);
+    // }
 
-    const avatars = await this.vkApiService.updateWithAvatars(uniqUserIds);
+    // const uniqUserIds = uniq(unnest(Object.values(dict)));
 
-    return tasks.map((t) => ({
-      ...t,
-      memberships: t.memberships.map((tm) =>
-        avatars.find((a) => a.userId === tm.joinedId),
-      ),
-    }));
+    // const avatars = await this.vkApiService.updateWithAvatars(uniqUserIds);
+
+    // return tasks.map((t) => ({
+    //   ...t,
+    //   memberships: t.memberships.map((tm) =>
+    //     avatars.find((a) => a.userId === tm.joinedId),
+    //   ),
+    // }));
   }
 
   async finishTasks(taskIds: number[], vkUserId: number, listId: number) {
