@@ -44,6 +44,7 @@ export const selectedBoardListInfo = createSelector(
       created: '',
       name: '',
       tasks: [],
+      memberships: [],
     };
   }
 );

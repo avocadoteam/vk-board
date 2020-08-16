@@ -6,6 +6,8 @@ import { NewListModel } from 'src/contracts/list';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
 import { ListMembership } from 'src/db/tables/listMembership';
+import { uniq, unnest } from 'ramda';
+import { VkApiService } from 'src/vk-api/vk-api.service';
 
 @Injectable()
 export class ListService {
@@ -13,27 +15,45 @@ export class ListService {
     @InjectRepository(List)
     private tableList: Repository<List>,
     private connection: Connection,
+    private vkApiService: VkApiService,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
 
-  getLists(vkUserId: number) {
-    return this.tableList
+  async getLists(vkUserId: number) {
+    let lists = await this.tableList
       .createQueryBuilder('list')
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId}`,
+      )
       .where([
         {
-          createdBy: null,
-          deleted: null,
-        },
-        {
-          createdBy: vkUserId,
           deleted: null,
         },
       ])
       .orderBy({
         'list.created': 'ASC',
       })
-      .select(['list.name', 'list.id', 'list.created'])
+      .select(['list.name', 'list.id', 'list.created', 'membership.joinedId'])
       .getMany();
+
+    const dict: { [listId: number]: number[] } = {};
+
+    for (const list of lists) {
+      dict[list.id] = list.memberships.map((m) => m.joinedId);
+    }
+
+    const uniqUserIds = uniq(unnest(Object.values(dict)));
+
+    const avatars = await this.vkApiService.updateWithAvatars(uniqUserIds);
+
+    return lists.map((list) => ({
+      ...list,
+      memberships: list.memberships.map((lm) =>
+        avatars.find((a) => a.userId === lm.joinedId),
+      ),
+    }));
   }
 
   async createList(model: NewListModel, vkUserId: number) {

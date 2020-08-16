@@ -3,6 +3,7 @@ export type BoardListIiem = {
   id: number;
   created: string;
   tasks: BoardTaskItem[];
+  memberships: MembershipItem[];
 };
 
 export type BoardTaskItem = {

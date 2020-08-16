@@ -5,8 +5,6 @@ import { Repository, Connection } from 'typeorm';
 import { NewTaskModel } from 'src/contracts/task';
 import { List } from 'src/db/tables/list';
 import { TaskMembership } from 'src/db/tables/taskMembership';
-import { VkApiService } from 'src/vk-api/vk-api.service';
-import { unnest, uniq } from 'ramda';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
 
@@ -18,7 +16,6 @@ export class TasksService {
     @InjectRepository(List)
     private tableList: Repository<List>,
     private connection: Connection,
-    private vkApiService: VkApiService,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
 
@@ -88,23 +85,6 @@ export class TasksService {
       .getOne();
 
     return list?.tasks ?? [];
-
-    // const dict: { [taskId: number]: number[] } = {};
-
-    // for (const task of tasks) {
-    //   dict[task.id] = task.memberships.map((m) => m.joinedId);
-    // }
-
-    // const uniqUserIds = uniq(unnest(Object.values(dict)));
-
-    // const avatars = await this.vkApiService.updateWithAvatars(uniqUserIds);
-
-    // return tasks.map((t) => ({
-    //   ...t,
-    //   memberships: t.memberships.map((tm) =>
-    //     avatars.find((a) => a.userId === tm.joinedId),
-    //   ),
-    // }));
   }
 
   async finishTasks(taskIds: number[], vkUserId: number, listId: number) {
