@@ -49,8 +49,10 @@ export type AppDispatch =
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | { type: 'FINISH_TASK'; payload: number }
   | { type: 'REMOVE_FINISH_TASK'; payload: number }
+  | { type: 'RESET_FINISH_TASKS'; payload: number[] }
   | { type: 'SELECT_TASK'; payload: SelectedTask }
   | { type: 'SET_BOARD_LIST_NAME'; payload: string }
+  | { type: 'SET_FINISH_TASK_TIMER'; payload: number }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -74,7 +76,7 @@ export enum FetchingStateName {
   Tasks = 'tasks',
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
-  NewBoardList = 'new_board_list'
+  NewBoardList = 'new_board_list',
 }
 
 export enum FetchingStatus {

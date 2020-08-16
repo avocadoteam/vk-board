@@ -1,5 +1,11 @@
 import * as models from 'core/models';
-import { FetchingStatus, ClientTheme, ActiveModal, appId } from 'core/models';
+import {
+  FetchingStatus,
+  ClientTheme,
+  ActiveModal,
+  appId,
+  FINISH_TASK_TIMER_VALUE,
+} from 'core/models';
 
 const hashValue = window.location.hash ? Number(window.location.hash.split('#').pop()) : null;
 
@@ -23,6 +29,7 @@ export const initialState: models.AppState['ui'] = {
       name: '',
     },
     tasksToBeFinished: [],
+    tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
     selectedTask: {
       id: 0,
       name: '',
@@ -175,6 +182,15 @@ export const reducer = (
         },
       };
     }
+    case 'RESET_FINISH_TASKS': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeFinished: dispatch.payload,
+        },
+      };
+    }
     case 'SELECT_TASK': {
       return {
         ...state,
@@ -192,6 +208,15 @@ export const reducer = (
         board: {
           ...state.board,
           boardListName: dispatch.payload,
+        },
+      };
+    }
+    case 'SET_FINISH_TASK_TIMER': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeFinishedTimer: dispatch.payload,
         },
       };
     }

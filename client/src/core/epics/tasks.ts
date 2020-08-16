@@ -5,13 +5,18 @@ import {
   FetchResponse,
   AppDispatch,
   BoardTaskItem,
+  FINISH_TASK_TIMER_VALUE,
 } from 'core/models';
 import { ofType } from 'redux-observable';
-import { filter, map, switchMap, auditTime } from 'rxjs/operators';
+import { filter, map, switchMap, auditTime, exhaustMap } from 'rxjs/operators';
 import { getNewTaskValues, getBoardUiState } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
-import { from, concat, of } from 'rxjs';
-import { captureFetchErrorUserErr, captureFetchError } from './errors';
+import { from, concat, of, iif } from 'rxjs';
+import {
+  captureFetchErrorUserErr,
+  captureFetchError,
+  captureFetchErrorMoreActions,
+} from './errors';
 import { safeCombineEpics } from './combine';
 import { postNewTask, getTasks, finishTasks, deleteTask } from 'core/operations/task';
 
@@ -101,7 +106,7 @@ const fetchTasksEpic: AppEpic = (action$, state$) =>
 const finishTasksEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('FINISH_TASK'),
-    auditTime(3500),
+    auditTime(FINISH_TASK_TIMER_VALUE),
     map(() => {
       const state = state$.value;
       const { selectedBoardListId, tasksToBeFinished } = getBoardUiState(state);
@@ -112,20 +117,39 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
         listId: selectedBoardListId,
       };
     }),
-    filter((v) => !!v.taskIds.length),
-    switchMap(({ q, taskIds, listId }) =>
-      finishTasks(taskIds, listId, q).pipe(
-        switchMap((response) => {
-          if (response.ok) {
-            return of({
-              type: 'SET_UPDATING_DATA',
-              payload: FetchingStateName.Tasks,
-            } as AppDispatch);
-          } else {
-            throw new Error(`Http ${response.status} on ${response.url}`);
-          }
-        }),
-        captureFetchError(FetchingStateName.FinishTasks)
+    exhaustMap(({ q, taskIds, listId }) =>
+      iif(
+        () => !taskIds.length,
+        of({
+          type: 'SET_FINISH_TASK_TIMER',
+          payload: FINISH_TASK_TIMER_VALUE,
+        } as AppDispatch),
+        finishTasks(taskIds, listId, q).pipe(
+          switchMap((response) => {
+            if (response.ok) {
+              return concat(
+                of({
+                  type: 'SET_UPDATING_DATA',
+                  payload: FetchingStateName.Tasks,
+                } as AppDispatch),
+                of({
+                  type: 'SET_FINISH_TASK_TIMER',
+                  payload: FINISH_TASK_TIMER_VALUE,
+                } as AppDispatch),
+                of({
+                  type: 'RESET_FINISH_TASKS',
+                  payload: [],
+                } as AppDispatch)
+              );
+            } else {
+              throw new Error(`Http ${response.status} on ${response.url}`);
+            }
+          }),
+          captureFetchErrorMoreActions(FetchingStateName.FinishTasks, {
+            type: 'SET_FINISH_TASK_TIMER',
+            payload: FINISH_TASK_TIMER_VALUE,
+          })
+        )
       )
     )
   );

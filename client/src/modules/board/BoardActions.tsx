@@ -7,10 +7,12 @@ import { Button } from 'atoms/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
 import { isBoardUpdating, getBoardUiState } from 'core/selectors/board';
+import { ListProgress } from 'modules/board-list';
+
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
+  const { selectedBoardListId, tasksToBeFinished } = useSelector(getBoardUiState);
   const boardUpadting = useSelector(isBoardUpdating);
-  const noSelectedListId = !useSelector(getBoardUiState).selectedBoardListId;
   const dispatch = useDispatch<AppDispatchActions>();
 
   const openListsModal = React.useCallback(() => {
@@ -28,6 +30,7 @@ export const BoardActions = React.memo(() => {
 
   return (
     <FixedLayout vertical="bottom" filled>
+      {tasksToBeFinished.length ? <ListProgress /> : null}
       <Separator wide />
       <Div>
         <Group>
@@ -38,7 +41,7 @@ export const BoardActions = React.memo(() => {
               stretched
               before={<Icon24Add />}
               onClick={openNewTaskModal}
-              disabled={boardUpadting || noSelectedListId}
+              disabled={boardUpadting || !selectedBoardListId}
             >
               Новая задача
             </Button>
