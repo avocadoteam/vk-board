@@ -34,4 +34,7 @@ export class FinishTasksModel {
   @ArrayMinSize(1)
   @IsString({ each: true })
   taskIds!: number[];
+
+  @IsNumber()
+  listId!: number;
 }

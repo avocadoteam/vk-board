@@ -8,7 +8,7 @@ import {
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap, auditTime } from 'rxjs/operators';
-import { getNewTaskValues } from 'core/selectors/board';
+import { getNewTaskValues, getBoardUiState } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
 import { from, concat, of } from 'rxjs';
 import { captureFetchErrorUserErr, captureFetchError } from './errors';
@@ -102,13 +102,19 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('FINISH_TASK'),
     auditTime(3500),
-    map(() => ({
-      q: getQToQuery(state$.value),
-      taskIds: state$.value.ui.board.tasksToBeFinished,
-    })),
+    map(() => {
+      const state = state$.value;
+      const { selectedBoardListId, tasksToBeFinished } = getBoardUiState(state);
+
+      return {
+        q: getQToQuery(state),
+        taskIds: tasksToBeFinished,
+        listId: selectedBoardListId,
+      };
+    }),
     filter((v) => !!v.taskIds.length),
-    switchMap(({ q, taskIds }) =>
-      finishTasks(taskIds, q).pipe(
+    switchMap(({ q, taskIds, listId }) =>
+      finishTasks(taskIds, listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return of({
@@ -128,12 +134,18 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('SET_UPDATING_DATA'),
     filter(({ payload }) => payload === FetchingStateName.DeleteTask),
-    map(() => ({
-      q: getQToQuery(state$.value),
-      selectedTaskId: state$.value.ui.board.selectedTask.id,
-    })),
-    switchMap(({ q, selectedTaskId }) =>
-      deleteTask(selectedTaskId, q).pipe(
+    map(() => {
+      const state = state$.value;
+      const { selectedBoardListId, selectedTask } = getBoardUiState(state);
+
+      return {
+        q: getQToQuery(state),
+        selectedTaskId: selectedTask.id,
+        listId: selectedBoardListId,
+      };
+    }),
+    switchMap(({ q, selectedTaskId, listId }) =>
+      deleteTask(selectedTaskId, listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return concat(

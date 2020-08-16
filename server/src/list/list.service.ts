@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
 import { Repository, Connection } from 'typeorm';
 import { NewListModel } from 'src/contracts/list';
+import { CacheManager } from 'src/custom-types/cache';
+import { cacheKey } from 'src/contracts/cache';
 
 @Injectable()
 export class ListService {
@@ -10,6 +12,7 @@ export class ListService {
     @InjectRepository(List)
     private tableList: Repository<List>,
     private connection: Connection,
+    @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
 
   getLists(vkUserId: number) {
@@ -39,6 +42,8 @@ export class ListService {
       const newList = new List(model.name, vkUserId);
       await queryRunner.manager.save(newList);
       await queryRunner.commitTransaction();
+
+      await this.cache.del(cacheKey.boardList(String(vkUserId)));
 
       return newList.id;
     } catch (err) {

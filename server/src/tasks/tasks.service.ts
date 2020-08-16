@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Task } from 'src/db/tables/task';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
@@ -7,6 +7,8 @@ import { List } from 'src/db/tables/list';
 import { TaskMembership } from 'src/db/tables/taskMembership';
 import { VkApiService } from 'src/vk-api/vk-api.service';
 import { unnest, uniq } from 'ramda';
+import { CacheManager } from 'src/custom-types/cache';
+import { cacheKey } from 'src/contracts/cache';
 
 @Injectable()
 export class TasksService {
@@ -15,6 +17,7 @@ export class TasksService {
     private tableTask: Repository<Task>,
     private connection: Connection,
     private vkApiService: VkApiService,
+    @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
 
   async createTask(model: NewTaskModel, vkUserId: number) {
@@ -42,6 +45,10 @@ export class TasksService {
       await queryRunner.manager.save(taskMembership);
 
       await queryRunner.commitTransaction();
+
+      await this.cache.del(
+        cacheKey.tasks(String(vkUserId), String(model.listId)),
+      );
 
       return newTask.id;
     } catch (err) {
@@ -91,15 +98,19 @@ export class TasksService {
     }));
   }
 
-  async finishTasks(taskIds: number[]) {
+  async finishTasks(taskIds: number[], vkUserId: number, listId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskIds, { finished: now });
+
+    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
   }
-  async deleteTask(taskId: number) {
+  async deleteTask(taskId: number, vkUserId: number, listId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskId, { deleted: now });
+
+    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
   }
 
   async hasTasksMembership(taskIds: number[], vkUserId: number) {

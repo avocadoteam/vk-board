@@ -30,7 +30,7 @@ export class BoardController {
 
   @Get()
   @UseInterceptors(BoardCacheInterceptor)
-  @CacheTTL(10)
+  @CacheTTL(60)
   getAvailableBoards(
     @Query(
       'vk_user_id',

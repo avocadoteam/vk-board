@@ -11,12 +11,14 @@ import {
   Body,
   BadRequestException,
   Delete,
+  CacheTTL,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { ListService } from './list.service';
 import { TasksService } from 'src/tasks/tasks.service';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { FinishTasksModel } from 'src/contracts/task';
+import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
 
 @Controller('api/list')
 @UseGuards(SignGuard)
@@ -27,6 +29,8 @@ export class ListController {
     private readonly taskService: TasksService,
   ) {}
 
+  @UseInterceptors(TasksCacheInterceptor)
+  @CacheTTL(60)
   @Get('/tasks')
   async getListTasks(
     @Query(
@@ -59,7 +63,7 @@ export class ListController {
     if (!(await this.taskService.hasTasksMembership(model.taskIds, vkUserId))) {
       throw new BadRequestException();
     }
-    await this.taskService.finishTasks(model.taskIds);
+    await this.taskService.finishTasks(model.taskIds, vkUserId, model.listId);
   }
 
   @Delete('/task')
@@ -74,11 +78,16 @@ export class ListController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
     )
     taskId: number,
+    @Query(
+      'listId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    listId: number,
   ) {
     if (!(await this.taskService.hasTasksMembership([taskId], vkUserId))) {
       throw new BadRequestException();
     }
 
-    await this.taskService.deleteTask(taskId);
+    await this.taskService.deleteTask(taskId, vkUserId, listId);
   }
 }
