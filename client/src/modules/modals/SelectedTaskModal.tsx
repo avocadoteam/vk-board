@@ -13,12 +13,14 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Button } from 'atoms/Button';
 import { isTaskDeleteUpdating } from 'core/selectors/task';
+import { isThemeDrak } from 'core/selectors/common';
 
 export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const info = useSelector(getSelectedTaskInfo);
   const deletting = useSelector(isTaskDeleteUpdating);
+  const dark = useSelector(isThemeDrak);
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });
@@ -46,35 +48,33 @@ export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
     >
       <Div>
         <MiniInfoCell
-          before={<Icon20ArticleOutline />}
+          before={<Icon20ArticleOutline className={css({ color: dark ? '#AEAEAE' : '#6A6A6A' })} />}
           multiline
           className={css({ padding: '6px 12px 0' })}
         >
-          <Text weight="medium" className={`useMonrope ${css({ color: '#000' })}`}>
+          <Text weight="medium" className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}>
             {info.description}
           </Text>
         </MiniInfoCell>
       </Div>
       {info.dueDate !== null && (
         <Div>
-          <MiniInfoCell before={<Icon20RecentOutline />} className={css({ padding: '0 12px' })}>
-            <Text weight="medium" className={`useMonrope ${css({ color: '#000' })}`}>
+          <MiniInfoCell
+            before={
+              <Icon20RecentOutline className={css({ color: dark ? '#AEAEAE' : '#6A6A6A' })} />
+            }
+            className={css({ padding: '0 12px' })}
+          >
+            <Text
+              weight="medium"
+              className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}
+            >
               до {format(new Date(info.dueDate), 'dd MMMM', { locale: ru })}
             </Text>
           </MiniInfoCell>
         </Div>
       )}
       <Div className={css({ padding: '12px 24px', display: 'flex' })}>
-        <Button
-          mode="secondary"
-          size="m"
-          stretched
-          before={<Icon24Linked />}
-          className={`useMonrope ${css({ fontSize: '14px' })}`}
-          disabled={deletting}
-        >
-          Скопировать ссылку
-        </Button>
         <Button mode="tertiary" disabled={deletting} className={css({ paddingRight: 0 })}>
           <Icon28WriteOutline />
         </Button>

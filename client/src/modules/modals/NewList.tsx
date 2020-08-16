@@ -31,7 +31,7 @@ export const NewList = React.memo(() => {
 
   if (click) {
     return (
-      <span className={css({ display: 'flex' })}>
+      <span className={`useMonrope ${css({ display: 'flex' })}`}>
         <Input
           type="text"
           placeholder="Введите название"
@@ -68,7 +68,7 @@ export const NewList = React.memo(() => {
   }
 
   return (
-    <CellButton onClick={() => setClicked(true)} className={css({ marginTop: '8px !important' })}>
+    <CellButton onClick={() => setClicked(true)} className={css({ marginTop: '6px !important' })}>
       <Icon16Add className={css({ marginRight: '.5rem' })} />
       Новый список
     </CellButton>

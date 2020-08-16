@@ -53,7 +53,15 @@ const ListsPC = React.memo<{ updateModalHeight?: () => void }>(({ updateModalHei
       {listItems.map((i) => (
         <span key={i.id}>
           <CellButton onClick={() => handleClickList(i.id)} selected={selectedBoardListId === i.id}>
-            {i.name}
+            <span
+              className={css({
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              })}
+            >
+              {i.name}
+            </span>
             <Icon28ChevronDownOutline
               className={css({ marginLeft: 'auto', color: 'rgba(0, 0, 0, 0.1)' })}
               onClick={(e) => toggleDropDown(e, i.id)}

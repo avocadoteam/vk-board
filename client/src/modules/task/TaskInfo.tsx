@@ -4,15 +4,25 @@ import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { MembershipItem } from 'core/models';
 import { UsersStack } from '@vkontakte/vkui';
+import { useSelector } from 'react-redux';
+import { isThemeDrak } from 'core/selectors/common';
 type Props = {
   dueDate: string | null;
   memberships: MembershipItem[];
 };
 
 export const TaskInfo = React.memo<Props>(({ dueDate, memberships = [] }) => {
+  const dark = useSelector(isThemeDrak);
   const { css } = useFela();
   return (
-    <span className={css({ height: '32px', display: 'flex', marginTop: '18px', color: '#6A6A6A' })}>
+    <span
+      className={css({
+        height: '32px',
+        display: 'flex',
+        marginTop: '18px',
+        color: dark ? '#AEAEAE' : '#6A6A6A',
+      })}
+    >
       <Icon20ArticleOutline className={css(iconStyle)} />
       {dueDate !== null && <Icon20RecentOutline className={css(iconStyle)} />}
       {memberships?.length > 1 ? (

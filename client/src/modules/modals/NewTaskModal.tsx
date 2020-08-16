@@ -10,6 +10,7 @@ import Icon24Add from '@vkontakte/icons/dist/24/add';
 import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { format, isBefore, addDays } from 'date-fns';
+import { isThemeDrak } from 'core/selectors/common';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -17,6 +18,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
+  const dark = useSelector(isThemeDrak);
   const { updating, hasError, error } = useSelector(getNewTaskInfo);
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
@@ -64,6 +66,9 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
               '>input': {
                 fontSize: '20px',
                 fontWeight: 600,
+                '::placeholder': {
+                  color: dark ? '#5F5F5F' : '#CFCFCF',
+                },
               },
             } as any)} `}
             name="name"
@@ -78,7 +83,11 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
         {showError}
         <span className={css({ display: 'flex' })}>
           <Icon20ArticleOutline
-            className={css({ marginLeft: '22px', marginTop: '12px', color: '#818c99' })}
+            className={css({
+              marginLeft: '22px',
+              marginTop: '12px',
+              color: dark ? '#5F5F5F' : '#CFCFCF',
+            })}
           />
           <Input
             type="text"
@@ -92,6 +101,11 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
                 border: 'none !important',
                 background: 'transparent !important',
               },
+              '>input': {
+                '::placeholder': {
+                  color: dark ? '#5F5F5F' : '#CFCFCF',
+                },
+              },
             } as any)}
             name="description"
             onChange={onChange}
@@ -102,7 +116,11 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
         </span>
         <span className={css({ display: 'flex' })}>
           <Icon20RecentOutline
-            className={css({ marginLeft: '22px', marginTop: '12px', color: '#818c99' })}
+            className={css({
+              marginLeft: '22px',
+              marginTop: '12px',
+              color: dark ? '#5F5F5F' : '#CFCFCF',
+            })}
           />
           <Input
             type="date"
@@ -113,6 +131,11 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
               '>div': {
                 border: 'none !important',
                 background: 'transparent !important',
+              },
+              '>input': {
+                '::placeholder': {
+                  color: dark ? '#5F5F5F' : '#CFCFCF',
+                },
               },
             } as any)}
             name="dueDate"

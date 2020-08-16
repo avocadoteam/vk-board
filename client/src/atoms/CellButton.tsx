@@ -10,7 +10,7 @@ export const CellButton: React.FC<Props> = ({ className = '', selected = false, 
   const dark = useSelector(isThemeDrak);
   const { css } = useFela({ dark, selected });
 
-  return <button {...props} className={`${css(cellButtonStyle)} ${className}`} />;
+  return <button {...props} className={`useMonrope ${css(cellButtonStyle)} ${className}`} />;
 };
 
 const cellButtonStyle: CssFelaStyle<
