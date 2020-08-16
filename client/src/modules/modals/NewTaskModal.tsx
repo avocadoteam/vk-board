@@ -7,7 +7,8 @@ import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { Button } from 'atoms/Button';
 import Icon24Add from '@vkontakte/icons/dist/24/add';
-import { getNewTaskValues, getNewTaskInfo } from 'core/selectors/board';
+import { getNewTaskValues } from 'core/selectors/board';
+import { getNewTaskInfo } from 'core/selectors/task';
 
 export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();

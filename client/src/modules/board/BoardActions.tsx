@@ -6,10 +6,11 @@ import { useFela } from 'react-fela';
 import { Button } from 'atoms/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
-import { isBoardUpdating } from 'core/selectors/board';
+import { isBoardUpdating, getBoardUiState } from 'core/selectors/board';
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
   const boardUpadting = useSelector(isBoardUpdating);
+  const noSelectedListId = !useSelector(getBoardUiState).selectedBoardListId;
   const dispatch = useDispatch<AppDispatchActions>();
 
   const openListsModal = React.useCallback(() => {
@@ -37,7 +38,7 @@ export const BoardActions = React.memo(() => {
               stretched
               before={<Icon24Add />}
               onClick={openNewTaskModal}
-              disabled={boardUpadting}
+              disabled={boardUpadting || noSelectedListId}
             >
               Новая задача
             </Button>

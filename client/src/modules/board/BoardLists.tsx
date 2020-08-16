@@ -1,16 +1,12 @@
 import React from 'react';
 import { Div, CardGrid, Card, List, Cell, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  selectedBoardListInfo,
-  getFinishedTasksCount,
-  isTasksUpdating,
-  isBoardUpdating,
-} from 'core/selectors/board';
+import { selectedBoardListInfo, isBoardUpdating } from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
 import { AppDispatchActions, BoardTaskItem } from 'core/models';
 import { LoadingCard } from 'atoms/LoadingCard';
+import { isTasksUpdating, getFinishedTasksCount } from 'core/selectors/task';
 
 export const BoardLists = React.memo(() => {
   const info = useSelector(selectedBoardListInfo);

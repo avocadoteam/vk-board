@@ -50,6 +50,7 @@ export type AppDispatch =
   | { type: 'FINISH_TASK'; payload: number }
   | { type: 'REMOVE_FINISH_TASK'; payload: number }
   | { type: 'SELECT_TASK'; payload: SelectedTask }
+  | { type: 'SET_BOARD_LIST_NAME'; payload: string }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -72,7 +73,8 @@ export enum FetchingStateName {
   NewTask = 'new_task',
   Tasks = 'tasks',
   FinishTasks = 'finish_tasks',
-  DeleteTask = 'delete_task'
+  DeleteTask = 'delete_task',
+  NewBoardList = 'new_board_list'
 }
 
 export enum FetchingStatus {

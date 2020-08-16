@@ -16,6 +16,7 @@ export const initialState: models.AppState['ui'] = {
   activeModal: null,
   board: {
     selectedBoardListId: 12,
+    boardListName: '',
     newTask: {
       description: '',
       dueDate: '',
@@ -123,6 +124,7 @@ export const reducer = (
       return {
         ...state,
         onlineHandleActivate: dispatch.payload,
+        activeModal: null,
       };
     }
 
@@ -180,7 +182,17 @@ export const reducer = (
           ...state.board,
           selectedTask: dispatch.payload,
         },
-        activeModal: ActiveModal.SelectedTask
+        activeModal: ActiveModal.SelectedTask,
+      };
+    }
+
+    case 'SET_BOARD_LIST_NAME': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          boardListName: dispatch.payload,
+        },
       };
     }
 

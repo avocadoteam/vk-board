@@ -29,6 +29,7 @@ export type SelectedTask = Pick<
 
 export type BoardState = {
   selectedBoardListId: number;
+  boardListName: string;
   newTask: {
     name: string;
     description: string;
