@@ -2,6 +2,8 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { CardGrid, Card } from '@vkontakte/vkui';
 import { IStyle } from 'fela';
+import { useSelector } from 'react-redux';
+import { isThemeDrak } from 'core/selectors/common';
 
 type Props = {
   height?: number;
@@ -9,6 +11,7 @@ type Props = {
 
 export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
   const { css } = useFela();
+  const dark = useSelector(isThemeDrak);
 
   return (
     <CardGrid
@@ -22,7 +25,7 @@ export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
         className={css(
           {
             borderRadius: '17px !important',
-            backgroundColor: '#FBFBFB',
+            backgroundColor: dark ? 'transparent' : '#FBFBFB',
             padding: '18px',
             width: 'calc(100% - 36px) !important',
           },
