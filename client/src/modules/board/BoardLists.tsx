@@ -7,8 +7,11 @@ import { TaskCheckLabel, TaskInfo } from 'modules/task';
 import { AppDispatchActions, BoardTaskItem } from 'core/models';
 import { LoadingCard } from 'atoms/LoadingCard';
 import { isTasksUpdating, getFinishedTasksCount } from 'core/selectors/task';
+import { ListMembershipStack } from 'modules/board-list';
+import { isThemeDrak } from 'core/selectors/common';
 
 export const BoardLists = React.memo(() => {
+  const dark = useSelector(isThemeDrak);
   const info = useSelector(selectedBoardListInfo);
   const updatingListOfTasks = useSelector(isTasksUpdating);
   const boardUpdating = useSelector(isBoardUpdating);
@@ -30,8 +33,16 @@ export const BoardLists = React.memo(() => {
 
   return (
     <>
-      <PanelHeader separator={false}>
-        <Text weight="semibold" className={`useMonrope ${css({ fontSize: '18px' })}`}>
+      <PanelHeader separator={false} left={<ListMembershipStack />}>
+        <Text
+          weight="semibold"
+          className={`useMonrope ${css({
+            fontSize: '18px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          })}`}
+        >
           {info.name} {boardUpdating ? <Spinner size="small" /> : null}
         </Text>
       </PanelHeader>
@@ -50,11 +61,11 @@ export const BoardLists = React.memo(() => {
                 size="l"
                 className={css({
                   borderRadius: '17px !important',
-                  backgroundColor: '#FFF',
+                  backgroundColor: dark ? '#222327' : '#FFF',
                   padding: '18px',
                   width: 'calc(100% - 36px) !important',
                   boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.02)',
-                  border: '1px solid #F7F7F7',
+                  border: `1px solid ${dark ? '#343434' : '#F7F7F7'}`,
                 })}
               >
                 <div style={{ minHeight: 28 }}>
@@ -75,7 +86,10 @@ export const BoardLists = React.memo(() => {
           <List>
             <Cell onClick={() => {}} expandable>
               <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
-                Выполненные {finishedCount}
+                Выполненные{' '}
+                <span className={`useMonrope ${css({ color: dark ? '#5F5F5F' : '#CFCFCF' })}`}>
+                  {finishedCount}
+                </span>
               </Text>
             </Cell>
           </List>
