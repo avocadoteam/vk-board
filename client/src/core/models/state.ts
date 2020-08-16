@@ -47,6 +47,7 @@ export type AppDispatch =
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
   | { type: 'SELECT_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
+  | { type: 'RESET_NEW_TASK'; payload: null }
   | { type: 'FINISH_TASK'; payload: number }
   | { type: 'REMOVE_FINISH_TASK'; payload: number }
   | { type: 'RESET_FINISH_TASKS'; payload: number[] }

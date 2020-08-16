@@ -1,7 +1,6 @@
 import React from 'react';
-import { useFela } from 'react-fela';
+import { useFela, CssFelaStyle } from 'react-fela';
 import { CardGrid, Card } from '@vkontakte/vkui';
-import { IStyle } from 'fela';
 import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 
@@ -10,8 +9,19 @@ type Props = {
 };
 
 export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
-  const { css } = useFela();
   const dark = useSelector(isThemeDrak);
+  const { css } = useFela({ dark });
+  const [show, setShow] = React.useState(false);
+
+  React.useEffect(() => {
+    const id = setTimeout(() => setShow(true), 1000);
+
+    return () => clearTimeout(id);
+  }, []);
+
+  if (!show) {
+    return null;
+  }
 
   return (
     <CardGrid
@@ -25,7 +35,7 @@ export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
         className={css(
           {
             borderRadius: '17px !important',
-            backgroundColor: dark ? 'transparent' : '#FBFBFB',
+            backgroundColor: dark ? '#AEAEAE' : '#FBFBFB',
             padding: '18px',
             width: 'calc(100% - 36px) !important',
           },
@@ -38,8 +48,10 @@ export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
   );
 });
 
-const shimmerAnimation = (): IStyle => ({
-  backgroundImage: 'linear-gradient(to right, #FBFBFB 0%, #edeef1 20%, #FBFBFB 40%, #FBFBFB 100%)',
+const shimmerAnimation: CssFelaStyle<{}, { dark: boolean }> = ({ dark }) => ({
+  backgroundImage: dark
+    ? 'linear-gradient(to right, #AEAEAE 0%, #edeef1 20%, #AEAEAE 40%, #AEAEAE 100%)'
+    : 'linear-gradient(to right, #FBFBFB 0%, #edeef1 20%, #FBFBFB 40%, #FBFBFB 100%)',
   backgroundRepeat: 'no-repeat',
 
   animationDuration: '1s',

@@ -6,7 +6,6 @@ import { ModalPage, Header, MiniInfoCell, Text, Div, Spinner } from '@vkontakte/
 import { getSelectedTaskInfo } from 'core/selectors/board';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
-import Icon24Linked from '@vkontakte/icons/dist/24/linked';
 import Icon28WriteOutline from '@vkontakte/icons/dist/28/write_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import { format } from 'date-fns';

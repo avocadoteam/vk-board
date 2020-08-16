@@ -162,6 +162,19 @@ export const reducer = (
         },
       };
     }
+    case 'RESET_NEW_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          newTask: {
+            description: '',
+            dueDate: null,
+            name: '',
+          },
+        },
+      };
+    }
     case 'FINISH_TASK': {
       return {
         ...state,

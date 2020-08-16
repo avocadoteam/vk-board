@@ -48,6 +48,10 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                     payload: null,
                   } as AppDispatch),
                   of({
+                    type: 'RESET_NEW_TASK',
+                    payload: null,
+                  } as AppDispatch),
+                  of({
                     type: 'SET_READY_DATA',
                     payload: {
                       name: FetchingStateName.NewTask,
