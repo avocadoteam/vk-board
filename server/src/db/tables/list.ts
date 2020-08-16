@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Task } from './task';
 import { ColumnNumericTransformer } from '../transform/int8';
+import { ListMembership } from './listMembership';
 
 @Entity()
 export class List {
@@ -21,12 +22,15 @@ export class List {
     type: 'int8',
     name: 'created_by',
     nullable: true,
-    transformer: new ColumnNumericTransformer()
+    transformer: new ColumnNumericTransformer(),
   })
   createdBy: number | null;
 
   @OneToMany((type) => Task, (task) => task.list)
   tasks!: Task[];
+
+  @OneToMany((type) => ListMembership, (lm) => lm.list)
+  memberships!: ListMembership[];
 
   constructor(name: string, createdBy: number) {
     this.name = name;
