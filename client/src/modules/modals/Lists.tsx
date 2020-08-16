@@ -33,8 +33,10 @@ const ListsPC = React.memo<{ updateModalHeight?: () => void }>(({ updateModalHei
   );
 
   const handleClickList = (id: number) => {
-    selectList(id);
-    closeModal();
+    if (selectedBoardListId !== id) {
+      selectList(id);
+      closeModal();
+    }
   };
 
   const toggleDropDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, listId: number) => {
