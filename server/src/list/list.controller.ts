@@ -60,7 +60,7 @@ export class ListController {
     @Body()
     model: FinishTasksModel,
   ) {
-    if (!(await this.taskService.hasTasksMembership(model.taskIds, vkUserId))) {
+    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
     await this.taskService.finishTasks(model.taskIds, vkUserId, model.listId);
@@ -84,7 +84,7 @@ export class ListController {
     )
     listId: number,
   ) {
-    if (!(await this.taskService.hasTasksMembership([taskId], vkUserId))) {
+    if (!(await this.listService.hasListMembership([listId], vkUserId))) {
       throw new BadRequestException();
     }
 

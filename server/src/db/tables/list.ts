@@ -19,6 +19,12 @@ export class List {
   created: Date;
 
   @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  deleted!: Date | null;
+
+  @Column({
     type: 'int8',
     name: 'created_by',
     nullable: true,

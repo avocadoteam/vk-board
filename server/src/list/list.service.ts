@@ -5,6 +5,7 @@ import { Repository, Connection } from 'typeorm';
 import { NewListModel } from 'src/contracts/list';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
+import { ListMembership } from 'src/db/tables/listMembership';
 
 @Injectable()
 export class ListService {
@@ -21,9 +22,11 @@ export class ListService {
       .where([
         {
           createdBy: null,
+          deleted: null,
         },
         {
           createdBy: vkUserId,
+          deleted: null,
         },
       ])
       .orderBy({
@@ -41,6 +44,10 @@ export class ListService {
     try {
       const newList = new List(model.name, vkUserId);
       await queryRunner.manager.save(newList);
+
+      const listMembership = new ListMembership(vkUserId, newList);
+      await queryRunner.manager.save(listMembership);
+
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
@@ -61,13 +68,34 @@ export class ListService {
           {
             id: listId,
             createdBy,
+            deleted: null,
           },
           {
             id: listId,
             createdBy: null,
+            deleted: null,
           },
         ],
       })) > 0
+    );
+  }
+
+  async hasListMembership(listIds: number[], vkUserId: number) {
+    return (
+      (await this.tableList
+        .createQueryBuilder('list')
+        .innerJoin(
+          'list.memberships',
+          'membership',
+          `membership.joined_id = ${vkUserId}`,
+        )
+        .where([
+          {
+            deleted: null,
+          },
+        ])
+        .andWhereInIds(listIds)
+        .getCount()) > 0
     );
   }
 }

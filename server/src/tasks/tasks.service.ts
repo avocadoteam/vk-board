@@ -26,7 +26,9 @@ export class TasksService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const list = await queryRunner.manager.findOne<List>(List, model.listId);
+      const list = await queryRunner.manager.findOne<List>(List, model.listId, {
+        where: { deleted: null },
+      });
 
       if (!list) {
         throw new Error(`List doesn't exist ${model.listId}`);
@@ -64,7 +66,7 @@ export class TasksService {
       .createQueryBuilder('task')
       .innerJoin('task.list', 'list', `list.id = ${listId}`)
       .innerJoin(
-        'task.memberships',
+        'list.memberships',
         'membership',
         `membership.joined_id = ${vkUserId}`,
       )
