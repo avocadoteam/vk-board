@@ -9,12 +9,26 @@ import { Button } from 'atoms/Button';
 import Icon24Add from '@vkontakte/icons/dist/24/add';
 import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
+import { format, isBefore, addDays } from 'date-fns';
+
+const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
 export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const { updating, hasError, error } = useSelector(getNewTaskInfo);
+
+  const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
+
+  React.useEffect(() => {
+    if (before) {
+      dispatch({
+        type: 'UPDATE_NEW_TASK',
+        payload: { name: 'dueDate', value: nextDay },
+      });
+    }
+  }, [before]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -55,6 +69,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             name="name"
             onChange={onChange}
             disabled={updating}
+            value={formValues.name}
           />
         </FormLayout>
       }
@@ -82,6 +97,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             onChange={onChange}
             status={formValues.description ? 'valid' : 'error'}
             disabled={updating}
+            value={formValues.description}
           />
         </span>
         <span className={css({ display: 'flex' })}>
@@ -90,7 +106,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
           />
           <Input
             type="date"
-            placeholder="Введите срок"
+            placeholder="Выберите срок"
             className={css({
               marginLeft: '0 !important',
               width: '100%',
@@ -102,6 +118,8 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
             name="dueDate"
             onChange={onChange}
             disabled={updating}
+            min={nextDay}
+            value={formValues.dueDate ?? ''}
           />
         </span>
 
