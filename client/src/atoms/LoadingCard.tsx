@@ -24,7 +24,7 @@ export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
         className={css(
           {
             borderRadius: '17px !important',
-            backgroundColor: dark ? '#AEAEAE' : '#FBFBFB',
+            backgroundColor: dark ? 'transparent' : '#FBFBFB',
             padding: '18px',
             width: 'calc(100% - 36px) !important',
           },

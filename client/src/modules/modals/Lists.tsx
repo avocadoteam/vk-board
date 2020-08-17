@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getBoardLists } from 'core/selectors/board';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { useFela } from 'react-fela';
-import { List, withModalRootContext, Cell, Div, Text } from '@vkontakte/vkui';
+import { List, withModalRootContext, Div, Text } from '@vkontakte/vkui';
 import Icon28ChevronDownOutline from '@vkontakte/icons/dist/28/chevron_down_outline';
 import { CellButton } from 'atoms/CellButton';
 import { getBoardUiState, isThemeDrak } from 'core/selectors/common';

@@ -130,7 +130,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             onChange={onChange}
             disabled={updating}
             min={nextDay}
-            value={formValues.dueDate ?? ''}
+            value={formValues.dueDate ? format(new Date(formValues.dueDate), 'yyyy-MM-dd') : ''}
           />
         </span>
       </FormLayout>

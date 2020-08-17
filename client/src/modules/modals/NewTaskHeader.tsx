@@ -7,7 +7,7 @@ import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
 
-export const NewTaskHeader = React.memo(({}) => {
+export const NewTaskHeader = React.memo(() => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);

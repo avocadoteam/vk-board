@@ -17,11 +17,9 @@ export const LoadingCardChain = React.memo<Props>(({ cards }) => {
       transform: 'scale(1)',
     },
     ref: transRef,
-    unique: true,
-    trail: 1000 / cards.length,
   });
 
-  useChain([transRef], [0, 0.5]);
+  useChain([transRef], [0, 0.1]);
 
   return transition((style, card) => {
     return (

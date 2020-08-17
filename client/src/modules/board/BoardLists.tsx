@@ -12,6 +12,7 @@ import { useTransition, animated, useChain } from 'react-spring';
 import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
 
 export const BoardLists = React.memo(() => {
+  const [showUpdating, setShow] = React.useState(false);
   const dark = useSelector(isThemeDrak);
   const info = useSelector(selectedBoardListInfo);
   const updatingListOfTasks = useSelector(isTasksUpdating);
@@ -23,6 +24,19 @@ export const BoardLists = React.memo(() => {
 
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
+
+  React.useEffect(() => {
+    let timer: any = null;
+    if (updatingListOfTasks) {
+      timer = setTimeout(() => {
+        setShow(true);
+      }, 1000);
+    } else {
+      setShow(false);
+      clearTimeout(timer);
+    }
+    return () => clearTimeout(timer);
+  }, [updatingListOfTasks]);
 
   const selectTask = React.useCallback(
     (task: BoardTaskItem) => {
@@ -96,7 +110,7 @@ export const BoardLists = React.memo(() => {
       </PanelHeader>
       <Div className={css({ padding: '12px 18px', paddingBottom: 80 })}>
         {!updatingListOfTasks && taskRender}
-        {updatingListOfTasks && <LoadingCardChain cards={[50, 112, 70]} />}
+        {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
         {showFinished && (
           <List>
             <Cell onClick={() => {}} expandable>

@@ -15,6 +15,12 @@ export const DeletePreview = React.memo<Props>(({ deletedPreview, cancelDelete }
   const deletting = useSelector(isTaskDeleteUpdating);
   const dark = useSelector(isThemeDrak);
 
+  React.useEffect(() => {
+    return () => {
+      cancelDelete();
+    };
+  }, []);
+
   const deleteTask = React.useCallback(() => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.DeleteTask });
   }, [dispatch]);
