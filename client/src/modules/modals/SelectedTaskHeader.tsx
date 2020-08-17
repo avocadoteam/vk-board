@@ -3,8 +3,9 @@ import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions } from 'core/models';
 import { Header, Div, FormLayout, Input } from '@vkontakte/vkui';
-import { getSelectedTaskInfo, getEditTaskValues } from 'core/selectors/board';
+import { getEditTaskValues } from 'core/selectors/board';
 import { isThemeDrak } from 'core/selectors/common';
+import { getSelectedTaskInfo, getEditTaskInfo } from 'core/selectors/task';
 
 type Props = {
   editable: boolean;
@@ -17,6 +18,7 @@ export const SelectedTaskHeader = React.memo<Props>(({ editable, deletedPreview 
   const info = useSelector(getSelectedTaskInfo);
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
+  const { updating } = useSelector(getEditTaskInfo);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -63,7 +65,7 @@ export const SelectedTaskHeader = React.memo<Props>(({ editable, deletedPreview 
         } as any)} `}
         name="name"
         onChange={onChange}
-        // disabled={updating}
+        disabled={updating}
         value={formValues.name}
       />
     </FormLayout>

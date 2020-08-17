@@ -76,6 +76,7 @@ export class ListService {
     } catch (err) {
       console.error(err);
       await queryRunner.rollbackTransaction();
+      throw new Error(err);
     } finally {
       await queryRunner.release();
     }

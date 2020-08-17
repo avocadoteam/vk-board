@@ -1,8 +1,8 @@
-import { NewTaskModel } from 'core/models';
+import { NewTaskModel, EditTaskModel } from 'core/models';
 import { request, Method } from './common';
 
 export const postNewTask = (data: NewTaskModel, q: string) =>
-  request(`/board/task${q}`, Method.Post, data);
+  request(`/list/task${q}`, Method.Post, data);
 
 export const getTasks = (listId: number, q: string) =>
   request(`/list/tasks${q}&listId=${listId}`, Method.Get);
@@ -12,3 +12,6 @@ export const finishTasks = (taskIds: number[], listId: number, q: string) =>
 
 export const deleteTask = (taskId: number, listId: number, q: string) =>
   request(`/list/task${q}&taskId=${taskId}&listId=${listId}`, Method.Delete);
+
+export const putEditTask = (data: EditTaskModel, q: string) =>
+  request(`/list/task${q}`, Method.Put, data);

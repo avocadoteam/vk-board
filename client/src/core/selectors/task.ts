@@ -6,7 +6,7 @@ import {
   BoardTaskItem,
   AppState,
 } from 'core/models';
-import { getStateUi } from './common';
+import { getStateUi, getBoardUiState } from './common';
 
 const getTaskDeleteDataState = createSelector(
   getStateUi,
@@ -20,6 +20,10 @@ const getPostNewTaskDataState = createSelector(
 const getTasksDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.Tasks] ?? {}) as FetchingDataType<BoardTaskItem[]>
+);
+const getEditTaskDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.EditTask] ?? {}) as FetchingDataType<boolean>
 );
 
 export const isTasksUpdating = createSelector(
@@ -73,3 +77,52 @@ export const isTaskDeleteUpdating = createSelector(
   getTaskDeleteDataState,
   (dataState) => dataState.status === FetchingStatus.Updating
 );
+
+export const isEditTaskUpdating = createSelector(
+  getEditTaskDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
+export const isEditTaskError = createSelector(
+  getEditTaskDataState,
+  (dataState) => dataState.status === FetchingStatus.Error
+);
+export const getEditTaskError = createSelector(
+  getEditTaskDataState,
+  (dataState) => dataState.error
+);
+
+export const isNotSameSelectedAndEdit = createSelector(getBoardUiState, (board): boolean => {
+  const { editedTask, selectedTask } = board;
+
+  return !!(
+    editedTask.name !== selectedTask.name ||
+    editedTask.description !== selectedTask.description ||
+    editedTask.dueDate !== selectedTask.dueDate
+  );
+});
+
+export const isEditTaskReady = createSelector(
+  getEditTaskDataState,
+  (dataState) => dataState.status === FetchingStatus.Ready
+);
+
+export const getEditTaskInfo = createStructuredSelector<
+  AppState,
+  {
+    notSameData: boolean;
+    taskReady: boolean;
+    error: any;
+    hasError: boolean;
+    updating: boolean;
+  }
+>({
+  notSameData: isNotSameSelectedAndEdit,
+  taskReady: isEditTaskReady,
+  error: getEditTaskError,
+  hasError: isEditTaskError,
+  updating: isEditTaskUpdating,
+});
+
+export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);
+export const getSelectedTaskId = createSelector(getSelectedTaskInfo, (task) => task.id);
+export const getSelectedTaskGUID = createSelector(getSelectedTaskInfo, (task) => task.taskGUID);

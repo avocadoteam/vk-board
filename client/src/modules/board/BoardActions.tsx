@@ -6,8 +6,9 @@ import { useFela } from 'react-fela';
 import { Button } from 'atoms/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
-import { isBoardUpdating, getBoardUiState } from 'core/selectors/board';
+import { isBoardUpdating } from 'core/selectors/board';
 import { ListProgress } from 'modules/board-list';
+import { getBoardUiState } from 'core/selectors/common';
 
 export const BoardActions = React.memo(() => {
   const { css } = useFela();

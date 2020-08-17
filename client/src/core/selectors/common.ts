@@ -20,3 +20,5 @@ export const getActiveMainView = createSelector(getStateUi, (ui) => {
 });
 
 export const getActiveModal = createSelector(getStateUi, (ui) => ui.activeModal);
+
+export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);

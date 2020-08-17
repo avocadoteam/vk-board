@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { getStateUi } from './common';
+import { getStateUi, getBoardUiState } from './common';
 import { FetchingStateName, FetchingDataType, BoardListIiem, FetchingStatus } from 'core/models';
 import { getOpenTasks } from './task';
 
@@ -25,8 +25,6 @@ export const getBoardLists = createSelector(getBoardListData, (data) =>
   }))
 );
 
-export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
-
 export const selectedBoardListInfo = createSelector(
   getBoardUiState,
   getBoardListData,
@@ -51,5 +49,3 @@ export const selectedBoardListInfo = createSelector(
 
 export const getNewTaskValues = createSelector(getBoardUiState, (board) => board.newTask);
 export const getEditTaskValues = createSelector(getBoardUiState, (board) => board.editedTask);
-
-export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);

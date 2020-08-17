@@ -2,8 +2,8 @@ import React from 'react';
 import { useInterval } from 'core/hooks';
 import { FINISH_TASK_TIMER_VALUE, AppDispatchActions } from 'core/models';
 import { Progress } from '@vkontakte/vkui';
-import { getBoardUiState } from 'core/selectors/board';
 import { useSelector, useDispatch } from 'react-redux';
+import { getBoardUiState } from 'core/selectors/common';
 
 export const ListProgress = React.memo(() => {
   const { tasksToBeFinishedTimer } = useSelector(getBoardUiState);

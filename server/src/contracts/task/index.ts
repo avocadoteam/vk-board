@@ -38,3 +38,9 @@ export class FinishTasksModel {
   @IsNumber()
   listId!: number;
 }
+
+export class UpdateTaskModel extends NewTaskModel {
+  @IsString()
+  @IsNotEmpty()
+  id!: number;
+}

@@ -6,10 +6,11 @@ import {
   AppDispatch,
   BoardTaskItem,
   FINISH_TASK_TIMER_VALUE,
+  EditTaskModel,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap, auditTime, exhaustMap } from 'rxjs/operators';
-import { getNewTaskValues, getBoardUiState } from 'core/selectors/board';
+import { getNewTaskValues, getEditTaskValues } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
 import { from, concat, of, iif } from 'rxjs';
 import {
@@ -18,7 +19,9 @@ import {
   captureFetchErrorMoreActions,
 } from './errors';
 import { safeCombineEpics } from './combine';
-import { postNewTask, getTasks, finishTasks, deleteTask } from 'core/operations/task';
+import { postNewTask, getTasks, finishTasks, deleteTask, putEditTask } from 'core/operations/task';
+import { getBoardUiState } from 'core/selectors/common';
+import { getSelectedTaskId, getSelectedTaskGUID } from 'core/selectors/task';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -69,7 +72,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorUserErr(FetchingStateName.Board, 'Не получилось сохранить новую задачу')
+        captureFetchErrorUserErr(FetchingStateName.NewTask, 'Не получилось сохранить новую задачу')
       )
     )
   );
@@ -202,9 +205,67 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const putEditTaskEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.EditTask),
+    map(() => {
+      const state = state$.value;
+      const formValues = getEditTaskValues(state);
+      return {
+        q: getQToQuery(state),
+        dataModel: {
+          ...formValues,
+          dueDate: formValues.dueDate || null,
+          listId: state.ui.board.selectedBoardListId,
+          id: getSelectedTaskId(state),
+        } as EditTaskModel,
+      };
+    }),
+    switchMap(({ q, dataModel }) =>
+      putEditTask(dataModel, q).pipe(
+        switchMap((response) => {
+          if (response.ok) {
+            return from(response.json() as Promise<FetchResponse<number>>).pipe(
+              switchMap(() => {
+                return concat(
+                  of({
+                    type: 'SELECT_TASK',
+                    payload: {
+                      id: dataModel.id,
+                      description: dataModel.description,
+                      dueDate: dataModel.dueDate,
+                      name: dataModel.name,
+                      taskGUID: getSelectedTaskGUID(state$.value),
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.EditTask,
+                      data: true,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_UPDATING_DATA',
+                    payload: FetchingStateName.Tasks,
+                  } as AppDispatch)
+                );
+              })
+            );
+          } else {
+            throw new Error(`Http ${response.status} on ${response.url}`);
+          }
+        }),
+        captureFetchErrorUserErr(FetchingStateName.EditTask, 'Не получилось обновить задачу')
+      )
+    )
+  );
+
 export const taskEpics = safeCombineEpics(
   postNewTaskEpic,
   fetchTasksEpic,
   finishTasksEpic,
-  deleteTaskEpic
+  deleteTaskEpic,
+  putEditTaskEpic
 );

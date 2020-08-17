@@ -79,6 +79,7 @@ export enum FetchingStateName {
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
   NewBoardList = 'new_board_list',
+  EditTask = 'edit_task'
 }
 
 export enum FetchingStatus {

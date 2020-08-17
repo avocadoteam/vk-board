@@ -23,10 +23,7 @@ export type MembershipItem = {
   userId: number;
 };
 
-export type TaskInfo = Pick<
-  BoardTaskItem,
-  'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'
->;
+export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'>;
 
 export type BoardState = {
   selectedBoardListId: number;
@@ -48,3 +45,7 @@ export type NewTaskModel = {
   dueDate: string | null;
   listId: number;
 };
+
+export type EditTaskModel = {
+  id: number;
+} & NewTaskModel;

@@ -2,7 +2,7 @@ import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Task } from 'src/db/tables/task';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
-import { NewTaskModel } from 'src/contracts/task';
+import { NewTaskModel, UpdateTaskModel } from 'src/contracts/task';
 import { List } from 'src/db/tables/list';
 import { TaskMembership } from 'src/db/tables/taskMembership';
 import { CacheManager } from 'src/custom-types/cache';
@@ -55,6 +55,40 @@ export class TasksService {
     } catch (err) {
       console.error(err);
       await queryRunner.rollbackTransaction();
+      throw new Error(err);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  async updateTask(model: UpdateTaskModel, vkUserId: number) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const list = await queryRunner.manager.findOne<List>(List, model.listId, {
+        where: { deleted: null },
+      });
+
+      if (!list) {
+        throw new Error(`List doesn't exist ${model.listId}`);
+      }
+
+      await queryRunner.manager.update<Task>(Task, model.id, {
+        name: model.name,
+        description: model.description,
+        dueDate: model.dueDate ? new Date(model.dueDate) : null,
+      });
+
+      await queryRunner.commitTransaction();
+
+      await this.cache.del(
+        cacheKey.tasks(String(vkUserId), String(model.listId)),
+      );
+    } catch (err) {
+      console.error(err);
+      await queryRunner.rollbackTransaction();
+      throw new Error(err);
     } finally {
       await queryRunner.release();
     }

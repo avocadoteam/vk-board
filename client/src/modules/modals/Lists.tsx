@@ -1,16 +1,17 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getBoardLists, getBoardUiState } from 'core/selectors/board';
+import { getBoardLists } from 'core/selectors/board';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { useFela } from 'react-fela';
 import { List, withModalRootContext } from '@vkontakte/vkui';
 import Icon28ChevronDownOutline from '@vkontakte/icons/dist/28/chevron_down_outline';
 import { CellButton } from 'atoms/CellButton';
+import { getBoardUiState } from 'core/selectors/common';
 
 const ListsPC = React.memo<{ updateModalHeight?: () => void }>(({ updateModalHeight }) => {
   const [openedListId, setOpenListId] = React.useState(0);
   const listItems = useSelector(getBoardLists);
-  const selectedBoardListId = useSelector(getBoardUiState).selectedBoardListId;
+  const { selectedBoardListId } = useSelector(getBoardUiState);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
 

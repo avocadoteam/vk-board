@@ -2,14 +2,13 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useSelector } from 'react-redux';
 import { MiniInfoCell, Text, Div, Spinner } from '@vkontakte/vkui';
-import { getSelectedTaskInfo } from 'core/selectors/board';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import Icon28WriteOutline from '@vkontakte/icons/dist/28/write_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import { ru } from 'date-fns/locale';
 import { Button } from 'atoms/Button';
-import { isTaskDeleteUpdating } from 'core/selectors/task';
+import { isTaskDeleteUpdating, getSelectedTaskInfo } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
 import { format } from 'date-fns';
 

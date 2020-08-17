@@ -1,14 +1,15 @@
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions } from 'core/models';
-import { FormLayout, Input, withModalRootContext, Div } from '@vkontakte/vkui';
+import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { FormLayout, Input, withModalRootContext, Div, FormStatus, Spinner } from '@vkontakte/vkui';
 import { getEditTaskValues } from 'core/selectors/board';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { Button } from 'atoms/Button';
 import { isThemeDrak } from 'core/selectors/common';
 import { format, isBefore, addDays } from 'date-fns';
+import { getEditTaskInfo } from 'core/selectors/task';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -23,6 +24,8 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
+  const { error, hasError, updating, notSameData } = useSelector(getEditTaskInfo);
+  const disabledSubmit = !formValues.name || !formValues.description || updating || !notSameData;
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
@@ -30,7 +33,13 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [editable, updateModalHeight]);
+  }, [editable, hasError, updateModalHeight]);
+
+  React.useEffect(() => {
+    return () => {
+      stopEdit();
+    };
+  }, []);
 
   React.useEffect(() => {
     if (before) {
@@ -46,6 +55,12 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
     dispatch({ type: 'EDIT_TASK', payload: { name, value } });
   };
 
+  const submitForm = React.useCallback(() => {
+    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
+  }, [dispatch]);
+
+  const showError = hasError && <FormStatus header={error} mode="error" />;
+
   if (!editable) {
     return null;
   }
@@ -53,7 +68,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
   return (
     <>
       <FormLayout className={'useMonrope'}>
-        {/* {showError} */}
+        {showError}
         <span className={css({ display: 'flex' })}>
           <Icon20ArticleOutline
             className={css({
@@ -83,7 +98,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             name="description"
             onChange={onChange}
             status={formValues.description ? 'valid' : 'error'}
-            // disabled={updating}
+            disabled={updating}
             value={formValues.description}
           />
         </span>
@@ -113,7 +128,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             } as any)}
             name="dueDate"
             onChange={onChange}
-            // disabled={updating}
+            disabled={updating}
             min={nextDay}
             value={formValues.dueDate ?? ''}
           />
@@ -124,7 +139,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
           mode="secondary"
           stretched
           size="xl"
-          // disabled={deletting}
+          disabled={updating}
           onClick={stopEdit}
           className={css({ marginRight: '10px' })}
         >
@@ -135,9 +150,9 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
           mode="primary"
           stretched
           size="xl"
-          // before={updating ? <Spinner /> : <Icon24Add />}
-          // disabled={!formValues.name || !formValues.description || updating}
-          // onClick={submitForm}
+          before={updating ? <Spinner /> : null}
+          disabled={disabledSubmit}
+          onClick={submitForm}
         >
           Сохранить
         </Button>
