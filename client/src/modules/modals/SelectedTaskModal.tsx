@@ -16,6 +16,7 @@ import { isThemeDrak } from 'core/selectors/common';
 
 export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
+  const [deletedPreview, setPreview] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
   const info = useSelector(getSelectedTaskInfo);
   const deletting = useSelector(isTaskDeleteUpdating);
@@ -29,22 +30,8 @@ export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.DeleteTask });
   }, [dispatch]);
 
-  return (
-    <ModalPage
-      id={id}
-      onClose={closeModal}
-      header={
-        <Div>
-          <Header
-            className={`useMonrope manropeBold ${css({
-              '>div>div': { fontSize: '20px !important' },
-            } as any)}`}
-          >
-            {info.name}
-          </Header>
-        </Div>
-      }
-    >
+  const showTask = !deletedPreview ? (
+    <>
       <Div>
         <MiniInfoCell
           before={<Icon20ArticleOutline className={css({ color: dark ? '#AEAEAE' : '#6A6A6A' })} />}
@@ -74,18 +61,86 @@ export const SelectedTaskModal = React.memo<{ id: string }>(({ id }) => {
         </Div>
       )}
       <Div className={css({ padding: '12px 24px', display: 'flex' })}>
-        <Button mode="tertiary" disabled={deletting} className={css({ paddingRight: 0 })}>
-          <Icon28WriteOutline />
+        <Button
+          onClick={() => setPreview(true)}
+          disabled={deletting}
+          before={deletting ? <Spinner size="regular" /> : <Icon28DeleteOutlineAndroid />}
+          mode="destructive"
+          size="xl"
+        >
+          Удалить
         </Button>
         <Button
           mode="tertiary"
-          onClick={deleteTask}
           disabled={deletting}
-          className={css({ color: '#FF4848', paddingRight: '0' })}
+          className={css({ paddingRight: 0, color: dark ? '#959595' : '#AEAEAE' })}
         >
-          {deletting ? <Spinner size="regular" /> : <Icon28DeleteOutlineAndroid />}
+          <Icon28WriteOutline />
         </Button>
       </Div>
+    </>
+  ) : null;
+
+  const deletePreviewText = deletedPreview ? (
+    <>
+      <Div>
+        <MiniInfoCell before={null} multiline className={css({ padding: '0 12px' })}>
+          <Text
+            weight="medium"
+            className={`useMonrope ${css({
+              color: dark ? '#AEAEAE' : '#6A6A6A',
+              textAlign: 'center',
+            })}`}
+          >
+            Это удалит задачу и вернуть её не получится.
+          </Text>
+        </MiniInfoCell>
+      </Div>
+      <Div className={css({ padding: '12px 24px', display: 'flex' })}>
+        <Button
+          mode="overlay_outline"
+          disabled={deletting}
+          onClick={() => setPreview(false)}
+          size="xl"
+          className={css({ marginRight: '10px' })}
+        >
+          Назад
+        </Button>
+        <Button
+          onClick={deleteTask}
+          disabled={deletting}
+          before={deletting ? <Spinner size="regular" /> : null}
+          mode="destructive"
+          size="xl"
+        >
+          Удалить
+        </Button>
+      </Div>
+    </>
+  ) : null;
+
+  return (
+    <ModalPage
+      id={id}
+      onClose={closeModal}
+      header={
+        <Div>
+          <Header
+            className={`useMonrope manropeBold ${css({
+              textAlign: deletedPreview ? 'center' : 'left',
+              '>div>div': { fontSize: '20px !important' },
+              '>div': {
+                display: deletedPreview ? 'block' : undefined,
+              },
+            } as any)}`}
+          >
+            {deletedPreview ? 'Вы уверены?' : info.name}
+          </Header>
+        </Div>
+      }
+    >
+      {showTask}
+      {deletePreviewText}
     </ModalPage>
   );
 });
