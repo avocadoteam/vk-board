@@ -23,7 +23,7 @@ export type MembershipItem = {
   userId: number;
 };
 
-export type SelectedTask = Pick<
+export type TaskInfo = Pick<
   BoardTaskItem,
   'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'
 >;
@@ -38,7 +38,8 @@ export type BoardState = {
   };
   tasksToBeFinished: number[];
   tasksToBeFinishedTimer: number;
-  selectedTask: SelectedTask;
+  selectedTask: TaskInfo;
+  editedTask: TaskInfo;
 };
 
 export type NewTaskModel = {

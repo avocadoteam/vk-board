@@ -37,6 +37,13 @@ export const initialState: models.AppState['ui'] = {
       dueDate: '',
       taskGUID: '',
     },
+    editedTask: {
+      id: 0,
+      name: '',
+      description: '',
+      dueDate: '',
+      taskGUID: '',
+    },
   },
 };
 
@@ -210,8 +217,21 @@ export const reducer = (
         board: {
           ...state.board,
           selectedTask: dispatch.payload,
+          editedTask: dispatch.payload,
         },
         activeModal: ActiveModal.SelectedTask,
+      };
+    }
+    case 'EDIT_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          editedTask: {
+            ...state.board.editedTask,
+            [dispatch.payload.name]: dispatch.payload.value,
+          },
+        },
       };
     }
 

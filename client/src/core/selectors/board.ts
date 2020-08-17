@@ -50,5 +50,6 @@ export const selectedBoardListInfo = createSelector(
 );
 
 export const getNewTaskValues = createSelector(getBoardUiState, (board) => board.newTask);
+export const getEditTaskValues = createSelector(getBoardUiState, (board) => board.editedTask);
 
 export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);

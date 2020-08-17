@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
-import { BoardState, SelectedTask } from './board';
+import { BoardState, TaskInfo } from './board';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -51,7 +51,8 @@ export type AppDispatch =
   | { type: 'FINISH_TASK'; payload: number }
   | { type: 'REMOVE_FINISH_TASK'; payload: number }
   | { type: 'RESET_FINISH_TASKS'; payload: number[] }
-  | { type: 'SELECT_TASK'; payload: SelectedTask }
+  | { type: 'SELECT_TASK'; payload: TaskInfo }
+  | { type: 'EDIT_TASK'; payload: { name: string; value: string | null } }
   | { type: 'SET_BOARD_LIST_NAME'; payload: string }
   | { type: 'SET_FINISH_TASK_TIMER'; payload: number }
   | LocationChangeAction;

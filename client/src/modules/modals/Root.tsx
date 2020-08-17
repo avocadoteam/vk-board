@@ -4,14 +4,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
 import { getActiveModal } from 'core/selectors/common';
 import { NewTaskModal } from './NewTaskModal';
-import { SelectedTaskModal } from './SelectedTaskModal';
 import { useFela } from 'react-fela';
 import { NewList } from './NewList';
 import { Lists } from './Lists';
 import { CellButton } from 'atoms/CellButton';
 import Icon16InfoOutline from '@vkontakte/icons/dist/16/info_outline';
+import { SelectedTaskHeader } from './SelectedTaskHeader';
+import { SelectedTask } from './SelectedTask';
+import { DeletePreview } from './DeletePreview';
+import { EditTask } from './EditTask';
 
 export const RootModals = React.memo(() => {
+  const [deletedPreview, setDelete] = React.useState(false);
+  const [editable, setEditable] = React.useState(false);
   const activeModal = useSelector(getActiveModal);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
@@ -39,7 +44,20 @@ export const RootModals = React.memo(() => {
       </ModalPage>
 
       <NewTaskModal id={ActiveModal.NewTask} />
-      <SelectedTaskModal id={ActiveModal.SelectedTask} />
+      <ModalPage
+        id={ActiveModal.SelectedTask}
+        onClose={closeModal}
+        header={<SelectedTaskHeader editable={editable} deletedPreview={deletedPreview} />}
+        dynamicContentHeight
+      >
+        <SelectedTask
+          showTask={!deletedPreview && !editable}
+          startEdit={() => setEditable(true)}
+          showDelete={() => setDelete(true)}
+        />
+        <DeletePreview deletedPreview={deletedPreview} cancelDelete={() => setDelete(false)} />
+        <EditTask editable={editable} stopEdit={() => setEditable(false)} />
+      </ModalPage>
     </ModalRoot>
   );
 });
