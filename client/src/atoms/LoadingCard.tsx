@@ -11,17 +11,6 @@ type Props = {
 export const LoadingCard = React.memo<Props>(({ height = 112 }) => {
   const dark = useSelector(isThemeDrak);
   const { css } = useFela({ dark });
-  const [show, setShow] = React.useState(false);
-
-  React.useEffect(() => {
-    const id = setTimeout(() => setShow(true), 1000);
-
-    return () => clearTimeout(id);
-  }, []);
-
-  if (!show) {
-    return null;
-  }
 
   return (
     <CardGrid
