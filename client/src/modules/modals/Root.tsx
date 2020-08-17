@@ -3,7 +3,6 @@ import { ModalRoot, ModalPage, Separator, List } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatchActions, ActiveModal } from 'core/models';
 import { getActiveModal } from 'core/selectors/common';
-import { NewTaskModal } from './NewTaskModal';
 import { useFela } from 'react-fela';
 import { NewList } from './NewList';
 import { Lists } from './Lists';
@@ -13,6 +12,8 @@ import { SelectedTaskHeader } from './SelectedTaskHeader';
 import { SelectedTask } from './SelectedTask';
 import { DeletePreview } from './DeletePreview';
 import { EditTask } from './EditTask';
+import { NewTaskHeader } from './NewTaskHeader';
+import { NewTask } from './NewTask';
 
 export const RootModals = React.memo(() => {
   const [deletedPreview, setDelete] = React.useState(false);
@@ -43,7 +44,15 @@ export const RootModals = React.memo(() => {
         <div className={css({ height: '10px' })} />
       </ModalPage>
 
-      <NewTaskModal id={ActiveModal.NewTask} />
+      <ModalPage
+        id={ActiveModal.NewTask}
+        onClose={closeModal}
+        header={<NewTaskHeader />}
+        dynamicContentHeight
+      >
+        <NewTask />
+      </ModalPage>
+
       <ModalPage
         id={ActiveModal.SelectedTask}
         onClose={closeModal}

@@ -2,7 +2,7 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { ModalPage, FormLayout, Input, Spinner, FormStatus } from '@vkontakte/vkui';
+import { FormLayout, Input, Spinner, FormStatus, withModalRootContext } from '@vkontakte/vkui';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { Button } from 'atoms/Button';
@@ -14,7 +14,11 @@ import { isThemeDrak } from 'core/selectors/common';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
-export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
+type Props = {
+  updateModalHeight?: () => void;
+};
+
+const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
@@ -22,6 +26,12 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const { updating, hasError, error } = useSelector(getNewTaskInfo);
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
+
+  React.useEffect(() => {
+    if (updateModalHeight) {
+      updateModalHeight();
+    }
+  }, [hasError, updateModalHeight]);
 
   React.useEffect(() => {
     if (before) {
@@ -37,10 +47,6 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
     dispatch({ type: 'UPDATE_NEW_TASK', payload: { name, value } });
   };
 
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
-
   const submitForm = React.useCallback(() => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.NewTask });
   }, [dispatch]);
@@ -48,37 +54,7 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
   const showError = hasError && <FormStatus header={error} mode="error" />;
 
   return (
-    <ModalPage
-      id={id}
-      onClose={closeModal}
-      header={
-        <FormLayout className={'useMonrope'}>
-          <Input
-            type="text"
-            placeholder="Введите название"
-            minLength={1}
-            maxLength={1024}
-            className={`${css({
-              '>div': {
-                border: 'none !important',
-                background: 'transparent !important',
-              },
-              '>input': {
-                fontSize: '20px',
-                fontWeight: 600,
-                '::placeholder': {
-                  color: dark ? '#5F5F5F' : '#CFCFCF',
-                },
-              },
-            } as any)} `}
-            name="name"
-            onChange={onChange}
-            disabled={updating}
-            value={formValues.name}
-          />
-        </FormLayout>
-      }
-    >
+    <>
       <FormLayout className={'useMonrope'}>
         {showError}
         <span className={css({ display: 'flex' })}>
@@ -158,6 +134,8 @@ export const NewTaskModal = React.memo<{ id: string }>(({ id }) => {
         </Button>
       </FormLayout>
       <div className={css({ height: '10px' })} />
-    </ModalPage>
+    </>
   );
 });
+
+export const NewTask = withModalRootContext(NewTaskPC);
