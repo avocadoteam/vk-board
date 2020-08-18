@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getBoardLists } from 'core/selectors/board';
 import { AppDispatchActions, FetchingStateName, MainView } from 'core/models';
 import { useFela } from 'react-fela';
-import { List, withModalRootContext, Div, Text } from '@vkontakte/vkui';
+import { List, withModalRootContext, Div, Text, Spinner } from '@vkontakte/vkui';
 import Icon28ChevronDownOutline from '@vkontakte/icons/dist/28/chevron_down_outline';
 import { CellButton } from 'atoms/CellButton';
 import { getBoardUiState, isThemeDrak } from 'core/selectors/common';
@@ -11,6 +11,7 @@ import Icon28ShareExternalOutline from '@vkontakte/icons/dist/28/share_external_
 import Icon28UsersOutline from '@vkontakte/icons/dist/28/users_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import { push, getSearch } from 'connected-react-router';
+import { isDeleteListUpdating } from 'core/selectors/boardLists';
 
 type Props = {
   goForward: (activePanel: MainView) => void;
@@ -19,6 +20,7 @@ type Props = {
 
 const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
   const listItems = useSelector(getBoardLists);
+  const deletting = useSelector(isDeleteListUpdating);
   const search = useSelector(getSearch);
   const dark = useSelector(isThemeDrak);
   const { selectedBoardListId, boardListOpenId } = useSelector(getBoardUiState);
@@ -34,6 +36,11 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });
   }, [dispatch]);
+
+  const deleteList = React.useCallback(() => {
+    dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
+    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.DeleteBoardList });
+  }, [dispatch, boardListOpenId]);
 
   const goToMembership = React.useCallback(() => {
     closeModal();
@@ -117,11 +124,22 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
                   padding: '0 1rem',
                 })}`}
               >
-                Список станет доступен другим пользователям с ссылкой (до 3 человек в бесплатной
+                Список станет доступен другим пользователям с ссылкой (до 3-x человек в бесплатной
                 версии)
               </Text>
-              <CellButton className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848' })}>
-                <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
+              <CellButton
+                className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848' })}
+                disabled={deletting}
+                onClick={deleteList}
+              >
+                {deletting ? (
+                  <Spinner
+                    size="regular"
+                    className={css({ width: 'unset', marginRight: '1rem' })}
+                  />
+                ) : (
+                  <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
+                )}
                 Удалить список
               </CellButton>
             </Div>

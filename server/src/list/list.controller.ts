@@ -145,4 +145,24 @@ export class ListController {
 
     await this.listService.dropMembership(model, vkUserId);
   }
+
+  @Delete()
+  async deleteList(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Query(
+      'listId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    listId: number,
+  ) {
+    if (!(await this.listService.isListOwner([listId], vkUserId))) {
+      throw new BadRequestException();
+    }
+
+    await this.listService.deleteList(listId, vkUserId);
+  }
 }

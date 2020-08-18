@@ -59,6 +59,7 @@ export type AppDispatch =
   | { type: 'SET_BOARD_LIST_NAME'; payload: string }
   | { type: 'SET_FINISH_TASK_TIMER'; payload: number }
   | { type: 'DROP_MEMBER_SHIP_ID'; payload: number }
+  | { type: 'SET_DELETE_BOARD_LIST_ID'; payload: number }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -83,6 +84,7 @@ export enum FetchingStateName {
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
   NewBoardList = 'new_board_list',
+  DeleteBoardList = 'delete_board_list',
   EditTask = 'edit_task',
   DropMembership = 'drop_membership',
 }

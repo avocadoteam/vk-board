@@ -44,6 +44,10 @@ const cellButtonStyle: CssFelaStyle<
   lineHeight: '20px',
   height: '50px',
   textAlign: 'left',
+  ':disabled': {
+    pointerEvents: 'none',
+    opacity: 0.4,
+  },
   ...(selected
     ? {
         backgroundColor: 'rgba(66, 164, 255, 0.1) !important',

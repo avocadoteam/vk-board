@@ -162,4 +162,12 @@ export class ListService {
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
   }
+  
+  async deleteList(listId: number, vkUserId: number) {
+    const now = new Date();
+
+    await this.tableList.update(listId, { deleted: now });
+
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
+  }
 }

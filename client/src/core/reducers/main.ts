@@ -24,6 +24,7 @@ export const initialState: models.AppState['ui'] = {
     selectedBoardListId: 12,
     boardListName: '',
     boardListOpenId: 0,
+    boardListToDeleteId: 0,
     newTask: {
       description: '',
       dueDate: '',
@@ -272,6 +273,16 @@ export const reducer = (
         membership: {
           ...state.membership,
           dropUserId: dispatch.payload,
+        },
+      };
+    }
+
+    case 'SET_DELETE_BOARD_LIST_ID': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          boardListToDeleteId: dispatch.payload,
         },
       };
     }

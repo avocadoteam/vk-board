@@ -26,6 +26,7 @@ export type BoardState = {
   selectedBoardListId: number;
   boardListName: string;
   boardListOpenId: number;
+  boardListToDeleteId: number;
   newTask: {
     name: string;
     description: string;
