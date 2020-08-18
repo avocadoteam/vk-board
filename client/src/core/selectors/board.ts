@@ -22,6 +22,7 @@ export const getBoardLists = createSelector(getBoardListData, (data) =>
   data.map((d) => ({
     name: d.name,
     id: d.id,
+    listguid: d.listguid,
   }))
 );
 
@@ -43,6 +44,7 @@ export const selectedBoardListInfo = createSelector(
       name: '',
       tasks: [],
       memberships: [],
+      listguid: '',
     };
   }
 );

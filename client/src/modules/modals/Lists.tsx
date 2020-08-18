@@ -12,6 +12,8 @@ import Icon28UsersOutline from '@vkontakte/icons/dist/28/users_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import { push, getSearch } from 'connected-react-router';
 import { isDeleteListUpdating } from 'core/selectors/boardLists';
+import { vkBridge } from 'core/vk-bridge/instance';
+import { getAppId } from 'core/selectors/settings';
 
 type Props = {
   goForward: (activePanel: MainView) => void;
@@ -22,6 +24,7 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
   const listItems = useSelector(getBoardLists);
   const deletting = useSelector(isDeleteListUpdating);
   const search = useSelector(getSearch);
+  const appId = useSelector(getAppId);
   const dark = useSelector(isThemeDrak);
   const { selectedBoardListId, boardListOpenId } = useSelector(getBoardUiState);
   const dispatch = useDispatch<AppDispatchActions>();
@@ -72,6 +75,13 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
     }
   };
 
+  const sharePost = React.useCallback(
+    async (listguid: string) => {
+      vkBridge.send('VKWebAppShare', { link: `https://vk.com/app${appId}#${listguid}` });
+    },
+    [appId]
+  );
+
   return (
     <List>
       {listItems.map((i) => (
@@ -107,11 +117,16 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
               <CellButton
                 className={css({ paddingLeft: 16, paddingRight: 16 })}
                 onClick={goToMembership}
+                disabled={deletting}
               >
                 <Icon28UsersOutline className={css(iconStyle)} />
                 Доступ
               </CellButton>
-              <CellButton className={css({ paddingLeft: 16, paddingRight: 16 })}>
+              <CellButton
+                className={css({ paddingLeft: 16, paddingRight: 16 })}
+                disabled={deletting}
+                onClick={() => sharePost(i.listguid)}
+              >
                 <Icon28ShareExternalOutline className={css(iconStyle)} />
                 Поделиться
               </CellButton>

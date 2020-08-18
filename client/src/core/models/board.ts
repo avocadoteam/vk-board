@@ -1,6 +1,7 @@
 import { MembershipItem } from './membership';
 
 export type BoardListIiem = {
+  listguid: string;
   name: string;
   id: number;
   created: string;

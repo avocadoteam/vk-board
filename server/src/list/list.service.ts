@@ -49,7 +49,13 @@ export class ListService {
       .orderBy({
         'list.created': 'ASC',
       })
-      .select(['list.name', 'list.id', 'list.created', 'membership.joinedId'])
+      .select([
+        'list.name',
+        'list.id',
+        'list.created',
+        'list.listguid',
+        'membership.joinedId',
+      ])
       .getMany();
 
     const dict: { [listId: number]: number[] } = {};
@@ -162,7 +168,7 @@ export class ListService {
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
   }
-  
+
   async deleteList(listId: number, vkUserId: number) {
     const now = new Date();
 
