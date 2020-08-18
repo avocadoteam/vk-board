@@ -1,4 +1,4 @@
-import { AppState, ClientTheme, MainView } from 'core/models';
+import { AppState, ClientTheme } from 'core/models';
 import { createSelector } from 'reselect';
 import { RouterState } from 'connected-react-router';
 

@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect';
-import { getStateUi, getBoardUiState } from './common';
+import { getStateUi } from './common';
 import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
-import { getBoardListData } from './board';
-import { getUserId } from './user';
 
 const getNewListDataState = createSelector(
   getStateUi,

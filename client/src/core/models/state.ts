@@ -1,4 +1,4 @@
-import { Dispatch, AnyAction } from 'redux';
+import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
 import { BoardState, TaskInfo } from './board';
 import { MembershipState } from './membership';
