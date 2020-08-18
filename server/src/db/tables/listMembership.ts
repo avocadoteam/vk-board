@@ -28,6 +28,19 @@ export class ListMembership {
   })
   joinedId: number;
 
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  left_date!: Date | null;
+
+  @Column({
+    type: 'int8',
+    nullable: true,
+    transformer: new ColumnNumericTransformer(),
+  })
+  left_by!: number | null;
+
   @ManyToOne((type) => List, (list) => list.memberships)
   @JoinColumn({
     name: 'list_id',

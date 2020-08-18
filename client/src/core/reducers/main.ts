@@ -23,6 +23,7 @@ export const initialState: models.AppState['ui'] = {
   board: {
     selectedBoardListId: 12,
     boardListName: '',
+    boardListOpenId: 0,
     newTask: {
       description: '',
       dueDate: '',
@@ -44,6 +45,9 @@ export const initialState: models.AppState['ui'] = {
       dueDate: '',
       taskGUID: '',
     },
+  },
+  membership: {
+    dropUserId: 0,
   },
 };
 
@@ -157,6 +161,15 @@ export const reducer = (
         },
       };
     }
+    case 'OPEN_BOARD_LIST': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          boardListOpenId: dispatch.payload,
+        },
+      };
+    }
     case 'UPDATE_NEW_TASK': {
       return {
         ...state,
@@ -250,6 +263,15 @@ export const reducer = (
         board: {
           ...state.board,
           tasksToBeFinishedTimer: dispatch.payload,
+        },
+      };
+    }
+    case 'DROP_MEMBER_SHIP_ID': {
+      return {
+        ...state,
+        membership: {
+          ...state.membership,
+          dropUserId: dispatch.payload,
         },
       };
     }

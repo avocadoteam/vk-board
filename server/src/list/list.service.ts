@@ -2,7 +2,7 @@ import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
 import { Repository, Connection } from 'typeorm';
-import { NewListModel } from 'src/contracts/list';
+import { NewListModel, DropMembershipModel } from 'src/contracts/list';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
 import { ListMembership } from 'src/db/tables/listMembership';
@@ -14,24 +14,38 @@ export class ListService {
   constructor(
     @InjectRepository(List)
     private tableList: Repository<List>,
+    @InjectRepository(ListMembership)
+    private tableListMembership: Repository<ListMembership>,
     private connection: Connection,
     private vkApiService: VkApiService,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
 
   async getLists(vkUserId: number) {
-    let lists = await this.tableList
-      .createQueryBuilder('list')
+    const qb = this.tableList.createQueryBuilder('list');
+    let lists = await qb
       .innerJoin(
         'list.memberships',
         'membership',
-        `membership.joined_id = ${vkUserId}`,
+        `membership.list_id = list.id and membership.left_date is null`,
       )
       .where([
         {
           deleted: null,
         },
       ])
+      .andWhere(
+        `${qb
+          .subQuery()
+          .select('mship.joined_id')
+          .from(ListMembership, 'mship')
+          .where(
+            `mship.joined_id = ${vkUserId} and mship.left_date is null and mship.list_id = list.id`,
+          )
+          .take(1)
+          .getQuery()} is not null`,
+      )
+      .setParameter('registered', true)
       .orderBy({
         'list.created': 'ASC',
       })
@@ -108,7 +122,7 @@ export class ListService {
         .innerJoin(
           'list.memberships',
           'membership',
-          `membership.joined_id = ${vkUserId}`,
+          `membership.joined_id = ${vkUserId} and membership.left_date is null`,
         )
         .where([
           {
@@ -118,5 +132,34 @@ export class ListService {
         .andWhereInIds(listIds)
         .getCount()) > 0
     );
+  }
+  async isListOwner(listIds: number[], vkUserId: number) {
+    return (
+      (await this.tableList
+        .createQueryBuilder('list')
+        .innerJoin(
+          'list.memberships',
+          'membership',
+          `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+        )
+        .where([
+          {
+            deleted: null,
+            createdBy: vkUserId,
+          },
+        ])
+        .andWhereInIds(listIds)
+        .getCount()) > 0
+    );
+  }
+  async dropMembership(model: DropMembershipModel, vkUserId: number) {
+    const now = new Date();
+
+    await this.tableListMembership.update(
+      { joinedId: model.userId, list: { id: model.listId } },
+      { left_date: now, left_by: vkUserId },
+    );
+
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
   }
 }

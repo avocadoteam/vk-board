@@ -1,6 +1,7 @@
-import { Dispatch } from 'redux';
+import { Dispatch, AnyAction } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
 import { BoardState, TaskInfo } from './board';
+import { MembershipState } from './membership';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -25,6 +26,7 @@ export type AppState = {
     isAppUser: boolean;
     activeModal: ActiveModal | null;
     board: BoardState;
+    membership: MembershipState;
   };
   router: RouterState;
 };
@@ -46,6 +48,7 @@ export type AppDispatch =
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
   | { type: 'SELECT_BOARD_LIST'; payload: number }
+  | { type: 'OPEN_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | { type: 'RESET_NEW_TASK'; payload: null }
   | { type: 'FINISH_TASK'; payload: number }
@@ -55,6 +58,7 @@ export type AppDispatch =
   | { type: 'EDIT_TASK'; payload: { name: string; value: string | null } }
   | { type: 'SET_BOARD_LIST_NAME'; payload: string }
   | { type: 'SET_FINISH_TASK_TIMER'; payload: number }
+  | { type: 'DROP_MEMBER_SHIP_ID'; payload: number }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -79,7 +83,8 @@ export enum FetchingStateName {
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
   NewBoardList = 'new_board_list',
-  EditTask = 'edit_task'
+  EditTask = 'edit_task',
+  DropMembership = 'drop_membership',
 }
 
 export enum FetchingStatus {

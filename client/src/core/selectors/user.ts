@@ -10,7 +10,7 @@ const getUserDataState = createSelector(
 
 export const getUserDataStatus = createSelector(getUserDataState, (userData) => userData.status);
 export const getUserInfo = createSelector(getUserDataState, (userData) => userData.data);
-export const getUserId = createSelector(getUserDataState, (userData) => userData.data?.id);
+export const getUserId = createSelector(getUserDataState, (userData) => userData.data?.id ?? 0);
 
 export const getUserHash = createSelector(getStateUi, (ui) => ui.hash);
 

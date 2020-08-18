@@ -11,14 +11,7 @@ export const isThemeDrak = createSelector(getTheme, (theme) => theme === ClientT
 
 export const isAppUser = createSelector(getStateUi, (ui) => ui.isAppUser);
 
-export const getActiveMainView = createSelector(getStateUi, (ui) => {
-  if (!ui.online) {
-    return MainView.Offline;
-  }
-
-  return MainView.Board;
-});
-
 export const getActiveModal = createSelector(getStateUi, (ui) => ui.activeModal);
 
 export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
+export const getMembershipUiState = createSelector(getStateUi, (ui) => ui.membership);

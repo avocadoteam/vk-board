@@ -24,6 +24,7 @@ import {
   UpdateTaskModel,
 } from 'src/contracts/task';
 import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
+import { DropMembershipModel } from 'src/contracts/list';
 
 @Controller('api/list')
 @UseGuards(SignGuard)
@@ -49,8 +50,8 @@ export class ListController {
     )
     listId: number,
   ) {
-    if (!(await this.listService.isListExists(listId, vkUserId))) {
-      throw new NotFoundException('List not found');
+    if (!(await this.listService.hasListMembership([listId], vkUserId))) {
+      throw new BadRequestException();
     }
     return this.taskService.getTasks(listId, vkUserId);
   }
@@ -81,8 +82,8 @@ export class ListController {
     @Body()
     model: NewTaskModel,
   ) {
-    if (!(await this.listService.isListExists(model.listId, vkUserId))) {
-      throw new NotFoundException('List not found');
+    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+      throw new BadRequestException();
     }
     return this.taskService.createTask(model, vkUserId);
   }
@@ -126,5 +127,22 @@ export class ListController {
     }
 
     await this.taskService.deleteTask(taskId, vkUserId, listId);
+  }
+
+  @Delete('/membership')
+  async dropMembership(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Body()
+    model: DropMembershipModel,
+  ) {
+    if (!(await this.listService.isListOwner([model.listId], vkUserId))) {
+      throw new BadRequestException();
+    }
+
+    await this.listService.dropMembership(model, vkUserId);
   }
 }

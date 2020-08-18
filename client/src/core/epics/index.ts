@@ -6,13 +6,15 @@ import { captureUrlEvent } from 'core/sentry';
 import { errMap } from 'core/utils';
 import { boardEpics } from './board';
 import { taskEpics } from './tasks';
+import { membershipEpics } from './membership';
 
 export const rootEpic: Epic = (action$, store$, dependencies) =>
   combineEpics(
     userEpics,
     getAdsEpic,
     boardEpics,
-    taskEpics
+    taskEpics,
+    membershipEpics
   )(action$, store$, dependencies).pipe(
     catchError((error, source) => {
       console.error(error);

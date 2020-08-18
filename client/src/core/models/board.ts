@@ -1,3 +1,5 @@
+import { MembershipItem } from './membership';
+
 export type BoardListIiem = {
   name: string;
   id: number;
@@ -18,16 +20,12 @@ export type BoardTaskItem = {
   memberships: MembershipItem[];
 };
 
-export type MembershipItem = {
-  avatar: string;
-  userId: number;
-};
-
 export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'>;
 
 export type BoardState = {
   selectedBoardListId: number;
   boardListName: string;
+  boardListOpenId: number;
   newTask: {
     name: string;
     description: string;

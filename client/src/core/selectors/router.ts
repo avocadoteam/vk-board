@@ -1,7 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
-import { getStateRouter } from './common';
+import { getStateRouter, getStateUi } from './common';
 import { matchPath } from 'react-router';
-import { AppState, appId } from 'core/models';
+import { AppState, appId, MainView } from 'core/models';
 
 export const getLocationNotificationEnabled = createSelector(
   getStateRouter,
@@ -10,10 +10,6 @@ export const getLocationNotificationEnabled = createSelector(
 export const getLocationVkAppId = createSelector(
   getStateRouter,
   (router) => Number((router?.location as any).query?.vk_app_id) || appId
-);
-export const getLocationIsAppUser = createSelector(
-  getStateRouter,
-  (router) => Number((router?.location as any).query?.vk_is_app_user) || 0
 );
 
 export const getLocationPathName = createSelector(
@@ -37,4 +33,20 @@ export const getLocationPathes = createStructuredSelector<
 >({
   main: getLocationMainPath,
   sub: getLocationSubPath,
+});
+
+export const getActiveMainView = createSelector(getStateUi, getLocationMainPath, (ui, mainPath) => {
+  if (!ui.online) {
+    return MainView.Offline;
+  }
+
+  if (mainPath === null) {
+    return MainView.Board;
+  }
+
+  if (mainPath === MainView.ListMembership) {
+    return MainView.ListMembership;
+  }
+
+  return MainView.Board;
 });

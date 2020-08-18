@@ -105,7 +105,7 @@ export class TasksService {
       .innerJoin(
         'list.memberships',
         'membership',
-        `membership.joined_id = ${vkUserId}`,
+        `membership.joined_id = ${vkUserId} and membership.left_date is null`,
       )
       .where([
         {

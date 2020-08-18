@@ -7,10 +7,11 @@ import { TasksModule } from 'src/tasks/tasks.module';
 import { RedisCacheModule } from 'src/redis-cache/redis-cache.module';
 import { VkApiService } from 'src/vk-api/vk-api.service';
 import { ConfigModule } from '@nestjs/config';
+import { ListMembership } from 'src/db/tables/listMembership';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([List]),
+    TypeOrmModule.forFeature([List, ListMembership]),
     TasksModule,
     RedisCacheModule,
     HttpModule,
