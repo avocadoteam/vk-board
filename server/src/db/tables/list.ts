@@ -2,11 +2,18 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Task } from './task';
 import { ColumnNumericTransformer } from '../transform/int8';
 import { ListMembership } from './listMembership';
+import { v4 } from 'uuid';
 
 @Entity()
 export class List {
   @PrimaryGeneratedColumn('increment')
   id!: number;
+
+  @Column({
+    type: 'uuid',
+    name: 'listguid',
+  })
+  listguid: string;
 
   @Column({
     length: 512,
@@ -42,5 +49,6 @@ export class List {
     this.name = name;
     this.createdBy = createdBy;
     this.created = new Date();
+    this.listguid = v4();
   }
 }
