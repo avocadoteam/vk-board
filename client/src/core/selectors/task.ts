@@ -33,9 +33,6 @@ export const isTasksUpdating = createSelector(
 
 export const getTasksData = createSelector(getTasksDataState, (dataState) => dataState.data ?? []);
 
-export const getOpenTasks = createSelector(getTasksData, (tasks) =>
-  tasks.filter((t) => t.finished === null)
-);
 export const getFinishedTasksCount = createSelector(
   getTasksData,
   (tasks) => tasks.filter((t) => t.finished !== null).length

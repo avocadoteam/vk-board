@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getBoardLists } from 'core/selectors/board';
-import { AppDispatchActions, FetchingStateName, MainView } from 'core/models';
+import { AppDispatchActions, FetchingStateName, MainView, BoardListItem } from 'core/models';
 import { useFela } from 'react-fela';
 import { List, withModalRootContext, Div, Text, Spinner } from '@vkontakte/vkui';
 import Icon28ChevronDownOutline from '@vkontakte/icons/dist/28/chevron_down_outline';
@@ -11,7 +11,7 @@ import Icon28ShareExternalOutline from '@vkontakte/icons/dist/28/share_external_
 import Icon28UsersOutline from '@vkontakte/icons/dist/28/users_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import { push, getSearch } from 'connected-react-router';
-import { isDeleteListUpdating } from 'core/selectors/boardLists';
+import { isDeleteListUpdating, getSelectedListId } from 'core/selectors/boardLists';
 import { vkBridge } from 'core/vk-bridge/instance';
 import { getAppId } from 'core/selectors/settings';
 
@@ -26,7 +26,8 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
   const search = useSelector(getSearch);
   const appId = useSelector(getAppId);
   const dark = useSelector(isThemeDrak);
-  const { selectedBoardListId, boardListOpenId } = useSelector(getBoardUiState);
+  const selectedBoardListId = useSelector(getSelectedListId);
+  const { boardListOpenId } = useSelector(getBoardUiState);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
 
@@ -51,17 +52,10 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
     dispatch(push(`/${MainView.ListMembership}${search}`) as any);
   }, [dispatch, goForward, closeModal, search]);
 
-  const selectList = React.useCallback(
-    (id: number) => {
-      dispatch({ type: 'SELECT_BOARD_LIST', payload: id });
+  const handleClickList = (listItem: BoardListItem) => {
+    if (selectedBoardListId !== listItem.id) {
+      dispatch({ type: 'SELECT_BOARD_LIST', payload: { id: listItem.id, data: listItem } });
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
-    },
-    [dispatch]
-  );
-
-  const handleClickList = (id: number) => {
-    if (selectedBoardListId !== id) {
-      selectList(id);
       closeModal();
     }
   };
@@ -87,7 +81,7 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
       {listItems.map((listItem) => (
         <span key={listItem.id}>
           <CellButton
-            onClick={() => handleClickList(listItem.id)}
+            onClick={() => handleClickList(listItem)}
             selected={selectedBoardListId === listItem.id}
           >
             <span

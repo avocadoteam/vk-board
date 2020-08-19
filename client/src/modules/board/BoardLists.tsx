@@ -1,7 +1,7 @@
 import React from 'react';
 import { Div, CardGrid, Card, List, Cell, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectedBoardListInfo, isBoardUpdating } from 'core/selectors/board';
+import { isBoardUpdating } from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
 import { AppDispatchActions, BoardTaskItem } from 'core/models';
@@ -10,6 +10,7 @@ import { ListMembershipStack } from 'modules/board-list';
 import { isThemeDrak } from 'core/selectors/common';
 import { useTransition, animated, useChain } from 'react-spring';
 import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
+import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boardLists';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -20,7 +21,7 @@ export const BoardLists = React.memo(() => {
   const finishedCount = useSelector(getFinishedTasksCount);
   const showFinished = finishedCount > 0;
   const transRef = React.useRef<any>();
-  const tasks = info.tasks ?? [];
+  const tasks = useSelector(getSelectedListTasks);
 
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();

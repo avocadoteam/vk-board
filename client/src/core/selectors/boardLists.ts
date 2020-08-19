@@ -31,5 +31,12 @@ export const isDeleteListUpdating = createSelector(
 export const isListMembershipOpenedByOwner = createSelector(
   getBoardLists,
   getBoardUiState,
-  (list, { boardListOpenId }) => list.find(l => l.id === boardListOpenId)?.isOwner
-)
+  (list, { boardListOpenId }) => list.find((l) => l.id === boardListOpenId)?.isOwner
+);
+
+export const getSelectedList = createSelector(getBoardUiState, (board) => board.selectedList);
+export const getSelectedListTasks = createSelector(getSelectedList, (list) =>
+  list.tasks.filter((t) => t.finished === null)
+);
+export const getSelectedListId = createSelector(getSelectedList, (list) => list.id);
+export const selectedBoardListInfo = createSelector(getSelectedList, (list) => list.data);

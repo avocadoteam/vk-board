@@ -1,4 +1,4 @@
-import { AppEpic, FetchingStateName, AppDispatch, FetchResponse, BoardListIiem } from 'core/models';
+import { AppEpic, FetchingStateName, AppDispatch, FetchResponse, BoardListItem } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap } from 'rxjs/operators';
 import { from, of, concat, iif } from 'rxjs';
@@ -7,6 +7,7 @@ import { getBoard, newBoardList } from 'core/operations/board';
 import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
+import { getSelectedListId } from 'core/selectors/boardLists';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -19,10 +20,10 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
       getBoard(q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return from(response.json() as Promise<FetchResponse<BoardListIiem[]>>).pipe(
+            return from(response.json() as Promise<FetchResponse<BoardListItem[]>>).pipe(
               map((v) => v?.data ?? []),
               switchMap((data) => {
-                const selectedId = state$.value.ui.board.selectedBoardListId;
+                const selectedId = getSelectedListId(state$.value);
 
                 if (!data.find((bl) => bl.id === selectedId)) {
                   return concat(
@@ -35,7 +36,10 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                     } as AppDispatch),
                     of({
                       type: 'SELECT_BOARD_LIST',
-                      payload: data[0]?.id,
+                      payload: {
+                        id: data[0]?.id,
+                        data: data[0],
+                      },
                     } as AppDispatch),
                     of({
                       type: 'SET_UPDATING_DATA',

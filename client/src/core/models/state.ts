@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
-import { BoardState, TaskInfo } from './board';
+import { BoardState, TaskInfo, BoardListItem, BoardTaskItem } from './board';
 import { MembershipState } from './membership';
 
 declare module 'react-redux' {
@@ -47,7 +47,8 @@ export type AppDispatch =
   | { type: 'SET_APP_USER'; payload: boolean }
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
-  | { type: 'SELECT_BOARD_LIST'; payload: number }
+  | { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } }
+  | { type: 'SET_BOARD_TASKS'; payload: BoardTaskItem[] }
   | { type: 'OPEN_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | { type: 'RESET_NEW_TASK'; payload: null }

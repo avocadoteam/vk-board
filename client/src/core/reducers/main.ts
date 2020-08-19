@@ -21,7 +21,18 @@ export const initialState: models.AppState['ui'] = {
   onlineHandleActivate: true,
   activeModal: null,
   board: {
-    selectedBoardListId: 12,
+    selectedList: {
+      data: {
+        created: '',
+        createdBy: 0,
+        id: 0,
+        listguid: '',
+        memberships: [],
+        name: '',
+      },
+      id: 1,
+      tasks: [],
+    },
     boardListName: '',
     boardListOpenId: 0,
     boardListToDeleteId: 0,
@@ -158,7 +169,23 @@ export const reducer = (
         ...state,
         board: {
           ...state.board,
-          selectedBoardListId: dispatch.payload,
+          selectedList: {
+            ...state.board.selectedList,
+            id: dispatch.payload.id,
+            data: dispatch.payload.data ?? state.board.selectedList.data,
+          },
+        },
+      };
+    }
+    case 'SET_BOARD_TASKS': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          selectedList: {
+            ...state.board.selectedList,
+            tasks: dispatch.payload,
+          },
         },
       };
     }

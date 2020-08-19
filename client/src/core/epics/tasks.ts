@@ -22,6 +22,7 @@ import { safeCombineEpics } from './combine';
 import { postNewTask, getTasks, finishTasks, deleteTask, putEditTask } from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedTaskId, getSelectedTaskGUID } from 'core/selectors/task';
+import { getSelectedListId } from 'core/selectors/boardLists';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -35,7 +36,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
         data: {
           ...formValues,
           dueDate: formValues.dueDate || null,
-          listId: state.ui.board.selectedBoardListId,
+          listId: getSelectedListId(state),
         } as NewTaskModel,
       };
     }),
@@ -83,7 +84,7 @@ const fetchTasksEpic: AppEpic = (action$, state$) =>
     filter(({ payload }) => payload === FetchingStateName.Tasks),
     map(() => ({
       q: getQToQuery(state$.value),
-      listId: state$.value.ui.board.selectedBoardListId,
+      listId: getSelectedListId(state$.value),
     })),
     switchMap(({ q, listId }) =>
       getTasks(listId, q).pipe(
@@ -92,13 +93,19 @@ const fetchTasksEpic: AppEpic = (action$, state$) =>
             return from(response.json() as Promise<FetchResponse<BoardTaskItem[]>>).pipe(
               map((v) => v?.data ?? []),
               switchMap((data) => {
-                return of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.Tasks,
-                    data,
-                  },
-                } as AppDispatch);
+                return concat(
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.Tasks,
+                      data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_BOARD_TASKS',
+                    payload: data,
+                  } as AppDispatch)
+                );
               })
             );
           } else {
@@ -116,12 +123,12 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
     auditTime(FINISH_TASK_TIMER_VALUE),
     map(() => {
       const state = state$.value;
-      const { selectedBoardListId, tasksToBeFinished } = getBoardUiState(state);
+      const { tasksToBeFinished } = getBoardUiState(state);
 
       return {
         q: getQToQuery(state),
         taskIds: tasksToBeFinished,
-        listId: selectedBoardListId,
+        listId: getSelectedListId(state),
       };
     }),
     exhaustMap(({ q, taskIds, listId }) =>
@@ -167,12 +174,12 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
     filter(({ payload }) => payload === FetchingStateName.DeleteTask),
     map(() => {
       const state = state$.value;
-      const { selectedBoardListId, selectedTask } = getBoardUiState(state);
+      const { selectedTask } = getBoardUiState(state);
 
       return {
         q: getQToQuery(state),
         selectedTaskId: selectedTask.id,
-        listId: selectedBoardListId,
+        listId: getSelectedListId(state),
       };
     }),
     switchMap(({ q, selectedTaskId, listId }) =>
@@ -217,7 +224,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
         dataModel: {
           ...formValues,
           dueDate: formValues.dueDate || null,
-          listId: state.ui.board.selectedBoardListId,
+          listId: getSelectedListId(state),
           id: getSelectedTaskId(state),
         } as EditTaskModel,
       };

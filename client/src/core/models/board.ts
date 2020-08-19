@@ -1,12 +1,11 @@
 import { MembershipItem } from './membership';
 
-export type BoardListIiem = {
+export type BoardListItem = {
   listguid: string;
   name: string;
   id: number;
   created: string;
   createdBy: number;
-  tasks: BoardTaskItem[];
   memberships: MembershipItem[];
 };
 
@@ -25,10 +24,14 @@ export type BoardTaskItem = {
 export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'>;
 
 export type BoardState = {
-  selectedBoardListId: number;
   boardListName: string;
   boardListOpenId: number;
   boardListToDeleteId: number;
+  selectedList: {
+    id: number;
+    data: BoardListItem;
+    tasks: BoardTaskItem[]
+  };
   newTask: {
     name: string;
     description: string;

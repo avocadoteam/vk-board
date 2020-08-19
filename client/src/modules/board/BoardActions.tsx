@@ -9,10 +9,12 @@ import { AppDispatchActions, ActiveModal } from 'core/models';
 import { isBoardUpdating } from 'core/selectors/board';
 import { ListProgress } from 'modules/board-list';
 import { getBoardUiState } from 'core/selectors/common';
+import { getSelectedListId } from 'core/selectors/boardLists';
 
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
-  const { selectedBoardListId, tasksToBeFinished } = useSelector(getBoardUiState);
+  const { tasksToBeFinished } = useSelector(getBoardUiState);
+  const selectedBoardListId = useSelector(getSelectedListId);
   const boardUpadting = useSelector(isBoardUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
 

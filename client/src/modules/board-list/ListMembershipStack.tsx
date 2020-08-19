@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { selectedBoardListInfo } from 'core/selectors/board';
 import { UsersStack } from '@vkontakte/vkui';
 import { useFela } from 'react-fela';
+import { selectedBoardListInfo } from 'core/selectors/boardLists';
 
 export const ListMembershipStack = React.memo(() => {
   const { memberships } = useSelector(selectedBoardListInfo);
