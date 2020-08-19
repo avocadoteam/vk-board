@@ -7,9 +7,10 @@ import { CellButton } from 'atoms/CellButton';
 import { getBoardUiState, isThemeDrak } from 'core/selectors/common';
 import * as sel from 'core/selectors/boardLists';
 import { useLongPress } from 'core/hooks';
-import { Input, Spinner } from '@vkontakte/vkui';
+import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
+import { tapticSelected, tapticDone } from 'core/vk-bridge/taptic';
 
 type Props = {
   listItem: BoardListItem & {
@@ -26,13 +27,23 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const created = useSelector(sel.isEditListCreated) && !updating;
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
+  const platform = usePlatform();
   const detections = useLongPress<HTMLButtonElement>(() => {
+    if (platform === OS.IOS) {
+      tapticSelected();
+    }
     dispatch({
       type: 'EDIT_BOARD_LIST_NAME',
-      payload: { name: listItem.name, id: listItem.id },
+      payload: { name: listItem.name },
     });
     setClicked(true);
   });
+
+  React.useEffect(() => {
+    if (platform === OS.IOS && created) {
+      tapticDone('success');
+    }
+  }, [platform, created]);
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });

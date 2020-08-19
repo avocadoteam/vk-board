@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import Icon16Add from '@vkontakte/icons/dist/16/add';
 import { CellButton } from 'atoms/CellButton';
-import { Input, Spinner } from '@vkontakte/vkui';
+import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
 import { isNewListUpdating, isNewListCreated } from 'core/selectors/boardLists';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
+import { tapticDone, tapticSelected } from 'core/vk-bridge/taptic';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
@@ -14,6 +15,20 @@ export const NewList = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
   const updating = useSelector(isNewListUpdating);
   const created = useSelector(isNewListCreated) && !updating;
+
+  const platform = usePlatform();
+  React.useEffect(() => {
+    if (platform === OS.IOS && created) {
+      tapticDone('success');
+    }
+  }, [platform, created]);
+
+  const handleClick = () => {
+    if (platform === OS.IOS) {
+      tapticSelected();
+    }
+    setClicked(true);
+  };
 
   const handleChangeName = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +83,7 @@ export const NewList = React.memo(() => {
   }
 
   return (
-    <CellButton onClick={() => setClicked(true)} className={css({ marginTop: '6px !important' })}>
+    <CellButton onClick={handleClick} className={css({ marginTop: '6px !important' })}>
       <Icon16Add className={css({ marginRight: '.5rem' })} />
       Новый список
     </CellButton>

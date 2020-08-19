@@ -186,11 +186,12 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
 const editBoardListNameEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('EDIT_BOARD_LIST_NAME'),
+    filter(({ payload }) => !!(payload as EditBoardNamePayload).id),
     debounceTime(1500),
     map((p) => ({
       q: getQToQuery(state$.value),
       listName: state$.value.ui.board.editBoardListName,
-      listId: (p.payload as EditBoardNamePayload).id,
+      listId: (p.payload as EditBoardNamePayload).id!,
     })),
     exhaustMap(({ q, listName, listId }) =>
       iif(

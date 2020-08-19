@@ -64,7 +64,7 @@ export type AppDispatch =
   | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
   | LocationChangeAction;
 
-export type EditBoardNamePayload = { name: string; id: number };
+export type EditBoardNamePayload = { name: string; id?: number };
 export type AppDispatchActions = Dispatch<AppDispatch>;
 
 export enum AppUser {
