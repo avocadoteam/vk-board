@@ -29,6 +29,8 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const { css } = useFela();
   const platform = usePlatform();
   const detections = useLongPress<HTMLButtonElement>(() => {
+
+    // TODO: move to hook
     if (platform === OS.IOS) {
       tapticSelected();
     }
@@ -40,10 +42,10 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   });
 
   React.useEffect(() => {
-    if (platform === OS.IOS && created) {
+    if (platform === OS.IOS && created && click) {
       tapticDone('success');
     }
-  }, [platform, created]);
+  }, [platform, created, click]);
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });

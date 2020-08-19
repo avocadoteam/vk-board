@@ -96,7 +96,13 @@ export const BoardLists = React.memo(() => {
 
   return (
     <>
-      <PanelHeader separator={false} left={<ListMembershipStack />}>
+      <PanelHeader
+        separator={false}
+        left={<ListMembershipStack />}
+        className={css({
+          background: dark ? undefined : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%)',
+        })}
+      >
         <Text
           weight="semibold"
           className={`useMonrope ${css({
@@ -104,12 +110,20 @@ export const BoardLists = React.memo(() => {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            lineHeight: '24px',
           })}`}
         >
           {info.name} {boardUpdating ? <Spinner size="small" /> : null}
         </Text>
       </PanelHeader>
-      <Div className={css({ padding: '12px 18px', paddingBottom: 80 })}>
+      <Div
+        className={css({
+          padding: '12px 18px',
+          paddingBottom: 80,
+          background: dark ? undefined : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%)',
+          height: 'calc(100vh - 150px)',
+        })}
+      >
         {!updatingListOfTasks && taskRender}
         {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
         {showFinished && (

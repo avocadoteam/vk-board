@@ -18,10 +18,10 @@ export const NewList = React.memo(() => {
 
   const platform = usePlatform();
   React.useEffect(() => {
-    if (platform === OS.IOS && created) {
+    if (platform === OS.IOS && created && click) {
       tapticDone('success');
     }
-  }, [platform, created]);
+  }, [platform, created, click]);
 
   const handleClick = () => {
     if (platform === OS.IOS) {

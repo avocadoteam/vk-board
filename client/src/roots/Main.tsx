@@ -47,6 +47,7 @@ export const Main = React.memo(() => {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              lineHeight: '24px',
             })}`}
           >
             Доступ
