@@ -6,19 +6,45 @@ import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { useFela } from 'react-fela';
 import { isThemeDrak, getMembershipUiState } from 'core/selectors/common';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { isListMembershipOpenedByOwner } from 'core/selectors/boardLists';
 
 export const ListMembershipLayout = React.memo(() => {
-  const { css } = useFela();
-  const dispatch = useDispatch<AppDispatchActions>();
   const list = useSelector(getMembershipList);
-  const dark = useSelector(isThemeDrak);
   const updating = useSelector(isDropMembershipUpdating);
-  const { dropUserId } = useSelector(getMembershipUiState);
 
-  const handleDropMembership = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    userId: number
-  ) => {
+  return (
+    <Div>
+      <List>
+        {list.map((m) => (
+          <SimpleCell
+            key={m.userId}
+            before={<Avatar size={40} src={m.avatar} />}
+            href={!updating ? `https://vk.com/id${m.userId}` : undefined}
+            target="_blank"
+            after={<DropMembershipItem updating={updating} userId={m.userId} />}
+            disabled={updating}
+          >
+            {m.name}
+          </SimpleCell>
+        ))}
+      </List>
+    </Div>
+  );
+});
+
+type Props = {
+  userId: number;
+  updating: boolean;
+};
+
+const DropMembershipItem: React.FC<Props> = ({ userId, updating }) => {
+  const { dropUserId } = useSelector(getMembershipUiState);
+  const { css } = useFela();
+  const dark = useSelector(isThemeDrak);
+  const canDropMembership = useSelector(isListMembershipOpenedByOwner);
+  const dispatch = useDispatch<AppDispatchActions>();
+
+  const handleDropMembership = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -36,40 +62,29 @@ export const ListMembershipLayout = React.memo(() => {
     });
   };
 
+  if (!canDropMembership) {
+    return null;
+  }
+
+  if (updating && dropUserId === userId) {
+    return (
+      <Spinner
+        size="regular"
+        className={css({
+          '>div': {
+            color: dark ? '#5F5F5F !important' : '#CFCFCF !important',
+            padding: '0 !important',
+          },
+          padding: '10px 2px 10px 10px',
+        } as any)}
+      />
+    );
+  }
+
   return (
-    <Div>
-      <List>
-        {list.map((m) => (
-          <SimpleCell
-            key={m.userId}
-            before={<Avatar size={40} src={m.avatar} />}
-            href={!updating ? `https://vk.com/id${m.userId}` : undefined}
-            target="_blank"
-            after={
-              updating && dropUserId === m.userId ? (
-                <Spinner
-                  size="regular"
-                  className={css({
-                    '>div': {
-                      color: dark ? '#5F5F5F !important' : '#CFCFCF !important',
-                      padding: '0 !important',
-                    },
-                    padding: '10px 2px 10px 10px',
-                  } as any)}
-                />
-              ) : (
-                <Icon24Cancel
-                  className={css({ color: dark ? '#5F5F5F !important' : '#CFCFCF !important' })}
-                  onClick={(e) => handleDropMembership(e, m.userId)}
-                />
-              )
-            }
-            disabled={updating}
-          >
-            {m.name}
-          </SimpleCell>
-        ))}
-      </List>
-    </Div>
+    <Icon24Cancel
+      className={css({ color: dark ? '#5F5F5F !important' : '#CFCFCF !important' })}
+      onClick={handleDropMembership}
+    />
   );
-});
+};

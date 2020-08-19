@@ -84,9 +84,12 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
 
   return (
     <List>
-      {listItems.map((i) => (
-        <span key={i.id}>
-          <CellButton onClick={() => handleClickList(i.id)} selected={selectedBoardListId === i.id}>
+      {listItems.map((listItem) => (
+        <span key={listItem.id}>
+          <CellButton
+            onClick={() => handleClickList(listItem.id)}
+            selected={selectedBoardListId === listItem.id}
+          >
             <span
               className={css({
                 overflow: 'hidden',
@@ -94,18 +97,18 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
                 textOverflow: 'ellipsis',
               })}
             >
-              {i.name}
+              {listItem.name}
             </span>
             <Icon28ChevronDownOutline
               className={css({
                 marginLeft: 'auto',
                 color: dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                transform: boardListOpenId === i.id ? 'rotate(180deg)' : undefined,
+                transform: boardListOpenId === listItem.id ? 'rotate(180deg)' : undefined,
               })}
-              onClick={(e) => toggleDropDown(e, i.id)}
+              onClick={(e) => toggleDropDown(e, listItem.id)}
             />
           </CellButton>
-          {boardListOpenId === i.id && (
+          {boardListOpenId === listItem.id && (
             <Div
               className={css({
                 minHeight: '100px',
@@ -125,7 +128,7 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
               <CellButton
                 className={css({ paddingLeft: 16, paddingRight: 16 })}
                 disabled={deletting}
-                onClick={() => sharePost(i.listguid)}
+                onClick={() => sharePost(listItem.listguid)}
               >
                 <Icon28ShareExternalOutline className={css(iconStyle)} />
                 Поделиться
@@ -142,21 +145,23 @@ const ListsPC = React.memo<Props>(({ updateModalHeight, goForward }) => {
                 Список станет доступен другим пользователям с ссылкой (до 3-x человек в бесплатной
                 версии)
               </Text>
-              <CellButton
-                className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848' })}
-                disabled={deletting}
-                onClick={deleteList}
-              >
-                {deletting ? (
-                  <Spinner
-                    size="regular"
-                    className={css({ width: 'unset', marginRight: '1rem' })}
-                  />
-                ) : (
-                  <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
-                )}
-                Удалить список
-              </CellButton>
+              {listItem.isOwner && (
+                <CellButton
+                  className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848' })}
+                  disabled={deletting}
+                  onClick={deleteList}
+                >
+                  {deletting ? (
+                    <Spinner
+                      size="regular"
+                      className={css({ width: 'unset', marginRight: '1rem' })}
+                    />
+                  ) : (
+                    <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
+                  )}
+                  Удалить список
+                </CellButton>
+              )}
             </Div>
           )}
         </span>

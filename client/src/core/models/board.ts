@@ -5,6 +5,7 @@ export type BoardListIiem = {
   name: string;
   id: number;
   created: string;
+  createdBy: number;
   tasks: BoardTaskItem[];
   memberships: MembershipItem[];
 };

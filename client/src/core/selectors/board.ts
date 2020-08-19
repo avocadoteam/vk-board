@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { getStateUi, getBoardUiState } from './common';
 import { FetchingStateName, FetchingDataType, BoardListIiem, FetchingStatus } from 'core/models';
 import { getOpenTasks } from './task';
+import { getUserId } from './user';
 
 const getBoardListsDataState = createSelector(
   getStateUi,
@@ -18,11 +19,12 @@ export const getBoardListData = createSelector(
   (dataState) => dataState.data ?? []
 );
 
-export const getBoardLists = createSelector(getBoardListData, (data) =>
+export const getBoardLists = createSelector(getBoardListData, getUserId, (data, userId) =>
   data.map((d) => ({
     name: d.name,
     id: d.id,
     listguid: d.listguid,
+    isOwner: d.createdBy === userId,
   }))
 );
 
@@ -45,6 +47,7 @@ export const selectedBoardListInfo = createSelector(
       tasks: [],
       memberships: [],
       listguid: '',
+      createdBy: 0,
     };
   }
 );

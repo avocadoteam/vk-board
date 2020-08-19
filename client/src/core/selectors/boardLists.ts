@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
-import { getStateUi } from './common';
+import { getStateUi, getBoardUiState } from './common';
 import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
-import { isBoardUpdating } from './board';
+import { isBoardUpdating, getBoardLists } from './board';
 
 const getNewListDataState = createSelector(
   getStateUi,
@@ -27,3 +27,9 @@ export const isDeleteListUpdating = createSelector(
   isBoardUpdating,
   (dataState, boardUpdating) => dataState.status === FetchingStatus.Updating || boardUpdating
 );
+
+export const isListMembershipOpenedByOwner = createSelector(
+  getBoardLists,
+  getBoardUiState,
+  (list, { boardListOpenId }) => list.find(l => l.id === boardListOpenId)?.isOwner
+)

@@ -53,6 +53,7 @@ export class ListService {
         'list.name',
         'list.id',
         'list.created',
+        'list.createdBy',
         'list.listguid',
         'membership.joinedId',
       ])
