@@ -2,7 +2,11 @@ import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
 import { Repository, Connection } from 'typeorm';
-import { NewListModel, DropMembershipModel } from 'src/contracts/list';
+import {
+  NewListModel,
+  DropMembershipModel,
+  EditListModel,
+} from 'src/contracts/list';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
 import { ListMembership } from 'src/db/tables/listMembership';
@@ -174,6 +178,12 @@ export class ListService {
     const now = new Date();
 
     await this.tableList.update(listId, { deleted: now });
+
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
+  }
+
+  async editListName(model: EditListModel, vkUserId: number) {
+    await this.tableList.update(model.listId, { name: model.name });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
   }

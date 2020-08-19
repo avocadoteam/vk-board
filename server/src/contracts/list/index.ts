@@ -14,3 +14,8 @@ export class DropMembershipModel {
   @IsNumber()
   userId!: number;
 }
+
+export class EditListModel extends NewListModel {
+  @IsNumber()
+  listId!: number;
+}

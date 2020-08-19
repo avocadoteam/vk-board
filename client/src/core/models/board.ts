@@ -25,6 +25,7 @@ export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'descript
 
 export type BoardState = {
   boardListName: string;
+  editBoardListName: string;
   boardListOpenId: number;
   boardListToDeleteId: number;
   selectedList: {

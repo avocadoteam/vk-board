@@ -9,20 +9,20 @@ import {
   HttpStatus,
   Post,
   Body,
+  Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { BoardCacheInterceptor } from 'src/interceptors/cache.interceptor';
 import { ListService } from 'src/list/list.service';
-import { NewListModel } from 'src/contracts/list';
+import { NewListModel, EditListModel } from 'src/contracts/list';
 
 @Controller('api/board')
 @UseGuards(SignGuard)
 @UseInterceptors(TransformInterceptor)
 export class BoardController {
-  constructor(
-    private readonly listService: ListService,
-  ) {}
+  constructor(private readonly listService: ListService) {}
 
   @Get()
   @UseInterceptors(BoardCacheInterceptor)
@@ -48,5 +48,21 @@ export class BoardController {
     model: NewListModel,
   ) {
     return this.listService.createList(model, vkUserId);
+  }
+
+  @Put('/list')
+  async editListNameOnBoard(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Body()
+    model: EditListModel,
+  ) {
+    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+      throw new BadRequestException();
+    }
+    return this.listService.editListName(model, vkUserId);
   }
 }

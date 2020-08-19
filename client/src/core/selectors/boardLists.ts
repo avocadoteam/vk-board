@@ -7,6 +7,10 @@ const getNewListDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.NewBoardList] ?? {}) as FetchingDataType<boolean>
 );
+const getEditListDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.EditBoardList] ?? {}) as FetchingDataType<boolean>
+);
 const getDeleteListDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.DeleteBoardList] ?? {}) as FetchingDataType<boolean>
@@ -19,6 +23,16 @@ export const isNewListUpdating = createSelector(
 
 export const isNewListCreated = createSelector(
   getNewListDataState,
+  (dataState) => dataState.status === FetchingStatus.Ready && !!dataState.data
+);
+
+export const isEditListUpdating = createSelector(
+  getEditListDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
+
+export const isEditListCreated = createSelector(
+  getEditListDataState,
   (dataState) => dataState.status === FetchingStatus.Ready && !!dataState.data
 );
 
