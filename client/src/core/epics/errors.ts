@@ -1,6 +1,6 @@
 import { FetchingStateName, AppDispatch } from 'core/models';
 import { catchError } from 'rxjs/operators';
-import { ObservableInput, of, concat } from 'rxjs';
+import { ObservableInput, of, concat, empty } from 'rxjs';
 import { captureUrlEvent } from 'core/sentry';
 import { errMap } from 'core/utils';
 import { tapTaptic } from './addons';
@@ -67,4 +67,11 @@ export const captureFetchErrorWithTaptic = (name: FetchingStateName) =>
       } as AppDispatch),
       tapTaptic('error')
     );
+  });
+
+export const captureErrorAndNothingElse = (context: string) =>
+  catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
+    console.error('Error in', context, errMap(error));
+    captureUrlEvent(`Error in ${context} ${errMap(error)}`);
+    return empty();
   });
