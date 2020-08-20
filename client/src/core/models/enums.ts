@@ -1,7 +1,8 @@
 export enum MainView {
   Board = 'board',
   Offline = 'offline',
-  ListMembership = 'listMembership'
+  ListMembership = 'listMembership',
+  About = 'about'
 }
 
 export enum Skeys {

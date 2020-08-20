@@ -14,11 +14,13 @@ import { DeletePreview } from './DeletePreview';
 import { EditTask } from './EditTask';
 import { NewTaskHeader } from './NewTaskHeader';
 import { NewTask } from './NewTask';
+import { push, getSearch } from 'connected-react-router';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
     const [deletedPreview, setDelete] = React.useState(false);
     const [editable, setEditable] = React.useState(false);
+    const search = useSelector(getSearch);
     const activeModal = useSelector(getActiveModal);
     const dispatch = useDispatch<AppDispatchActions>();
     const { css } = useFela();
@@ -26,6 +28,12 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
     const closeModal = React.useCallback(() => {
       dispatch({ type: 'SET_MODAL', payload: null });
     }, [dispatch]);
+
+    const goToAbout = React.useCallback(() => {
+      closeModal();
+      goForward(MainView.About);
+      dispatch(push(`/${MainView.About}${search}`) as any);
+    }, [dispatch, goForward, closeModal, search]);
 
     return (
       <ModalRoot activeModal={activeModal} onClose={closeModal}>
@@ -38,7 +46,7 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           <Lists goForward={goForward} />
           <Separator wide />
           <List>
-            <CellButton>
+            <CellButton onClick={goToAbout}>
               <Icon16InfoOutline className={css({ marginRight: '1rem' })} /> Информация
             </CellButton>
           </List>

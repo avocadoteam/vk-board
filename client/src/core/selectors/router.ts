@@ -48,9 +48,13 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
     return MainView.Board;
   }
 
-  if (mainPath === MainView.ListMembership) {
-    return MainView.ListMembership;
-  }
+  switch (mainPath) {
+    case MainView.ListMembership:
+      return MainView.ListMembership;
+    case MainView.About:
+      return MainView.About;
 
-  return MainView.Board;
+    default:
+      return MainView.Board;
+  }
 });

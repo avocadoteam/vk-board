@@ -11,6 +11,7 @@ import { useViewChange } from 'core/hooks';
 import { goBack } from 'connected-react-router';
 import { useFela } from 'react-fela';
 import { isThemeDrak } from 'core/selectors/common';
+import { Premium } from 'modules/about';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
@@ -68,6 +69,23 @@ export const Main = React.memo(() => {
           </Text>
         </PanelHeader>
         <ListMembershipLayout />
+      </Panel>
+      <Panel id={MainView.About}>
+        <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>
+          <Text
+            weight="semibold"
+            className={`useMonrope ${css({
+              fontSize: '18px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: '24px',
+            })}`}
+          >
+            О приложении
+          </Text>
+        </PanelHeader>
+        <Premium />
       </Panel>
     </View>
   );
