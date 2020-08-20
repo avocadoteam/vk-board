@@ -5,9 +5,10 @@ import {
   FetchResponse,
   BoardListItem,
   EditBoardNamePayload,
+  FeatchReadyAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
-import { filter, switchMap, map, debounceTime, exhaustMap } from 'rxjs/operators';
+import { filter, switchMap, map, debounceTime, exhaustMap, delay } from 'rxjs/operators';
 import { from, of, concat, iif } from 'rxjs';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
@@ -232,9 +233,28 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const resetPutListActionsEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_READY_DATA'),
+    filter<FeatchReadyAction>(
+      ({ payload }) =>
+        (payload.name === FetchingStateName.EditBoardList ||
+          payload.name === FetchingStateName.NewBoardList) &&
+        !!payload.data
+    ),
+    delay(2500),
+    exhaustMap(({ payload }) =>
+      map(
+        () =>
+          ({ type: 'SET_READY_DATA', payload: { name: payload.name, data: false } } as AppDispatch)
+      )
+    )
+  );
+
 export const boardEpics = safeCombineEpics(
   fetchBoardEpic,
   saveBoardListEpic,
   deleteBoardListEpic,
-  editBoardListNameEpic
+  editBoardListNameEpic,
+  resetPutListActionsEpic
 );

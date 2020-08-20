@@ -36,7 +36,7 @@ export type AppDispatch =
       type: 'SET_UPDATING_DATA';
       payload: FetchingStateName;
     }
-  | { type: 'SET_READY_DATA'; payload: FetchigReadyPayload }
+  | FeatchReadyAction
   | { type: 'SET_ERROR_DATA'; payload: { name: FetchingStateName; error: any } }
   | { type: 'SET_THEME'; payload: ClientTheme }
   | { type: 'SET_NOTIFICATIONS'; payload: boolean }
@@ -64,8 +64,8 @@ export type AppDispatch =
   | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
   | LocationChangeAction;
 
-export type EditBoardNamePayload = { name: string; id?: number };
 export type AppDispatchActions = Dispatch<AppDispatch>;
+export type FeatchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
 
 export enum AppUser {
   Yes = 'yes',
@@ -110,6 +110,7 @@ export type FetchResponse<T> = {
 };
 
 export type FetchigReadyPayload = { name: FetchingStateName; data: any };
+export type EditBoardNamePayload = { name: string; id?: number };
 
 export enum ClientTheme {
   oldLight = 'client_light',

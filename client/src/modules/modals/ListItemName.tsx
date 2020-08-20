@@ -24,10 +24,11 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const selectedBoardListId = useSelector(sel.getSelectedListId);
   const { boardListOpenId, editBoardListName } = useSelector(getBoardUiState);
   const updating = useSelector(sel.isEditListUpdating);
-  const created = useSelector(sel.isEditListCreated) && !updating;
+  const created = useSelector(sel.isEditListCreated);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
   const platform = usePlatform();
+
   const detections = useLongPress<HTMLButtonElement>(() => {
     if (platform === OS.IOS) {
       tapticSelected();
@@ -107,12 +108,12 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
             className={css({ width: 'unset', marginRight: '30px', marginTop: '22px' })}
           />
         )}
-        {created && (
+        {created && !updating && (
           <Icon24DoneOutline
             className={css({ marginRight: '24px', marginTop: '16px', color: '#42A4FF' })}
           />
         )}
-        {!created && (
+        {!created && !updating && (
           <Icon24Cancel
             onClick={() => setClicked(false)}
             className={css({ marginRight: '24px', marginTop: '16px', color: '#42A4FF' })}
