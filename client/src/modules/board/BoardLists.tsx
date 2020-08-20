@@ -97,15 +97,7 @@ export const BoardLists = React.memo(() => {
 
   return (
     <>
-      <PanelHeader
-        separator={false}
-        left={<ListMembershipStack />}
-        className={css({
-          background: dark
-            ? undefined
-            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
-        })}
-      >
+      <PanelHeader separator={false} left={<ListMembershipStack />}>
         <Text
           weight="semibold"
           className={`useMonrope ${css({
@@ -123,10 +115,6 @@ export const BoardLists = React.memo(() => {
         className={css({
           padding: '12px 18px',
           paddingBottom: 90,
-          background: dark
-            ? undefined
-            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
-          minHeight: 'calc(100vh - 155px)',
         })}
       >
         <AdsBanner />

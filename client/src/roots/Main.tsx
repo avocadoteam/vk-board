@@ -37,6 +37,9 @@ export const Main = React.memo(() => {
       <Panel
         id={MainView.Board}
         className={css({
+          background: dark
+            ? undefined
+            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
           '>div': {
             background: dark
               ? undefined
