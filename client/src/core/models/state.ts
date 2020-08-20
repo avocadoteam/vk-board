@@ -67,11 +67,6 @@ export type AppDispatch =
 export type AppDispatchActions = Dispatch<AppDispatch>;
 export type FeatchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
 
-export enum AppUser {
-  Yes = 'yes',
-  No = 'no',
-}
-
 export enum ActiveModal {
   SelectedTask = 'selectedtask',
   Lists = 'lists',
@@ -80,6 +75,7 @@ export enum ActiveModal {
 
 export enum FetchingStateName {
   User = 'user',
+  UserSKeys = 'user_storage_keys',
   Ads = 'ads',
   Board = 'board',
   NewTask = 'new_task',

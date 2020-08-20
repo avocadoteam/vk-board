@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { getStateUi, getBoardUiState } from './common';
 import { FetchingStateName, FetchingDataType, BoardListItem, FetchingStatus } from 'core/models';
-import { getUserId } from './user';
+import { getUserId, isUserDataUpdating } from './user';
 
 const getBoardListsDataState = createSelector(
   getStateUi,
@@ -10,7 +10,8 @@ const getBoardListsDataState = createSelector(
 
 export const isBoardUpdating = createSelector(
   getBoardListsDataState,
-  (dataState) => dataState.status === FetchingStatus.Updating
+  isUserDataUpdating,
+  (dataState, userUpdating) => dataState.status === FetchingStatus.Updating || userUpdating
 );
 
 export const getBoardListData = createSelector(

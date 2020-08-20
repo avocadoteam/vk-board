@@ -6,6 +6,7 @@ import {
   BoardListItem,
   EditBoardNamePayload,
   FeatchReadyAction,
+  Skeys,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -16,7 +17,7 @@ import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { tapTaptic } from './addons';
+import { useTapticEpic, setStorageValueEpic } from './addons';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -53,7 +54,8 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                     of({
                       type: 'SET_UPDATING_DATA',
                       payload: FetchingStateName.Tasks,
-                    } as AppDispatch)
+                    } as AppDispatch),
+                    setStorageValueEpic(Skeys.userSelectedListId, String(data[0]?.id ?? 0))
                   );
                 }
 
@@ -112,7 +114,7 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
       q: getQToQuery(state$.value),
       listName: state$.value.ui.board.boardListName,
     })),
-    exhaustMap(({ q, listName }) =>
+    switchMap(({ q, listName }) =>
       iif(
         () => !listName.length,
         of({
@@ -137,7 +139,7 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
                     data: true,
                   },
                 } as AppDispatch),
-                tapTaptic('success')
+                useTapticEpic('success')
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
@@ -196,7 +198,7 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
       listName: state$.value.ui.board.editBoardListName,
       listId: (p.payload as EditBoardNamePayload).id!,
     })),
-    exhaustMap(({ q, listName, listId }) =>
+    switchMap(({ q, listName, listId }) =>
       iif(
         () => !listName.length,
         of({
@@ -221,7 +223,7 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
                     data: true,
                   },
                 } as AppDispatch),
-                tapTaptic('success')
+                useTapticEpic('success')
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
@@ -245,10 +247,7 @@ const resetPutListActionsEpic: AppEpic = (action$, state$) =>
     auditTime(100),
     delay(2500),
     exhaustMap(({ payload }) =>
-      map(
-        () =>
-          ({ type: 'SET_READY_DATA', payload: { name: payload.name, data: false } } as AppDispatch)
-      )
+      of({ type: 'SET_READY_DATA', payload: { name: payload.name, data: false } } as AppDispatch)
     )
   );
 

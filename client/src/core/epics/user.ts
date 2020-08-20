@@ -1,13 +1,14 @@
 import { ofType } from 'redux-observable';
-import { AppDispatch, FetchingStateName, appUserStorageKey, AppUser, AppEpic } from 'core/models';
+import { AppDispatch, FetchingStateName, AppUser, AppEpic, Skeys } from 'core/models';
 import { filter, switchMap, mergeMap } from 'rxjs/operators';
 import { from } from 'rxjs';
-import { getUserData, getIsAppUserFromStorage } from 'core/vk-bridge/user';
+import { getUserData, getUserStorageKeys } from 'core/vk-bridge/user';
 import { UserInfo } from '@vkontakte/vk-bridge';
 import { getHash, getSearch } from 'connected-react-router';
-import { captureFetchError, captureErrorFallbackActions } from './errors';
+import { captureFetchErrorMoreActions } from './errors';
 import { getLocationNotificationEnabled, getLocationVkAppId } from 'core/selectors/router';
 import { safeCombineEpics } from './combine';
+import { devTimeout } from './addons';
 
 const getUserInfo: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -15,6 +16,7 @@ const getUserInfo: AppEpic = (action$, state$) =>
     filter(({ payload }) => payload === FetchingStateName.User),
     switchMap(() =>
       from(getUserData()).pipe(
+        devTimeout(),
         mergeMap((userInfo: UserInfo) => {
           return [
             {
@@ -23,33 +25,60 @@ const getUserInfo: AppEpic = (action$, state$) =>
                 name: FetchingStateName.User,
                 data: userInfo,
               },
-            }
+            },
+            {
+              type: 'SET_UPDATING_DATA',
+              payload: FetchingStateName.UserSKeys,
+            },
           ] as AppDispatch[];
         }),
-        captureFetchError(FetchingStateName.User)
+        captureFetchErrorMoreActions(FetchingStateName.User, {
+          type: 'SET_UPDATING_DATA',
+          payload: FetchingStateName.UserSKeys,
+        })
       )
     )
   );
 
-const getIsAppUser: AppEpic = (action$, state$) =>
+const getUserSKeysEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('SET_UPDATING_DATA'),
-    filter(({ payload }) => payload === FetchingStateName.User),
+    filter(({ payload }) => payload === FetchingStateName.UserSKeys),
     switchMap(() =>
-      from(getIsAppUserFromStorage()).pipe(
+      from(getUserStorageKeys()).pipe(
+        devTimeout(),
         mergeMap((result) => {
-          const appUserKey = result.keys.find((v) => v.key === appUserStorageKey);
+          const isAppUser = result.keys.find((v) => v.key === Skeys.appUser)?.value === AppUser.Yes;
+          const selectedListId =
+            result.keys.find((v) => v.key === Skeys.userSelectedListId)?.value ?? 0;
           return [
             {
               type: 'SET_APP_USER',
-              payload: appUserKey?.value === AppUser.Yes,
+              payload: isAppUser,
+            },
+            {
+              type: 'SELECT_BOARD_LIST',
+              payload: {
+                id: Number(selectedListId),
+              },
+            },
+            {
+              type: 'SET_UPDATING_DATA',
+              payload: FetchingStateName.Board,
             },
           ] as AppDispatch[];
         }),
-        captureErrorFallbackActions('getIsAppUser', {
-          type: 'SET_APP_USER',
-          payload: false,
-        })
+        captureFetchErrorMoreActions(
+          FetchingStateName.UserSKeys,
+          {
+            type: 'SET_APP_USER',
+            payload: false,
+          },
+          {
+            type: 'SET_UPDATING_DATA',
+            payload: FetchingStateName.Board,
+          }
+        )
       )
     )
   );
@@ -88,4 +117,4 @@ const setInitInfo: AppEpic = (action$, state$) =>
     })
   );
 
-export const userEpics = safeCombineEpics(getUserInfo, getIsAppUser, setInitInfo);
+export const userEpics = safeCombineEpics(getUserInfo, getUserSKeysEpic, setInitInfo);

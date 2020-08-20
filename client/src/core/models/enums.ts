@@ -3,3 +3,13 @@ export enum MainView {
   Offline = 'offline',
   ListMembership = 'listMembership'
 }
+
+export enum Skeys {
+  appUser = 'appUser',
+  userSelectedListId = 'userSelectedListId'
+}
+
+export enum AppUser {
+  Yes = 'yes',
+  No = 'no',
+}

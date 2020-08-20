@@ -3,7 +3,7 @@ import { catchError } from 'rxjs/operators';
 import { ObservableInput, of, concat, empty } from 'rxjs';
 import { captureUrlEvent } from 'core/sentry';
 import { errMap } from 'core/utils';
-import { tapTaptic } from './addons';
+import { useTapticEpic } from './addons';
 
 export const captureFetchError = (name: FetchingStateName) =>
   catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
@@ -65,7 +65,7 @@ export const captureFetchErrorWithTaptic = (name: FetchingStateName) =>
           error: `Cannot load ${name} data`,
         },
       } as AppDispatch),
-      tapTaptic('error')
+      useTapticEpic('error')
     );
   });
 
