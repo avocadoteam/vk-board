@@ -7,7 +7,7 @@ import { CellButton } from 'atoms/CellButton';
 import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
 import { isNewListUpdating, isNewListCreated } from 'core/selectors/boardLists';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
-import { tapticDone, tapticSelected } from 'core/vk-bridge/taptic';
+import { tapticSelected } from 'core/vk-bridge/taptic';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
@@ -17,11 +17,6 @@ export const NewList = React.memo(() => {
   const created = useSelector(isNewListCreated) && !updating;
 
   const platform = usePlatform();
-  React.useEffect(() => {
-    if (platform === OS.IOS && created && click) {
-      tapticDone('success');
-    }
-  }, [platform, created, click]);
 
   const handleClick = () => {
     if (platform === OS.IOS) {

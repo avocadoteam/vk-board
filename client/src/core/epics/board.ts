@@ -9,12 +9,13 @@ import {
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap } from 'rxjs/operators';
 import { from, of, concat, iif } from 'rxjs';
-import { captureFetchError } from './errors';
+import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
 import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
+import { tapTaptic } from './addons';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -134,13 +135,14 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
                     name: FetchingStateName.NewBoardList,
                     data: true,
                   },
-                } as AppDispatch)
+                } as AppDispatch),
+                tapTaptic('success')
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
             }
           }),
-          captureFetchError(FetchingStateName.NewBoardList)
+          captureFetchErrorWithTaptic(FetchingStateName.NewBoardList)
         )
       )
     )
@@ -217,13 +219,14 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
                     name: FetchingStateName.EditBoardList,
                     data: true,
                   },
-                } as AppDispatch)
+                } as AppDispatch),
+                tapTaptic('success')
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
             }
           }),
-          captureFetchError(FetchingStateName.EditBoardList)
+          captureFetchErrorWithTaptic(FetchingStateName.EditBoardList)
         )
       )
     )

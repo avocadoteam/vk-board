@@ -10,7 +10,7 @@ import { useLongPress } from 'core/hooks';
 import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
-import { tapticSelected, tapticDone } from 'core/vk-bridge/taptic';
+import { tapticSelected } from 'core/vk-bridge/taptic';
 
 type Props = {
   listItem: BoardListItem & {
@@ -29,8 +29,6 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const { css } = useFela();
   const platform = usePlatform();
   const detections = useLongPress<HTMLButtonElement>(() => {
-
-    // TODO: move to hook
     if (platform === OS.IOS) {
       tapticSelected();
     }
@@ -40,12 +38,6 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
     });
     setClicked(true);
   });
-
-  React.useEffect(() => {
-    if (platform === OS.IOS && created && click) {
-      tapticDone('success');
-    }
-  }, [platform, created, click]);
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });

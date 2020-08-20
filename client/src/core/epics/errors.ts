@@ -3,6 +3,7 @@ import { catchError } from 'rxjs/operators';
 import { ObservableInput, of, concat } from 'rxjs';
 import { captureUrlEvent } from 'core/sentry';
 import { errMap } from 'core/utils';
+import { tapTaptic } from './addons';
 
 export const captureFetchError = (name: FetchingStateName) =>
   catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
@@ -50,4 +51,20 @@ export const captureFetchErrorUserErr = (name: FetchingStateName, err: string) =
         error: err,
       },
     });
+  });
+
+export const captureFetchErrorWithTaptic = (name: FetchingStateName) =>
+  catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
+    console.error('Error in', name, errMap(error));
+    captureUrlEvent(`Error in ${name} ${errMap(error)}`);
+    return concat(
+      of({
+        type: 'SET_ERROR_DATA',
+        payload: {
+          name,
+          error: `Cannot load ${name} data`,
+        },
+      } as AppDispatch),
+      tapTaptic('error')
+    );
   });
