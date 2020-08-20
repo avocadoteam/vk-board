@@ -6,7 +6,7 @@ import { join } from 'path';
 @Controller()
 @UseGuards(SignGuard)
 export class AppController {
-  @Get()
+  @Get(['', 'listMembership'])
   root(@Res() res: Response) {
     return res.sendFile(join(__dirname, '..', 'public') + '/index.html');
   }
