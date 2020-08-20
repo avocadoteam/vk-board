@@ -6,7 +6,6 @@ import {
   BoardListItem,
   EditBoardNamePayload,
   FeatchReadyAction,
-  Skeys,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -16,8 +15,8 @@ import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
 import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
-import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { useTapticEpic, setStorageValueEpic } from './addons';
+import { selectedBoardListInfo, getSelectedListId } from 'core/selectors/boardLists';
+import { useTapticEpic } from './addons';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -33,7 +32,9 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
             return from(response.json() as Promise<FetchResponse<BoardListItem[]>>).pipe(
               map((v) => v?.data ?? []),
               switchMap((data) => {
-                const { id, name } = selectedBoardListInfo(state$.value);
+                const state = state$.value;
+                const { name } = selectedBoardListInfo(state);
+                const id = getSelectedListId(state);
                 const boardDataList = data.find((bl) => bl.id === id);
                 if (!boardDataList) {
                   return concat(
@@ -54,8 +55,7 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                     of({
                       type: 'SET_UPDATING_DATA',
                       payload: FetchingStateName.Tasks,
-                    } as AppDispatch),
-                    setStorageValueEpic(Skeys.userSelectedListId, String(data[0]?.id ?? 0))
+                    } as AppDispatch)
                   );
                 }
 

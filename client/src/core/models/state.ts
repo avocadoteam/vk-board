@@ -47,7 +47,7 @@ export type AppDispatch =
   | { type: 'SET_APP_USER'; payload: boolean }
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
-  | { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } }
+  | SelectBoardListAction
   | { type: 'SET_BOARD_TASKS'; payload: BoardTaskItem[] }
   | { type: 'OPEN_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
@@ -66,6 +66,7 @@ export type AppDispatch =
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
 export type FeatchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
+export type SelectBoardListAction = { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } };
 
 export enum ActiveModal {
   SelectedTask = 'selectedtask',

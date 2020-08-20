@@ -16,6 +16,9 @@ import 'core/vk-bridge/init';
 import 'core/global-listen';
 import 'assets/css/theme.css';
 import 'assets/fonts/style.css';
+// if (process.env.NODE_ENV === 'development') {
+  import('./eruda').then(({ default: eruda }) => {}); //runtime download
+  // }
 
 const felaRenderer = configureFela();
 
@@ -29,6 +32,3 @@ ReactDOM.render(
   </Redux>,
   document.getElementById('root')
 );
-// if (process.env.NODE_ENV === 'development') {
-  import('./eruda').then(({ default: eruda }) => {}); //runtime download
-// }

@@ -1,6 +1,13 @@
 import { ofType } from 'redux-observable';
-import { AppDispatch, FetchingStateName, AppUser, AppEpic, Skeys } from 'core/models';
-import { filter, switchMap, mergeMap } from 'rxjs/operators';
+import {
+  AppDispatch,
+  FetchingStateName,
+  AppUser,
+  AppEpic,
+  Skeys,
+  SelectBoardListAction,
+} from 'core/models';
+import { filter, switchMap, mergeMap, auditTime } from 'rxjs/operators';
 import { from } from 'rxjs';
 import { getUserData, getUserStorageKeys } from 'core/vk-bridge/user';
 import { UserInfo } from '@vkontakte/vk-bridge';
@@ -8,7 +15,7 @@ import { getHash, getSearch } from 'connected-react-router';
 import { captureFetchErrorMoreActions } from './errors';
 import { getLocationNotificationEnabled, getLocationVkAppId } from 'core/selectors/router';
 import { safeCombineEpics } from './combine';
-import { devTimeout } from './addons';
+import { devTimeout, setStorageValueEpic } from './addons';
 
 const getUserInfo: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -124,4 +131,16 @@ const setInitInfo: AppEpic = (action$, state$) =>
     })
   );
 
-export const userEpics = safeCombineEpics(getUserInfo, getUserSKeysEpic, setInitInfo);
+const updateUserStorageSelectedListId: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SELECT_BOARD_LIST'),
+    auditTime<SelectBoardListAction>(2500),
+    switchMap(({ payload }) => setStorageValueEpic(Skeys.userSelectedListId, String(payload.id)))
+  );
+
+export const userEpics = safeCombineEpics(
+  getUserInfo,
+  getUserSKeysEpic,
+  setInitInfo,
+  updateUserStorageSelectedListId
+);
