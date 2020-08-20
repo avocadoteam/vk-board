@@ -10,10 +10,12 @@ import { ListMembershipLayout } from 'modules/board-list';
 import { useViewChange } from 'core/hooks';
 import { goBack } from 'connected-react-router';
 import { useFela } from 'react-fela';
+import { isThemeDrak } from 'core/selectors/common';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
   const dispatch = useDispatch<AppDispatchActions>();
+  const dark = useSelector(isThemeDrak);
   const { css } = useFela();
   const { goForward, goBack: swipeBack, history } = useViewChange(MainView, 'Board', true);
 
@@ -32,7 +34,16 @@ export const Main = React.memo(() => {
       onSwipeBack={handleBack}
       history={history}
     >
-      <Panel id={MainView.Board}>
+      <Panel
+        id={MainView.Board}
+        className={css({
+          '>div': {
+            background: dark
+              ? undefined
+              : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
+          },
+        } as any)}
+      >
         <BoardLayout />
       </Panel>
       <Panel id={MainView.Offline}>

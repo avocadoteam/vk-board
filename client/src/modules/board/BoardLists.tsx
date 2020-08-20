@@ -100,7 +100,9 @@ export const BoardLists = React.memo(() => {
         separator={false}
         left={<ListMembershipStack />}
         className={css({
-          background: dark ? undefined : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%)',
+          background: dark
+            ? undefined
+            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
         })}
       >
         <Text
@@ -120,8 +122,10 @@ export const BoardLists = React.memo(() => {
         className={css({
           padding: '12px 18px',
           paddingBottom: 80,
-          background: dark ? undefined : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%)',
-          height: 'calc(100vh - 150px)',
+          background: dark
+            ? undefined
+            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
+          height: 'calc(100vh - 170px)',
         })}
       >
         {!updatingListOfTasks && taskRender}
