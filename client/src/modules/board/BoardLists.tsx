@@ -11,6 +11,7 @@ import { isThemeDrak } from 'core/selectors/common';
 import { useTransition, animated, useChain } from 'react-spring';
 import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
 import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boardLists';
+import { AdsBanner } from 'modules/ads';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -121,13 +122,14 @@ export const BoardLists = React.memo(() => {
       <Div
         className={css({
           padding: '12px 18px',
-          paddingBottom: 80,
+          paddingBottom: 90,
           background: dark
             ? undefined
             : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
-          height: 'calc(100vh - 170px)',
+          minHeight: 'calc(100vh - 155px)',
         })}
       >
+        <AdsBanner />
         {!updatingListOfTasks && taskRender}
         {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
         {showFinished && (

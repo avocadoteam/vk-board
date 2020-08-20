@@ -72,7 +72,7 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
         payload: { name: e.target.value, id: listItem.id },
       });
     },
-    [dispatch]
+    [dispatch, listItem.id]
   );
 
   if (click) {
