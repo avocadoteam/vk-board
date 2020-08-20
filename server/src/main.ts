@@ -23,7 +23,11 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      frameguard: false,
+    }),
+  );
   app.use(logger('tiny'));
   app.useGlobalPipes(
     new ValidationPipe({
