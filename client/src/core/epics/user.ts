@@ -66,6 +66,13 @@ const getUserSKeysEpic: AppEpic = (action$, state$) =>
               type: 'SET_UPDATING_DATA',
               payload: FetchingStateName.Board,
             },
+            {
+              type: 'SET_READY_DATA',
+              payload: {
+                name: FetchingStateName.UserSKeys,
+                data: undefined,
+              },
+            },
           ] as AppDispatch[];
         }),
         captureFetchErrorMoreActions(
