@@ -19,7 +19,7 @@ export type AppState = {
     };
     notifications: boolean;
     appId: number;
-    hash: number | null;
+    hashListGUID: string | null;
     online: boolean;
     onlineHandleActivate: boolean;
     initialQuery: string;
@@ -41,7 +41,7 @@ export type AppDispatch =
   | { type: 'SET_THEME'; payload: ClientTheme }
   | { type: 'SET_NOTIFICATIONS'; payload: boolean }
   | { type: 'SET_APPID'; payload: number }
-  | { type: 'SET_HASH'; payload: number | null }
+  | SetHashAction
   | { type: 'SET_APP_CONNECT'; payload: boolean }
   | { type: 'SET_INIT_QUERY'; payload: string }
   | { type: 'SET_APP_USER'; payload: boolean }
@@ -67,6 +67,7 @@ export type AppDispatch =
 export type AppDispatchActions = Dispatch<AppDispatch>;
 export type FeatchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
 export type SelectBoardListAction = { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } };
+export type SetHashAction = { type: 'SET_HASH'; payload: string | null };
 
 export enum ActiveModal {
   SelectedTask = 'selectedtask',
@@ -88,6 +89,7 @@ export enum FetchingStateName {
   DeleteBoardList = 'delete_board_list',
   EditTask = 'edit_task',
   DropMembership = 'drop_membership',
+  SaveMembership = 'save_membership',
 }
 
 export enum FetchingStatus {

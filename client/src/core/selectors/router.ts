@@ -11,6 +11,10 @@ export const getLocationVkAppId = createSelector(
   getStateRouter,
   (router) => Number((router?.location as any).query?.vk_app_id) || appId
 );
+export const getLocationUserId = createSelector(
+  getStateRouter,
+  (router) => Number((router?.location as any).query?.vk_user_id) || 0
+);
 
 export const getLocationPathName = createSelector(
   getStateRouter,

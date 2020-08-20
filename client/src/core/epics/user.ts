@@ -105,7 +105,7 @@ const setInitInfo: AppEpic = (action$, state$) =>
       const state = state$.value;
       const hash = getHash(state$.value);
       const q = getSearch(state$.value);
-      const hashValue = hash ? Number(hash.split('#').pop()) : null;
+      const hashListGUID = hash ? hash.split('#').pop() : null;
       const actions: AppDispatch[] = [
         {
           type: 'SET_NOTIFICATIONS',
@@ -117,7 +117,7 @@ const setInitInfo: AppEpic = (action$, state$) =>
         },
         {
           type: 'SET_HASH',
-          payload: !hashValue || isNaN(hashValue) ? null : hashValue,
+          payload: hashListGUID ?? null,
         },
       ];
 

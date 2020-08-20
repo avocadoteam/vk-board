@@ -6,6 +6,7 @@ import {
   NewListModel,
   DropMembershipModel,
   EditListModel,
+  CreateMembershipModel,
 } from 'src/contracts/list';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
@@ -144,6 +145,25 @@ export class ListService {
         .getCount()) > 0
     );
   }
+
+  async hasListMembershipByGUID(listguid: string, vkUserId: number) {
+    return (
+      (await this.tableList
+        .createQueryBuilder('list')
+        .innerJoin(
+          'list.memberships',
+          'membership',
+          `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+        )
+        .where([
+          {
+            listguid,
+          },
+        ])
+        .getCount()) > 0
+    );
+  }
+
   async isListOwner(listIds: number[], vkUserId: number) {
     return (
       (await this.tableList
@@ -186,5 +206,36 @@ export class ListService {
     await this.tableList.update(model.listId, { name: model.name });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
+  }
+
+  async createMembership(model: CreateMembershipModel, vkUserId: number) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const list = await queryRunner.manager.findOne<List>(List, {
+        where: { deleted: null, listguid: model.guid },
+      });
+
+      if (!list) {
+        throw new Error(`List doesn't exist with guid ${model.guid}`);
+      }
+
+      const newListMember = new ListMembership(vkUserId, list);
+      await queryRunner.manager.save(newListMember);
+
+      await queryRunner.commitTransaction();
+
+      await this.cache.del(cacheKey.boardList(String(vkUserId)));
+
+      return list.id;
+    } catch (err) {
+      console.error(err);
+      await queryRunner.rollbackTransaction();
+      throw new Error(err);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

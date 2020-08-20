@@ -1,4 +1,4 @@
-import { IsString, Length, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, Length, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 
 export class NewListModel {
   @IsString()
@@ -18,4 +18,9 @@ export class DropMembershipModel {
 export class EditListModel extends NewListModel {
   @IsNumber()
   listId!: number;
+}
+
+export class CreateMembershipModel {
+  @IsUUID()
+  guid!: string;
 }

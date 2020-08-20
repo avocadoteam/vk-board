@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { getStateUi } from './common';
 import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
 import { UserInfo } from '@vkontakte/vk-bridge';
+import { getLocationUserId } from './router';
 
 const getUserDataState = createSelector(
   getStateUi,
@@ -24,8 +25,11 @@ export const isUserDataUpdating = createSelector(
     status === FetchingStatus.Updating || keysStatus == FetchingStatus.Updating
 );
 export const getUserInfo = createSelector(getUserDataState, (userData) => userData.data);
-export const getUserId = createSelector(getUserDataState, (userData) => userData.data?.id ?? 0);
 
-export const getUserHash = createSelector(getStateUi, (ui) => ui.hash);
+export const getUserId = createSelector(
+  getUserDataState,
+  getLocationUserId,
+  (userData, locationUserId) => userData.data?.id ?? locationUserId
+);
 
 export const getQToQuery = createSelector(getStateUi, (ui) => ui?.initialQuery ?? '');

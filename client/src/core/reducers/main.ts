@@ -7,14 +7,14 @@ import {
   FINISH_TASK_TIMER_VALUE,
 } from 'core/models';
 
-const hashValue = window.location.hash ? Number(window.location.hash.split('#').pop()) : null;
+const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
 
 export const initialState: models.AppState['ui'] = {
   theme: ClientTheme.Light,
   fetchingDatas: {},
   notifications: false,
   appId,
-  hash: !hashValue || isNaN(hashValue) ? null : hashValue,
+  hashListGUID: hashListGUID ?? null,
   online: true,
   initialQuery: '',
   isAppUser: true,
@@ -129,7 +129,7 @@ export const reducer = (
     case 'SET_HASH': {
       return {
         ...state,
-        hash: dispatch.payload,
+        hashListGUID: dispatch.payload,
       };
     }
     case 'SET_APP_CONNECT': {

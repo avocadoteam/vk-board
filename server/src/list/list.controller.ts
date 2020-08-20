@@ -24,7 +24,7 @@ import {
   UpdateTaskModel,
 } from 'src/contracts/task';
 import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
-import { DropMembershipModel } from 'src/contracts/list';
+import { DropMembershipModel, CreateMembershipModel } from 'src/contracts/list';
 
 @Controller('api/list')
 @UseGuards(SignGuard)
@@ -164,5 +164,21 @@ export class ListController {
     }
 
     await this.listService.deleteList(listId, vkUserId);
+  }
+
+  @Post('/membership')
+  async createMembership(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Body()
+    model: CreateMembershipModel,
+  ) {
+    if (await this.listService.hasListMembershipByGUID(model.guid, vkUserId)) {
+      throw new BadRequestException();
+    }
+    return this.listService.createMembership(model, vkUserId);
   }
 }
