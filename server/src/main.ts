@@ -6,15 +6,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-const helmet = require('helmet');
+import * as helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import * as logger from 'morgan';
-
-// TODO: add seeds
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,11 +21,12 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  // app.use(
-  //   helmet({
-  //     frameguard: false,
-  //   }),
-  // );
+  app.use(
+    helmet({
+      frameguard: false,
+      contentSecurityPolicy: false,
+    }),
+  );
   app.use(logger('tiny'));
   app.useGlobalPipes(
     new ValidationPipe({
