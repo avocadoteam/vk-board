@@ -8,7 +8,7 @@ import {
   FeatchReadyAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
-import { filter, switchMap, map, debounceTime, exhaustMap, delay } from 'rxjs/operators';
+import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
 import { from, of, concat, iif } from 'rxjs';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
@@ -242,6 +242,7 @@ const resetPutListActionsEpic: AppEpic = (action$, state$) =>
           payload.name === FetchingStateName.NewBoardList) &&
         !!payload.data
     ),
+    auditTime(100),
     delay(2500),
     exhaustMap(({ payload }) =>
       map(
