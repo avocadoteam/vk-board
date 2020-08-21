@@ -12,6 +12,7 @@ import { useTransition, animated, useChain } from 'react-spring';
 import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
 import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boardLists';
 import { AdsBanner } from 'modules/ads';
+import { BoardEmpty } from './BoardEmpty';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -118,6 +119,7 @@ export const BoardLists = React.memo(() => {
         })}
       >
         <AdsBanner />
+        <BoardEmpty />
         {!updatingListOfTasks && taskRender}
         {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
         {showFinished && (
