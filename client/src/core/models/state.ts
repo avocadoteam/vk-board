@@ -33,11 +33,8 @@ export type AppState = {
 };
 
 export type AppDispatch =
-  | {
-      type: 'SET_UPDATING_DATA';
-      payload: FetchingStateName;
-    }
-  | FeatchReadyAction
+  | FetchUpdateAction
+  | FetchReadyAction
   | { type: 'SET_ERROR_DATA'; payload: { name: FetchingStateName; error: any } }
   | { type: 'SET_THEME'; payload: ClientTheme }
   | { type: 'SET_NOTIFICATIONS'; payload: boolean }
@@ -67,7 +64,8 @@ export type AppDispatch =
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
-export type FeatchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
+export type FetchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
+export type FetchUpdateAction = { type: 'SET_UPDATING_DATA'; payload: FetchingStateName };
 export type SelectBoardListAction = { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } };
 export type SetHashAction = { type: 'SET_HASH'; payload: string | null };
 
@@ -92,6 +90,7 @@ export enum FetchingStateName {
   EditTask = 'edit_task',
   DropMembership = 'drop_membership',
   SaveMembership = 'save_membership',
+  ListMembershipPreview = 'list_membership_preview',
 }
 
 export enum FetchingStatus {

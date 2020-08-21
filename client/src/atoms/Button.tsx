@@ -1,23 +1,34 @@
 import React from 'react';
 import { Button as VkButton } from '@vkontakte/vkui';
-import { useFela } from 'react-fela';
+import { useFela, CssFelaStyle } from 'react-fela';
 import { ButtonProps } from '@vkontakte/vkui/dist/components/Button/Button';
 import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
-export const Button: React.FC<ButtonProps> = (props) => {
-  const { css } = useFela();
+
+type Props = {
+  square?: boolean;
+} & ButtonProps;
+
+export const Button: React.FC<Props> = (props) => {
   const dark = useSelector(isThemeDrak);
-  return (
-    <VkButton
-      {...props}
-      className={`useMonrope ${props.className ?? ''} ${css({
-        borderRadius: '37px',
-        backgroundColor: bgByMode(props.mode, dark),
-        color: colorByMode(props.mode, dark),
-      })}`}
-    />
-  );
+  const { css } = useFela<{}, StyleProps>({
+    square: props.square ?? false,
+    mode: props.mode,
+    dark,
+  });
+  return <VkButton {...props} className={`useMonrope ${props.className ?? ''} ${css(btnStyle)}`} />;
 };
+
+type StyleProps = {
+  dark: boolean;
+} & Pick<Props, 'square' | 'mode'>;
+
+const btnStyle: CssFelaStyle<{}, StyleProps> = ({ dark = false, mode, square }) => ({
+  height: square ? '48px' : undefined,
+  borderRadius: square ? '12px' : '37px',
+  backgroundColor: bgByMode(mode, dark),
+  color: colorByMode(mode, dark),
+});
 
 const bgByMode = (mode: ButtonProps['mode'], dark: boolean) => {
   switch (mode) {

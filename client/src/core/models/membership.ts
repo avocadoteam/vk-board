@@ -7,3 +7,8 @@ export type MembershipItem = {
 export type MembershipState = {
   dropUserId: number;
 };
+
+export type MembershipListPreview = {
+  id: number;
+  name: string
+}

@@ -180,4 +180,20 @@ export class ListController {
     }
     return this.listService.createMembership(model, vkUserId);
   }
+
+  @Get('/membership')
+  async previewMembership(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Query()
+    model: CreateMembershipModel,
+  ) {
+    if (await this.listService.hasListMembershipByGUID(model.guid, vkUserId)) {
+      throw new BadRequestException();
+    }
+    return this.listService.previewMembershipByGUID(model.guid);
+  }
 }

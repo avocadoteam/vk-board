@@ -1,6 +1,11 @@
 import { createSelector } from 'reselect';
 import { getStateUi, getBoardUiState } from './common';
-import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
+import {
+  FetchingStateName,
+  FetchingDataType,
+  FetchingStatus,
+  MembershipListPreview,
+} from 'core/models';
 import { getBoardListData, isBoardUpdating } from './board';
 import { getUserId } from './user';
 
@@ -9,10 +14,41 @@ const getDropMembershipDataState = createSelector(
   (ui) => (ui.fetchingDatas[FetchingStateName.DropMembership] ?? {}) as FetchingDataType<boolean>
 );
 
+const getPreviewMembershipDataState = createSelector(
+  getStateUi,
+  (ui) =>
+    (ui.fetchingDatas[FetchingStateName.ListMembershipPreview] ?? {}) as FetchingDataType<
+      MembershipListPreview
+    >
+);
+
+const getSaveMembershipDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.SaveMembership] ?? {}) as FetchingDataType<boolean>
+);
+
 export const isDropMembershipUpdating = createSelector(
   getDropMembershipDataState,
   isBoardUpdating,
   (dataState, boardUpdating) => dataState.status === FetchingStatus.Updating || boardUpdating
+);
+
+export const isPreviewMembershipReady = createSelector(
+  getPreviewMembershipDataState,
+  (dataState) => dataState.status === FetchingStatus.Ready && !!dataState.data
+);
+export const getPreviewMembershipData = createSelector(
+  getPreviewMembershipDataState,
+  (dataState) => dataState.data ?? { id: 0, name: '' }
+);
+
+export const isSaveMembershipUpdating = createSelector(
+  getSaveMembershipDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
+export const isSaveMembershipReady = createSelector(
+  getSaveMembershipDataState,
+  (dataState) => dataState.status === FetchingStatus.Ready
 );
 
 export const getMembershipList = createSelector(

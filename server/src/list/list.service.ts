@@ -1,4 +1,9 @@
-import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  CACHE_MANAGER,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
 import { Repository, Connection } from 'typeorm';
@@ -153,7 +158,7 @@ export class ListService {
         .innerJoin(
           'list.memberships',
           'membership',
-          `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+          `membership.joined_id = ${vkUserId}`,
         )
         .where([
           {
@@ -162,6 +167,21 @@ export class ListService {
         ])
         .getCount()) > 0
     );
+  }
+  async previewMembershipByGUID(listguid: string) {
+    const listPreview = await this.tableList
+      .createQueryBuilder('list')
+      .where([
+        {
+          listguid,
+        },
+      ])
+      .select(['list.id', 'list.name'])
+      .getOne();
+    if (!listPreview) {
+      throw new NotFoundException();
+    }
+    return listPreview;
   }
 
   async isListOwner(listIds: number[], vkUserId: number) {

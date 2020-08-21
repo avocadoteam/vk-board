@@ -5,7 +5,7 @@ import {
   FetchResponse,
   BoardListItem,
   EditBoardNamePayload,
-  FeatchReadyAction,
+  FetchReadyAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -238,7 +238,7 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
 const resetPutListActionsEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('SET_READY_DATA'),
-    filter<FeatchReadyAction>(
+    filter<FetchReadyAction>(
       ({ payload }) =>
         (payload.name === FetchingStateName.EditBoardList ||
           payload.name === FetchingStateName.NewBoardList) &&

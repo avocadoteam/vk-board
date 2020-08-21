@@ -10,3 +10,6 @@ export const createMembership = (guid: string, q: string) =>
   request(`/list/membership${q}`, Method.Post, {
     guid,
   });
+
+export const listMembershipPreview = (guid: string, q: string) =>
+  request(`/list/membership${q}&guid=${guid}`, Method.Get);

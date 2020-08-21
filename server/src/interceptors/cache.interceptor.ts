@@ -17,9 +17,9 @@ export class MembershipCacheInterceptor extends CacheInterceptor {
     const query = context.switchToHttp().getRequest().query;
 
     const userId = query['vk_user_id'] ?? '1';
-    const taskId = query['taskId'] ?? '1';
+    const guid = query['guid'] ?? '1';
 
-    return cacheKey.membership(userId, taskId);
+    return cacheKey.membership(userId, guid);
   }
 }
 

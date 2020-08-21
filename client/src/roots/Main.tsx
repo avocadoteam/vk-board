@@ -8,17 +8,32 @@ import { BoardLayout } from 'modules/board';
 import { RootModals } from 'modules/modals/Root';
 import { ListMembershipLayout } from 'modules/board-list';
 import { useViewChange } from 'core/hooks';
-import { goBack } from 'connected-react-router';
+import { goBack, push, getSearch } from 'connected-react-router';
 import { useFela } from 'react-fela';
 import { isThemeDrak } from 'core/selectors/common';
 import { Premium } from 'modules/about';
+import { MembershipPreview } from 'modules/membership-preview';
+import { isPreviewMembershipReady } from 'core/selectors/membership';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
+  const search = useSelector(getSearch);
+  const previewMembershipReady = useSelector(isPreviewMembershipReady);
   const { css } = useFela();
   const { goForward, goBack: swipeBack, history } = useViewChange(MainView, 'Board', true);
+
+  React.useEffect(() => {
+    if (previewMembershipReady) {
+      goToMembershipPreview();
+    }
+  }, [previewMembershipReady]);
+
+  const goToMembershipPreview = React.useCallback(() => {
+    goForward(MainView.ListSharePreview);
+    dispatch(push(`/${MainView.ListSharePreview}${search}`) as any);
+  }, [dispatch, goForward, search]);
 
   const handleBack = () => {
     if (activeView === MainView.ListMembership) {
@@ -86,6 +101,10 @@ export const Main = React.memo(() => {
           </Text>
         </PanelHeader>
         <Premium />
+      </Panel>
+      <Panel id={MainView.ListSharePreview}>
+        <PanelHeader separator={false} />
+        <MembershipPreview handleBack={handleBack} />
       </Panel>
     </View>
   );

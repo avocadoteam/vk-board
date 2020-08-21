@@ -46,16 +46,14 @@ export const Premium = React.memo(() => {
   const textCss = css(textStyle);
   const btnCss = css({
     marginTop: '31px',
-    height: '48px',
-    borderRadius: '12px !important',
   });
 
   const buyButton = isPlatformIOS() ? (
-    <Button mode="primary" stretched className={btnCss} disabled before={<Icon16Lock />}>
+    <Button mode="primary" stretched className={btnCss} disabled before={<Icon16Lock />} square>
       Недоступно на iOS
     </Button>
   ) : (
-    <Button mode="primary" stretched className={btnCss}>
+    <Button mode="primary" stretched className={btnCss} square>
       Купить 228 ₽
     </Button>
   );

@@ -51,6 +51,8 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
   switch (mainPath) {
     case MainView.ListMembership:
       return MainView.ListMembership;
+    case MainView.ListSharePreview:
+      return MainView.ListSharePreview;
     case MainView.About:
       return MainView.About;
 
