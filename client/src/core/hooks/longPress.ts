@@ -1,10 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 
 export const useLongPress = <T = Element>(
   onLongPress: (e?: React.MouseEvent<T, MouseEvent> | React.TouchEvent<T>) => void,
   { shouldPreventDefault = false, delay = 500 } = {}
 ) => {
-  const [longPressTriggered, setLongPressTriggered] = useState(false);
   const timeout = useRef<NodeJS.Timeout>();
   const target = useRef<EventTarget>();
 
@@ -18,7 +17,6 @@ export const useLongPress = <T = Element>(
       }
       timeout.current = setTimeout(() => {
         onLongPress(e);
-        setLongPressTriggered(true);
       }, delay);
     },
     [onLongPress, delay, shouldPreventDefault]
@@ -27,12 +25,11 @@ export const useLongPress = <T = Element>(
   const clear = useCallback(
     (e: React.MouseEvent<T, MouseEvent> | React.TouchEvent<T>) => {
       timeout.current && clearTimeout(timeout.current);
-      setLongPressTriggered(false);
       if (shouldPreventDefault && target.current) {
         target.current.removeEventListener('touchend', preventDefault);
       }
     },
-    [shouldPreventDefault, longPressTriggered]
+    [shouldPreventDefault]
   );
 
   return {

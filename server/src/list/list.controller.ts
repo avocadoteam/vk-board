@@ -6,7 +6,6 @@ import {
   Query,
   ParseIntPipe,
   HttpStatus,
-  NotFoundException,
   Put,
   Body,
   BadRequestException,

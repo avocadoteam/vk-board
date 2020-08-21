@@ -7,6 +7,7 @@ import { errMap } from 'core/utils';
 import { boardEpics } from './board';
 import { taskEpics } from './tasks';
 import { membershipEpics } from './membership';
+import { socketEpics } from './socket';
 
 export const rootEpic: Epic = (action$, store$, dependencies) =>
   combineEpics(
@@ -14,7 +15,8 @@ export const rootEpic: Epic = (action$, store$, dependencies) =>
     getAdsEpic,
     boardEpics,
     taskEpics,
-    membershipEpics
+    membershipEpics,
+    socketEpics
   )(action$, store$, dependencies).pipe(
     catchError((error, source) => {
       console.error(error);

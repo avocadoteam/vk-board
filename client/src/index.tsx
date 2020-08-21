@@ -13,6 +13,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { configureFela } from 'core/fela';
 import '@vkontakte/vkui/dist/vkui.css';
 import 'core/vk-bridge/init';
+import 'core/fire-callbacks';
 import 'core/global-listen';
 import 'assets/css/theme.css';
 import 'assets/fonts/style.css';

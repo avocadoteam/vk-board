@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListModule } from './list/list.module';
 import { BoardModule } from './board/board.module';
 import { TasksModule } from './tasks/tasks.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TasksModule } from './tasks/tasks.module';
     ListModule,
     BoardModule,
     TasksModule,
+    EventsModule,
   ],
   controllers: [AppController],
 })

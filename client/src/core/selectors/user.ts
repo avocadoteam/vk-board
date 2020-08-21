@@ -22,7 +22,7 @@ export const isUserDataUpdating = createSelector(
   getUserDataStatus,
   getUserSKeysDataStatus,
   (status, keysStatus) =>
-    status === FetchingStatus.Updating || keysStatus == FetchingStatus.Updating
+    status === FetchingStatus.Updating || keysStatus === FetchingStatus.Updating
 );
 export const getUserInfo = createSelector(getUserDataState, (userData) => userData.data);
 
