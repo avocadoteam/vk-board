@@ -62,6 +62,7 @@ export const initialState: models.AppState['ui'] = {
   membership: {
     dropUserId: 0,
   },
+  showAds: true,
 };
 
 export const reducer = (
@@ -321,6 +322,12 @@ export const reducer = (
           ...state.board,
           editBoardListName: dispatch.payload.name,
         },
+      };
+    }
+    case 'SET_ADS': {
+      return {
+        ...state,
+        showAds: dispatch.payload,
       };
     }
 

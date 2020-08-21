@@ -2,26 +2,20 @@ import React from 'react';
 import { PromoBanner, CardGrid, Card } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAdsData } from 'core/selectors/ads';
-import { getSelectedListId } from 'core/selectors/boardLists';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { AppDispatchActions } from 'core/models';
 import { useFela } from 'react-fela';
-import { isThemeDrak } from 'core/selectors/common';
+import { isThemeDrak, isAdsShown } from 'core/selectors/common';
 
 export const AdsBanner = React.memo(() => {
   const { css } = useFela();
-  const [adsBanner, setAdsBanner] = React.useState(true);
   const adsData = useSelector(getAdsData);
-  const selectedListId = useSelector(getSelectedListId);
+  const adsBanner = useSelector(isAdsShown);
   const dark = useSelector(isThemeDrak);
   const dispatch = useDispatch<AppDispatchActions>();
 
-  React.useEffect(() => {
-    dispatch({
-      type: 'SET_UPDATING_DATA',
-      payload: FetchingStateName.Ads,
-    });
-    setAdsBanner(true);
-  }, [selectedListId]);
+  const hideAds = React.useCallback(() => {
+    dispatch({ type: 'SET_ADS', payload: false });
+  }, [dispatch]);
 
   if (!adsData || !adsBanner) {
     return null;
@@ -47,7 +41,7 @@ export const AdsBanner = React.memo(() => {
         <div style={{ minHeight: 28 }}>
           <PromoBanner
             className={css({ outline: 'none' })}
-            onClose={() => setAdsBanner(false)}
+            onClose={hideAds}
             bannerData={adsData}
           />
         </div>

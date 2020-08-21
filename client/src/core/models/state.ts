@@ -27,6 +27,7 @@ export type AppState = {
     activeModal: ActiveModal | null;
     board: BoardState;
     membership: MembershipState;
+    showAds: boolean;
   };
   router: RouterState;
 };
@@ -62,6 +63,7 @@ export type AppDispatch =
   | { type: 'DROP_MEMBER_SHIP_ID'; payload: number }
   | { type: 'SET_DELETE_BOARD_LIST_ID'; payload: number }
   | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
+  | { type: 'SET_ADS'; payload: boolean }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
