@@ -17,12 +17,12 @@ export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
   const dark = useSelector(isThemeDrak);
   const info = useSelector(selectedBoardListInfo);
+  const tasks = useSelector(getSelectedListTasks);
   const updatingListOfTasks = useSelector(isTasksUpdating);
   const boardUpdating = useSelector(isBoardUpdating);
   const finishedCount = useSelector(getFinishedTasksCount);
   const showFinished = finishedCount > 0;
   const transRef = React.useRef<any>();
-  const tasks = useSelector(getSelectedListTasks);
 
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
@@ -66,7 +66,7 @@ export const BoardLists = React.memo(() => {
 
   const taskRender = transition((style, t) => {
     return (
-      <animated.div style={style}>
+      <animated.div style={style} key={t.id}>
         <CardGrid
           className={css({
             padding: 0,

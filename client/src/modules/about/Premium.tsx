@@ -36,11 +36,6 @@ const itemsToAppear = [
     id: 5,
     type: 'btn',
   },
-  {
-    id: 6,
-    text: 'Одноразовая оплата, потому что всех бесят подписки.',
-    type: 'subInfo',
-  },
 ];
 
 export const Premium = React.memo(() => {
@@ -94,22 +89,8 @@ export const Premium = React.memo(() => {
               {item.text}
             </Text>
           </MiniInfoCell>
-        ) : item.type === 'btn' ? (
-          buyButton
         ) : (
-          <Text
-            weight="medium"
-            className={`useMonrope ${css(textStyle, {
-              fontSize: '11px',
-              lineHeight: '16px',
-              color: '#959595',
-              marginTop: '1rem',
-              padding: '0 19px',
-              textAlign: 'center',
-            })}`}
-          >
-            {item.text}
-          </Text>
+          buyButton
         )}
       </animated.div>
     );
