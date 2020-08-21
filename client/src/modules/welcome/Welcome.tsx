@@ -29,7 +29,7 @@ export const Welcome = React.memo(() => {
   const updating = useSelector(isFirstListUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
   const { firstBoardListName } = useSelector(getBoardUiState);
-  const { activeView, goForward } = useViewChange(WelcomeView, 'TaskCreation');
+  const { activeView, goForward } = useViewChange(WelcomeView, 'Greetings');
   const transRef = React.useRef<any>();
 
   const handleChange = React.useCallback(
