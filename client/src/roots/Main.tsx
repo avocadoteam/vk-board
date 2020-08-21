@@ -14,6 +14,7 @@ import { isThemeDrak } from 'core/selectors/common';
 import { Premium } from 'modules/about';
 import { MembershipPreview } from 'modules/membership-preview';
 import { isPreviewMembershipReady } from 'core/selectors/membership';
+import { Welcome } from 'modules/welcome';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
@@ -105,6 +106,9 @@ export const Main = React.memo(() => {
       <Panel id={MainView.ListSharePreview}>
         <PanelHeader separator={false} />
         <MembershipPreview handleBack={handleBack} />
+      </Panel>
+      <Panel id={MainView.Welcome}>
+        <Welcome />
       </Panel>
     </View>
   );

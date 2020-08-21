@@ -42,6 +42,7 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           onClose={closeModal}
           header={<NewList />}
           dynamicContentHeight
+          settlingHeight={100}
         >
           <Lists goForward={goForward} />
           <Separator wide />

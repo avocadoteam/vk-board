@@ -6,6 +6,8 @@ import {
   BoardListItem,
   EditBoardNamePayload,
   FetchReadyAction,
+  Skeys,
+  AppUser,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -16,7 +18,7 @@ import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
 import { selectedBoardListInfo, getSelectedListId } from 'core/selectors/boardLists';
-import { useTapticEpic } from './addons';
+import { useTapticEpic, setStorageValueEpic } from './addons';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -251,10 +253,51 @@ const resetPutListActionsEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const firstBoardListEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.FirstBoardList),
+    map(() => {
+      const state = state$.value;
+      return {
+        q: getQToQuery(state),
+        listName: state.ui.board.firstBoardListName,
+      };
+    }),
+    switchMap(({ q, listName }) =>
+      newBoardList(listName, q).pipe(
+        switchMap((response) => {
+          if (response.ok) {
+            return concat(
+              useTapticEpic('success'),
+              of({
+                type: 'SET_UPDATING_DATA',
+                payload: FetchingStateName.Board,
+              } as AppDispatch),
+              of({ type: 'SET_APP_USER', payload: true } as AppDispatch),
+              of({
+                type: 'SET_READY_DATA',
+                payload: {
+                  name: FetchingStateName.FirstBoardList,
+                  data: true,
+                },
+              } as AppDispatch),
+              setStorageValueEpic(Skeys.appUser, AppUser.Yes)
+            );
+          } else {
+            throw new Error(`Http ${response.status} on ${response.url}`);
+          }
+        }),
+        captureFetchErrorWithTaptic(FetchingStateName.FirstBoardList)
+      )
+    )
+  );
+
 export const boardEpics = safeCombineEpics(
   fetchBoardEpic,
   saveBoardListEpic,
   deleteBoardListEpic,
   editBoardListNameEpic,
-  resetPutListActionsEpic
+  resetPutListActionsEpic,
+  firstBoardListEpic
 );

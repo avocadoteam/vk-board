@@ -9,10 +9,10 @@ type Props = {
   square?: boolean;
 } & ButtonProps;
 
-export const Button: React.FC<Props> = (props) => {
+export const Button: React.FC<Props> = ({ square = false, ...props }) => {
   const dark = useSelector(isThemeDrak);
   const { css } = useFela<{}, StyleProps>({
-    square: props.square ?? false,
+    square,
     mode: props.mode,
     dark,
   });

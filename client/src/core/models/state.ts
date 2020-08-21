@@ -61,6 +61,7 @@ export type AppDispatch =
   | { type: 'SET_DELETE_BOARD_LIST_ID'; payload: number }
   | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
   | { type: 'SET_ADS'; payload: boolean }
+  | { type: 'SET_FIRST_BOARD_LIST_NAME'; payload: string }
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
@@ -85,6 +86,7 @@ export enum FetchingStateName {
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
   NewBoardList = 'new_board_list',
+  FirstBoardList = 'first_board_list',
   EditBoardList = 'edit_board_list',
   DeleteBoardList = 'delete_board_list',
   EditTask = 'edit_task',

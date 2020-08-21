@@ -34,6 +34,7 @@ export const initialState: models.AppState['ui'] = {
       tasks: [],
     },
     boardListName: '',
+    firstBoardListName: '',
     editBoardListName: '',
     boardListOpenId: 0,
     boardListToDeleteId: 0,
@@ -321,6 +322,15 @@ export const reducer = (
         board: {
           ...state.board,
           editBoardListName: dispatch.payload.name,
+        },
+      };
+    }
+    case 'SET_FIRST_BOARD_LIST_NAME': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          firstBoardListName: dispatch.payload,
         },
       };
     }

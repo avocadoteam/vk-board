@@ -15,7 +15,15 @@ const getDeleteListDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.DeleteBoardList] ?? {}) as FetchingDataType<boolean>
 );
+const getFirstListDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.FirstBoardList] ?? {}) as FetchingDataType<boolean>
+);
 
+export const isFirstListUpdating = createSelector(
+  getFirstListDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
 export const isNewListUpdating = createSelector(
   getNewListDataState,
   (dataState) => dataState.status === FetchingStatus.Updating
