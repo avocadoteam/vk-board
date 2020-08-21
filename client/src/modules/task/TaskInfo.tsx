@@ -2,7 +2,7 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
-import { MembershipItem } from 'core/models';
+import { BoardTaskItem } from 'core/models';
 import { UsersStack, Text } from '@vkontakte/vkui';
 import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
@@ -10,38 +10,39 @@ import { ru } from 'date-fns/locale';
 import { format } from 'date-fns';
 
 type Props = {
-  dueDate: string | null;
-  memberships: MembershipItem[];
+  task: BoardTaskItem;
 };
 
-export const TaskInfo = React.memo<Props>(({ dueDate, memberships = [] }) => {
-  const dark = useSelector(isThemeDrak);
-  const { css } = useFela();
-  return (
-    <span
-      className={css({
-        height: '32px',
-        display: 'flex',
-        marginTop: '18px',
-        color: dark ? '#AEAEAE' : '#6A6A6A',
-      })}
-    >
-      <Icon20ArticleOutline className={css(iconStyle)} />
-      <TimeInfo dueDate={dueDate} />
-      {memberships?.length > 1 ? (
-        <UsersStack
-          photos={memberships.map((m) => m.avatar)}
-          visibleCount={4}
-          size="m"
-          className={css({ padding: 0 })}
-          layout="vertical"
-        />
-      ) : null}
-    </span>
-  );
-});
+export const TaskInfo = React.memo<Props>(
+  ({ task: { dueDate, memberships = [], description } }) => {
+    const dark = useSelector(isThemeDrak);
+    const { css } = useFela();
+    return (
+      <span
+        className={css({
+          display: 'flex',
+          marginTop: '18px',
+          color: dark ? '#AEAEAE' : '#6A6A6A',
+        })}
+      >
+        {description && <Icon20ArticleOutline className={css(iconStyle)} />}
+        <TimeInfo dueDate={dueDate} />
+        {memberships?.length > 1 ? (
+          <UsersStack
+            photos={memberships.map((m) => m.avatar)}
+            visibleCount={4}
+            size="m"
+            className={css({ padding: 0 })}
+            layout="vertical"
+          />
+        ) : null}
+      </span>
+    );
+  }
+);
 
 const iconStyle = () => ({
+  marginBottom: '18px',
   alignSelf: 'center',
   marginRight: '1rem',
   width: '22px !important',
@@ -49,7 +50,7 @@ const iconStyle = () => ({
   '>svg': { width: '22px', height: '22px' },
 });
 
-const TimeInfo = React.memo<Pick<Props, 'dueDate'>>(({ dueDate }) => {
+const TimeInfo = React.memo<Pick<Props['task'], 'dueDate'>>(({ dueDate }) => {
   const { css } = useFela();
   if (dueDate === null) {
     return null;
@@ -66,6 +67,7 @@ const TimeInfo = React.memo<Pick<Props, 'dueDate'>>(({ dueDate }) => {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           alignSelf: 'center',
+          marginBottom: '18px',
         })}`}
       >
         {format(new Date(dueDate), 'dd MMMM', { locale: ru })}

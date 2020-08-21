@@ -29,9 +29,11 @@ export class Task {
   name: string;
 
   @Column({
+    type: 'varchar',
     length: 2048,
+    nullable: true,
   })
-  description: string;
+  description: string | null;
 
   @Column({
     type: 'timestamp',
@@ -76,9 +78,9 @@ export class Task {
 
   constructor(
     name: string,
-    description: string,
     createdBy: number,
     list: List,
+    description: string | null = null,
     dueDate: string | null = null,
   ) {
     this.name = name;

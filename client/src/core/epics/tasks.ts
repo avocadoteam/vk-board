@@ -35,6 +35,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
         q: getQToQuery(state),
         data: {
           ...formValues,
+          description: formValues.description || null,
           dueDate: formValues.dueDate || null,
           listId: getSelectedListId(state),
         } as NewTaskModel,

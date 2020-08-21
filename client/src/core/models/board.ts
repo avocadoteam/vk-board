@@ -11,7 +11,7 @@ export type BoardListItem = {
 
 export type BoardTaskItem = {
   name: string;
-  description: string;
+  description: string | null;
   id: number;
   created: string;
   dueDate: string | null;
@@ -35,7 +35,7 @@ export type BoardState = {
   };
   newTask: {
     name: string;
-    description: string;
+    description: string | null;
     dueDate: string | null;
   };
   tasksToBeFinished: number[];

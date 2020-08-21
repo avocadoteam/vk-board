@@ -14,10 +14,11 @@ export class NewTaskModel {
   @Length(1, 1024)
   name!: string;
 
+  @ValidateIf((o) => o.description !== null)
   @IsString()
   @IsNotEmpty()
   @Length(1, 2048)
-  description!: string;
+  description!: string | null;
 
   @IsNumber()
   listId!: number;

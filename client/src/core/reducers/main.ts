@@ -217,7 +217,7 @@ export const reducer = (
         board: {
           ...state.board,
           newTask: {
-            description: '',
+            description: null,
             dueDate: null,
             name: '',
           },

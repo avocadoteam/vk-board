@@ -25,7 +25,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
   const { error, hasError, updating, notSameData } = useSelector(getEditTaskInfo);
-  const disabledSubmit = !formValues.name || !formValues.description || updating || !notSameData;
+  const disabledSubmit = !formValues.name || updating || !notSameData;
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
@@ -97,9 +97,8 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             } as any)}
             name="description"
             onChange={onChange}
-            status={formValues.description ? 'valid' : 'error'}
             disabled={updating}
-            value={formValues.description}
+            value={formValues.description ?? ''}
           />
         </span>
         <span className={css({ display: 'flex' })}>

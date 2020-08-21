@@ -79,7 +79,7 @@ export const BoardLists = React.memo(() => {
             className={css({
               borderRadius: '17px !important',
               backgroundColor: dark ? '#222327' : '#FFF',
-              padding: '18px',
+              padding: '18px 18px 0',
               width: 'calc(100% - 36px) !important',
               boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.02)',
               border: `1px solid ${dark ? '#343434' : '#F7F7F7'}`,
@@ -87,7 +87,7 @@ export const BoardLists = React.memo(() => {
           >
             <div style={{ minHeight: 28 }}>
               <TaskCheckLabel id={t.id} name={t.name} />
-              <TaskInfo dueDate={t.dueDate} memberships={t.memberships} />
+              <TaskInfo task={t} />
             </div>
           </Card>
         </CardGrid>

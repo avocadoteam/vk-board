@@ -85,9 +85,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
             } as any)}
             name="description"
             onChange={onChange}
-            status={formValues.description ? 'valid' : 'error'}
             disabled={updating}
-            value={formValues.description}
+            value={formValues.description ?? ''}
           />
         </span>
         <span className={css({ display: 'flex' })}>
@@ -127,7 +126,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
           size="xl"
           stretched
           before={updating ? <Spinner /> : <Icon24Add />}
-          disabled={!formValues.name || !formValues.description || updating}
+          disabled={!formValues.name || updating}
           onClick={submitForm}
         >
           Создать задачу

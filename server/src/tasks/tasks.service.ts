@@ -35,9 +35,9 @@ export class TasksService {
 
       const newTask = new Task(
         model.name,
-        model.description,
         vkUserId,
         list,
+        model.description,
         model.dueDate,
       );
       await queryRunner.manager.save(newTask);

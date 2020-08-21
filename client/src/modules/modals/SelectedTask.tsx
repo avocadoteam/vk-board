@@ -30,17 +30,24 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
 
   return (
     <>
-      <Div>
-        <MiniInfoCell
-          before={<Icon20ArticleOutline className={css({ color: dark ? '#AEAEAE' : '#6A6A6A' })} />}
-          multiline
-          className={css({ padding: '6px 12px 0' })}
-        >
-          <Text weight="medium" className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}>
-            {info.description}
-          </Text>
-        </MiniInfoCell>
-      </Div>
+      {info.description !== null && (
+        <Div>
+          <MiniInfoCell
+            before={
+              <Icon20ArticleOutline className={css({ color: dark ? '#AEAEAE' : '#6A6A6A' })} />
+            }
+            multiline
+            className={css({ padding: '6px 12px 0' })}
+          >
+            <Text
+              weight="medium"
+              className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}
+            >
+              {info.description}
+            </Text>
+          </MiniInfoCell>
+        </Div>
+      )}
       {info.dueDate !== null && (
         <Div>
           <MiniInfoCell
