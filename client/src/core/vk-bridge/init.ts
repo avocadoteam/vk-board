@@ -1,6 +1,8 @@
 import { vkBridge } from './instance';
 import { store } from 'core/store';
 import { ClientTheme } from 'core/models';
+import { selectedBoardListInfo } from 'core/selectors/boardLists';
+import { joinRoom, leaveRoom } from 'core/socket/list';
 
 // set client theme
 vkBridge.subscribe(({ detail: { type, data } }) => {
@@ -28,6 +30,18 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
       type: 'SET_HASH',
       payload: hashListGUID ?? null,
     });
+
+    const { listguid } = selectedBoardListInfo(store.getState());
+    if (listguid) {
+      joinRoom(listguid);
+    }
+  }
+
+  if (type === 'VKWebAppViewHide') {
+    const { listguid } = selectedBoardListInfo(store.getState());
+    if (listguid) {
+      leaveRoom(listguid);
+    }
   }
 });
 

@@ -92,16 +92,22 @@ export class EventsGateway implements OnGatewayInit {
     });
   }
 
-  // @SubscribeMessage('leaveRoom')
-  // leaveRoom(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() listGUID: string,
-  // ) {
-  //   if (!!listGUID) {
-  //     socket.leave(listGUID);
-  //     console.info('left room ', listGUID);
-  //   }
-  // }
+  @SubscribeMessage('leaveRoom')
+  leaveRoom(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() listGUID: string,
+  ) {
+    const adapter = socket.adapter as RedisAdapter;
+    if (!!listGUID) {
+      adapter.remoteLeave(socket.id, listGUID, (err: Error) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(socket.id, 'left room', listGUID);
+        }
+      });
+    }
+  }
 
   autoLeaveRooms(socket: Socket) {
     return new Promise((res) => {
@@ -109,18 +115,19 @@ export class EventsGateway implements OnGatewayInit {
       adapter.clientRooms(socket.id, (err: Error, rooms: string[]) => {
         if (err) {
           console.error(err);
-        }
-        console.log(socket.id, 'Socket rooms', rooms);
-        rooms.reduce((r) => {
-          adapter.remoteLeave(socket.id, r, (err: Error) => {
-            if (err) {
-              console.error(err);
-            } else {
-              console.log(socket.id, 'left room', r);
-            }
+        } else if (rooms?.length) {
+          console.log(socket.id, 'Socket rooms', rooms);
+          rooms.reduce((r) => {
+            adapter.remoteLeave(socket.id, r, (err: Error) => {
+              if (err) {
+                console.error(err);
+              } else {
+                console.log(socket.id, 'left room', r);
+              }
+            });
+            return '';
           });
-          return '';
-        });
+        }
         return res();
       });
     });
