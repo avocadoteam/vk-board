@@ -7,7 +7,6 @@ import {
   MaxFreeListsPerPerson,
   MaxFreeMembershipInList,
 } from 'src/constants/free-trial';
-import { ListMembership } from 'src/db/tables/listMembership';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey, dayTTL } from 'src/contracts/cache';
 
@@ -18,9 +17,8 @@ export class RestricitionsService {
     private tablePayment: Repository<Payment>,
     @InjectRepository(List)
     private tableList: Repository<List>,
-    @InjectRepository(ListMembership)
-    private tableListMembership: Repository<ListMembership>,
-    @Inject(CACHE_MANAGER) private cache: CacheManager,
+    @Inject(CACHE_MANAGER)
+    private cache: CacheManager,
   ) {}
 
   async hasUserUnlimitedRights(vkUserId: number) {
@@ -36,7 +34,7 @@ export class RestricitionsService {
 
     const can =
       (await this.tableList.count({ createdBy: vkUserId, deleted: null })) <
-        MaxFreeListsPerPerson && !(await this.hasUserUnlimitedRights(vkUserId));
+        MaxFreeListsPerPerson || (await this.hasUserUnlimitedRights(vkUserId));
 
     await this.cache.set(cacheKey.canCreateList(vkUserId), can, {
       ttl: dayTTL,
@@ -54,21 +52,20 @@ export class RestricitionsService {
       return cacheCan;
     }
 
+    const list = await this.tableList
+      .createQueryBuilder('list')
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.left_date is null`,
+      )
+      .where(`list.id = ${listId} and created_by != ${vkUserId}`)
+      .select(['list.createdBy', 'membership'])
+      .getOne();
+
     const can =
-      (await this.tableListMembership
-        .createQueryBuilder('membership')
-        .innerJoin(
-          'membership.list',
-          'list',
-          `list.id = ${listId} and created_by != ${vkUserId}`,
-        )
-        .where([
-          {
-            left_date: null,
-          },
-        ])
-        .getCount()) < MaxFreeMembershipInList &&
-      !(await this.hasUserUnlimitedRights(vkUserId));
+      (list?.memberships.length ?? 0) < MaxFreeMembershipInList ||
+      (await this.hasUserUnlimitedRights(list?.createdBy ?? 0));
 
     await this.cache.set(cacheKey.canJoinList(vkUserId, listId), can, {
       ttl: dayTTL,

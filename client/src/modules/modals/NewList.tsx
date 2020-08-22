@@ -4,10 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import Icon16Add from '@vkontakte/icons/dist/16/add';
 import { CellButton } from 'atoms/CellButton';
-import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
-import { isNewListUpdating, isNewListCreated } from 'core/selectors/boardLists';
+import { Input, Spinner, usePlatform, OS, Div, Text } from '@vkontakte/vkui';
+import {
+  isNewListUpdating,
+  isNewListCreated,
+  canUserContinueCreateLists,
+} from 'core/selectors/boardLists';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { tapticSelected } from 'core/vk-bridge/taptic';
+import { isThemeDrak } from 'core/selectors/common';
+import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
@@ -15,6 +21,8 @@ export const NewList = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
   const updating = useSelector(isNewListUpdating);
   const created = useSelector(isNewListCreated) && !updating;
+  const canCreateLists = useSelector(canUserContinueCreateLists);
+  const dark = useSelector(isThemeDrak);
 
   const platform = usePlatform();
 
@@ -38,6 +46,27 @@ export const NewList = React.memo(() => {
     },
     [dispatch]
   );
+
+  if (!canCreateLists) {
+    return (
+      <Div>
+        <Text
+          weight="medium"
+          className={`useMonrope ${css({
+            fontSize: '16px',
+            lineHeight: '24px',
+            color: dark ? '#AEAEAE' : '#6A6A6A',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px',
+          })}`}
+        >
+          <Icon16Lock width={20} height={20} className={css({ marginRight: '1rem' })} />
+          Лимит (бесплатная версия)
+        </Text>
+      </Div>
+    );
+  }
 
   if (click) {
     return (

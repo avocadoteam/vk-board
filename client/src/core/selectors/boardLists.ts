@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import { getStateUi, getBoardUiState } from './common';
-import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
+import { FetchingStateName, FetchingDataType, FetchingStatus, MaxFreeListsPerPerson } from 'core/models';
 import { isBoardUpdating, getBoardLists } from './board';
+import { getUserId } from './user';
 
 const getNewListDataState = createSelector(
   getStateUi,
@@ -65,3 +66,9 @@ export const getFinishedListTasks = createSelector(getSelectedList, (list) =>
 );
 export const getSelectedListId = createSelector(getSelectedList, (list) => list.id);
 export const selectedBoardListInfo = createSelector(getSelectedList, (list) => list.data);
+
+export const canUserContinueCreateLists = createSelector(
+  getBoardLists,
+  getUserId,
+  (data, userId) => data.filter(d => d.createdBy === userId).length < MaxFreeListsPerPerson
+)
