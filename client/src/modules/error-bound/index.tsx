@@ -1,17 +1,19 @@
 import React from 'react';
-import { PanelHeader, Group, Div, Title } from '@vkontakte/vkui';
+import { PanelHeader, Group, Div, Title, Text } from '@vkontakte/vkui';
 import { AlienOffline } from 'assets/svg/AlienOffline';
 import { captureException } from '@sentry/browser';
+
 type LocalState = {
   hasError: boolean;
+  error: any;
 };
 
 export class ErrorBoundary extends React.Component<unknown, LocalState> {
-  state: LocalState = { hasError: false };
+  state: LocalState = { hasError: false, error: '' };
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(error: any) {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -51,6 +53,7 @@ export class ErrorBoundary extends React.Component<unknown, LocalState> {
             <Title weight="bold" level="2" className="useMonrope manropeBold">
               Произошла ошибка
             </Title>
+            <Text weight="regular">{JSON.stringify(this.state.error)}</Text>
           </Group>
         </>
       );
