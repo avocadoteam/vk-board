@@ -5,13 +5,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { Button } from 'atoms/Button';
-import { appV, AppDispatchActions, FetchingStateName } from 'core/models';
+import { appV, AppDispatchActions, FetchingStateName, payToUserId } from 'core/models';
 import { Notifications } from './Notifications';
 import { isPlatformIOS } from 'core/selectors/settings';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 import { useTransition, useChain, animated } from 'react-spring';
 import { hasUserPremium, isPaymentUpdating } from 'core/selectors/payment';
 import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
+import { getUserId } from 'core/selectors/user';
 
 const itemsToAppear = [
   {
@@ -47,6 +48,7 @@ export const Premium = React.memo(() => {
   const { css } = useFela({ dark });
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
+  const km = useSelector(getUserId) === payToUserId;
 
   const handleBuy = React.useCallback(() => {
     dispatch({
@@ -155,6 +157,19 @@ export const Premium = React.memo(() => {
               <span className={css({ color: '#42A4FF' })}>премиум</span>
             </Text>
             {transitionFragments}
+            {km && (
+              <Button
+                mode="primary"
+                stretched
+                className={btnCss}
+                before={<Icon24LogoGoogle />}
+                square
+              >
+                <a href="/google/auth" target="_blank" className={css({ textDecoration: 'none' })}>
+                  Синхронизировать с Google Tasks
+                </a>
+              </Button>
+            )}
           </div>
         </Card>
       </CardGrid>
