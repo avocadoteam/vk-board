@@ -8,6 +8,7 @@ import { RedisCacheModule } from 'src/redis-cache/redis-cache.module';
 import { VkApiService } from 'src/vk-api/vk-api.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListMembership } from 'src/db/tables/listMembership';
+import { RestricitionsModule } from 'src/restricitions/restricitions.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ListMembership } from 'src/db/tables/listMembership';
     RedisCacheModule,
     HttpModule,
     ConfigModule,
+    RestricitionsModule
   ],
   providers: [ListService, VkApiService],
   exports: [ListService],

@@ -17,12 +17,17 @@ import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { BoardCacheInterceptor } from 'src/interceptors/cache.interceptor';
 import { ListService } from 'src/list/list.service';
 import { NewListModel, EditListModel } from 'src/contracts/list';
+import { RestricitionsService } from 'src/restricitions/restricitions.service';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
 
 @Controller('api/board')
 @UseGuards(SignGuard)
 @UseInterceptors(TransformInterceptor)
 export class BoardController {
-  constructor(private readonly listService: ListService) {}
+  constructor(
+    private readonly listService: ListService,
+    private readonly restrictionsService: RestricitionsService,
+  ) {}
 
   @Get()
   @UseInterceptors(BoardCacheInterceptor)
@@ -38,7 +43,7 @@ export class BoardController {
   }
 
   @Post('/list')
-  createListOnBoard(
+  async createListOnBoard(
     @Query(
       'vk_user_id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
@@ -47,6 +52,9 @@ export class BoardController {
     @Body()
     model: NewListModel,
   ) {
+    if (!await this.restrictionsService.canUserContinueCreateLists(vkUserId)) {
+      throw new PaymentRequiredException();
+    }
     return this.listService.createList(model, vkUserId);
   }
 

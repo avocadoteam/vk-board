@@ -151,7 +151,20 @@ export class ListService {
     );
   }
 
-  async hasListMembershipByGUID(listguid: string, vkUserId: number) {
+  async hasListMembershipBeforeJoin(listId: number, vkUserId: number) {
+    return (
+      (await this.tableList
+        .createQueryBuilder('list')
+        .innerJoin(
+          'list.memberships',
+          'membership',
+          `membership.joined_id = ${vkUserId}`,
+        )
+        .whereInIds([listId])
+        .getCount()) > 0
+    );
+  }
+  async hasListMembershipBeforeJoinGUID(guid: string, vkUserId: number) {
     return (
       (await this.tableList
         .createQueryBuilder('list')
@@ -162,7 +175,7 @@ export class ListService {
         )
         .where([
           {
-            listguid,
+            listguid: guid,
           },
         ])
         .getCount()) > 0
@@ -212,6 +225,7 @@ export class ListService {
     );
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
+    await this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
   }
 
   async deleteList(listId: number, vkUserId: number) {
@@ -220,6 +234,7 @@ export class ListService {
     await this.tableList.update(listId, { deleted: now });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
+    await this.cache.del(cacheKey.canCreateList(vkUserId));
   }
 
   async editListName(model: EditListModel, vkUserId: number) {
@@ -235,11 +250,11 @@ export class ListService {
     await queryRunner.startTransaction();
     try {
       const list = await queryRunner.manager.findOne<List>(List, {
-        where: { deleted: null, listguid: model.guid },
+        where: { deleted: null, id: model.listId },
       });
 
       if (!list) {
-        throw new Error(`List doesn't exist with guid ${model.guid}`);
+        throw new Error(`List doesn't exist with id ${model.listId}`);
       }
 
       const newListMember = new ListMembership(vkUserId, list);
@@ -248,6 +263,7 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
+      await this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
 
       return list.id;
     } catch (err) {

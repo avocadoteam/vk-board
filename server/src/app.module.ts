@@ -10,6 +10,7 @@ import { ListModule } from './list/list.module';
 import { BoardModule } from './board/board.module';
 import { TasksModule } from './tasks/tasks.module';
 import { EventsModule } from './events/events.module';
+import { RestricitionsModule } from './restricitions/restricitions.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EventsModule } from './events/events.module';
     BoardModule,
     TasksModule,
     EventsModule,
+    RestricitionsModule,
   ],
   controllers: [AppController],
 })

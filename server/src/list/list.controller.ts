@@ -23,7 +23,9 @@ import {
   UpdateTaskModel,
 } from 'src/contracts/task';
 import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
-import { DropMembershipModel, CreateMembershipModel } from 'src/contracts/list';
+import { DropMembershipModel, CreateMembershipModel, PreviewMembershipModel } from 'src/contracts/list';
+import { RestricitionsService } from 'src/restricitions/restricitions.service';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
 
 @Controller('api/list')
 @UseGuards(SignGuard)
@@ -32,6 +34,7 @@ export class ListController {
   constructor(
     private readonly listService: ListService,
     private readonly taskService: TasksService,
+    private readonly restrictionService: RestricitionsService,
   ) {}
 
   @UseInterceptors(TasksCacheInterceptor)
@@ -191,8 +194,11 @@ export class ListController {
     @Body()
     model: CreateMembershipModel,
   ) {
-    if (await this.listService.hasListMembershipByGUID(model.guid, vkUserId)) {
+    if (await this.listService.hasListMembershipBeforeJoin(model.listId, vkUserId)) {
       throw new BadRequestException();
+    }
+    if (!await this.restrictionService.canUserJoinList(vkUserId, model.listId)) {
+      throw new PaymentRequiredException();
     }
     return this.listService.createMembership(model, vkUserId);
   }
@@ -205,9 +211,9 @@ export class ListController {
     )
     vkUserId: number,
     @Query()
-    model: CreateMembershipModel,
+    model: PreviewMembershipModel,
   ) {
-    if (await this.listService.hasListMembershipByGUID(model.guid, vkUserId)) {
+    if (await this.listService.hasListMembershipBeforeJoinGUID(model.guid, vkUserId)) {
       throw new BadRequestException();
     }
     return this.listService.previewMembershipByGUID(model.guid);

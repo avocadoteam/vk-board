@@ -21,6 +21,7 @@ import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { safeCombineEpics } from './combine';
 import { getSearch } from 'connected-react-router';
 import { getBoardListData } from 'core/selectors/board';
+import { getPreviewMembershipData } from 'core/selectors/membership';
 
 const dropMembershipEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -112,7 +113,10 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorWithTaptic(FetchingStateName.ListMembershipPreview, 'Ссылка недействительна')
+        captureFetchErrorWithTaptic(
+          FetchingStateName.ListMembershipPreview,
+          'Ссылка недействительна'
+        )
       )
     )
   );
@@ -123,10 +127,10 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
     filter<FetchUpdateAction>(({ payload }) => payload === FetchingStateName.SaveMembership),
     map(() => ({
       q: getSearch(state$.value),
-      guid: state$.value.ui.hashListGUID!,
+      listId: getPreviewMembershipData(state$.value).id,
     })),
-    switchMap(({ q, guid }) =>
-      createMembership(guid, q).pipe(
+    switchMap(({ q, listId }) =>
+      createMembership(listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
@@ -156,7 +160,10 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorWithTaptic(FetchingStateName.SaveMembership, 'Не получилось Вас добавить в список')
+        captureFetchErrorWithTaptic(
+          FetchingStateName.SaveMembership,
+          'Не получилось Вас добавить в список'
+        )
       )
     )
   );

@@ -6,9 +6,9 @@ export const dropMembership = (userId: number, listId: number, q: string) =>
     listId,
   });
 
-export const createMembership = (guid: string, q: string) =>
+export const createMembership = (listId: number, q: string) =>
   request(`/list/membership${q}`, Method.Post, {
-    guid,
+    listId,
   });
 
 export const listMembershipPreview = (guid: string, q: string) =>

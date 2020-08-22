@@ -21,6 +21,11 @@ export class EditListModel extends NewListModel {
 }
 
 export class CreateMembershipModel {
+  @IsNumber()
+  listId!: number;
+}
+
+export class PreviewMembershipModel {
   @IsUUID()
   guid!: string;
 }
