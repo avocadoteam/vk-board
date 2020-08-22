@@ -102,6 +102,7 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
+      await this.cache.del(cacheKey.canCreateList(vkUserId));
 
       return newList.id;
     } catch (err) {
