@@ -15,6 +15,7 @@ import { EditTask } from './EditTask';
 import { NewTaskHeader } from './NewTaskHeader';
 import { NewTask } from './NewTask';
 import { push, getSearch } from 'connected-react-router';
+import { DropMember } from './DropMember';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
@@ -77,6 +78,8 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           <DeletePreview deletedPreview={deletedPreview} cancelDelete={() => setDelete(false)} />
           <EditTask editable={editable} stopEdit={() => setEditable(false)} />
         </ModalPage>
+
+        <DropMember id={ActiveModal.DropMembership} />
       </ModalRoot>
     );
   }

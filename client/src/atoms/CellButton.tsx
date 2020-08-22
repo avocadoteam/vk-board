@@ -35,8 +35,8 @@ const cellButtonStyle: CssFelaStyle<
   fontSize: '16px',
   fontWeight: 500,
   ':active': {
-    backgroundColor: 'rgba(66, 164, 255, 0.1) !important',
-    color: '#42A4FF !important',
+    backgroundColor: 'rgba(66, 164, 255, 0.1)',
+    color: '#42A4FF',
   },
   paddingLeft: '23px',
   paddingRight: '23px',
@@ -50,8 +50,8 @@ const cellButtonStyle: CssFelaStyle<
   },
   ...(selected
     ? {
-        backgroundColor: 'rgba(66, 164, 255, 0.1) !important',
-        color: '#42A4FF !important',
+        backgroundColor: 'rgba(66, 164, 255, 0.1)',
+        color: '#42A4FF',
       }
     : {}),
 });

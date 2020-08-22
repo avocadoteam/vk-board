@@ -54,10 +54,14 @@ export class VkApiService {
         userId: number;
         avatar: string;
         name: string;
+        firstName: string;
+        lastName: string;
       }[] = avatars.map((a) => ({
         userId: a.id,
         avatar: a.photo_100,
         name: `${a.first_name || ''} ${a.last_name || ''}`,
+        firstName: a.first_name || '',
+        lastName: a.first_name || ''
       }));
 
       console.log('[VkApiService] updateWithAvatars done');

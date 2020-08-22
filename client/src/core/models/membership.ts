@@ -1,6 +1,8 @@
 export type MembershipItem = {
   avatar: string;
   userId: number;
+  firstName: string;
+  lastName: string;
   name: string;
 };
 

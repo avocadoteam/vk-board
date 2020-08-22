@@ -93,12 +93,19 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
           </Text>
           {listItem.isOwner && (
             <CellButton
-              className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848' })}
+              className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848 !important' })}
               disabled={deletting}
               onClick={deleteList}
             >
               {deletting ? (
-                <Spinner size="regular" className={css({ width: 'unset', marginRight: '1rem' })} />
+                <Spinner
+                  size="regular"
+                  className={css({
+                    width: 'unset',
+                    marginRight: '1rem',
+                    color: '#FF4848 !important',
+                  })}
+                />
               ) : (
                 <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
               )}

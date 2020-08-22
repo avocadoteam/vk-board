@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
 import { BoardState, TaskInfo, BoardListItem, BoardTaskItem } from './board';
 import { MembershipState } from './membership';
+import { ActiveModal } from './enums';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -69,12 +70,6 @@ export type FetchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPa
 export type FetchUpdateAction = { type: 'SET_UPDATING_DATA'; payload: FetchingStateName };
 export type SelectBoardListAction = { type: 'SELECT_BOARD_LIST'; payload: { id: number; data?: BoardListItem } };
 export type SetHashAction = { type: 'SET_HASH'; payload: string | null };
-
-export enum ActiveModal {
-  SelectedTask = 'selectedtask',
-  Lists = 'lists',
-  NewTask = 'newtask',
-}
 
 export enum FetchingStateName {
   User = 'user',

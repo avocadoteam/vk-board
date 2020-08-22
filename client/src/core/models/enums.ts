@@ -20,3 +20,10 @@ export enum AppUser {
   Yes = 'yes',
   No = 'no',
 }
+
+export enum ActiveModal {
+  SelectedTask = 'selectedtask',
+  Lists = 'lists',
+  NewTask = 'newtask',
+  DropMembership = 'dropmembership'
+}

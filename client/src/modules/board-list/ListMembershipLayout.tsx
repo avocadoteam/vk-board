@@ -5,7 +5,7 @@ import { getMembershipList, isDropMembershipUpdating } from 'core/selectors/memb
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { useFela } from 'react-fela';
 import { isThemeDrak, getMembershipUiState } from 'core/selectors/common';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { AppDispatchActions, ActiveModal } from 'core/models';
 import { isListMembershipOpenedByOwner } from 'core/selectors/boardLists';
 
 export const ListMembershipLayout = React.memo(() => {
@@ -57,8 +57,8 @@ const DropMembershipItem: React.FC<Props> = ({ userId, updating }) => {
       payload: userId,
     });
     dispatch({
-      type: 'SET_UPDATING_DATA',
-      payload: FetchingStateName.DropMembership,
+      type: 'SET_MODAL',
+      payload: ActiveModal.DropMembership,
     });
   };
 

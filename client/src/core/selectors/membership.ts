@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { getStateUi, getBoardUiState } from './common';
+import { getStateUi, getBoardUiState, getMembershipUiState } from './common';
 import {
   FetchingStateName,
   FetchingDataType,
@@ -60,3 +60,9 @@ export const getMembershipList = createSelector(
       (m) => m.userId !== userId
     )
 );
+
+export const getUserFirstNameToDelete = createSelector(
+  getMembershipList,
+  getMembershipUiState,
+  (list, { dropUserId }) => list.find(ml => ml.userId === dropUserId)?.firstName
+)
