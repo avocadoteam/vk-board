@@ -6,4 +6,5 @@ export const getNotifications = createSelector(getStateUi, (ui) => ui.notificati
 
 export const getAppId = createSelector(getStateUi, (ui) => ui.appId);
 
-export const isPlatformIOS = defaultMemoize(() => platform() === OS.IOS);
+// export const isPlatformIOS = defaultMemoize(() => platform() === OS.IOS);
+export const isPlatformIOS = defaultMemoize(() => false);
