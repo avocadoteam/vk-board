@@ -11,6 +11,7 @@ const hashListGUID = window.location.hash ? window.location.hash.split('#').pop(
 
 export const initialState: models.AppState['ui'] = {
   theme: ClientTheme.Light,
+  errorsQueue: [],
   fetchingDatas: {},
   notifications: false,
   appId,
@@ -113,6 +114,12 @@ export const reducer = (
             error: dispatch.payload.error,
           },
         },
+        errorsQueue:
+          state.errorsQueue.includes(dispatch.payload.error) ||
+          (typeof dispatch.payload.error === 'string' &&
+            dispatch.payload.error.includes('Cannot load '))
+            ? state.errorsQueue
+            : [...state.errorsQueue, dispatch.payload.error],
       };
     }
 
@@ -338,6 +345,20 @@ export const reducer = (
       return {
         ...state,
         showAds: dispatch.payload,
+      };
+    }
+    case 'ENQUEUE_ERROR': {
+      return {
+        ...state,
+        errorsQueue: state.errorsQueue.includes(dispatch.payload)
+          ? state.errorsQueue
+          : [...state.errorsQueue, dispatch.payload],
+      };
+    }
+    case 'DEQUEUE_ERROR': {
+      return {
+        ...state,
+        errorsQueue: state.errorsQueue.filter((e) => e !== dispatch.payload),
       };
     }
 

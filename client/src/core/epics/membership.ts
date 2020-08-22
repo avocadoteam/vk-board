@@ -112,7 +112,7 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorWithTaptic(FetchingStateName.ListMembershipPreview)
+        captureFetchErrorWithTaptic(FetchingStateName.ListMembershipPreview, 'Ссылка недействительна')
       )
     )
   );
@@ -156,7 +156,7 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorWithTaptic(FetchingStateName.SaveMembership)
+        captureFetchErrorWithTaptic(FetchingStateName.SaveMembership, 'Не получилось Вас добавить в список')
       )
     )
   );

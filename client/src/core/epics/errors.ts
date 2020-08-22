@@ -40,7 +40,7 @@ export const captureErrorFallbackActions = (context: string, ...actions: AppDisp
     return concat(...actions.map((a) => of(a)));
   });
 
-export const captureFetchErrorUserErr = (name: FetchingStateName, err: string) =>
+export const captureFetchErrorUserErr = (name: FetchingStateName, humanError: string) =>
   catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
     console.error('Error in', name, errMap(error));
     captureUrlEvent(`Error in ${name} ${errMap(error)}`);
@@ -48,12 +48,12 @@ export const captureFetchErrorUserErr = (name: FetchingStateName, err: string) =
       type: 'SET_ERROR_DATA',
       payload: {
         name,
-        error: err,
+        error: humanError,
       },
     });
   });
 
-export const captureFetchErrorWithTaptic = (name: FetchingStateName) =>
+export const captureFetchErrorWithTaptic = (name: FetchingStateName, humanError: string) =>
   catchError<AppDispatch, ObservableInput<AppDispatch>>((error, o) => {
     console.error('Error in', name, errMap(error));
     captureUrlEvent(`Error in ${name} ${errMap(error)}`);
@@ -62,7 +62,7 @@ export const captureFetchErrorWithTaptic = (name: FetchingStateName) =>
         type: 'SET_ERROR_DATA',
         payload: {
           name,
-          error: `Cannot load ${name} data`,
+          error: humanError,
         },
       } as AppDispatch),
       useTapticEpic('error')

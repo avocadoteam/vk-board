@@ -147,7 +147,10 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
               throw new Error(`Http ${response.status} on ${response.url}`);
             }
           }),
-          captureFetchErrorWithTaptic(FetchingStateName.NewBoardList)
+          captureFetchErrorWithTaptic(
+            FetchingStateName.NewBoardList,
+            'Не удалось сохранить новый список'
+          )
         )
       )
     )
@@ -231,7 +234,10 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
               throw new Error(`Http ${response.status} on ${response.url}`);
             }
           }),
-          captureFetchErrorWithTaptic(FetchingStateName.EditBoardList)
+          captureFetchErrorWithTaptic(
+            FetchingStateName.EditBoardList,
+            'Не удалось обновить название списока'
+          )
         )
       )
     )
@@ -288,7 +294,7 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorWithTaptic(FetchingStateName.FirstBoardList)
+        captureFetchErrorWithTaptic(FetchingStateName.FirstBoardList, 'Не удалось создать список')
       )
     )
   );

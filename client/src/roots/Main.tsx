@@ -15,6 +15,7 @@ import { Premium } from 'modules/about';
 import { MembershipPreview } from 'modules/membership-preview';
 import { isPreviewMembershipReady } from 'core/selectors/membership';
 import { Welcome } from 'modules/welcome';
+import { SnakbarsErr } from 'modules/snaks';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
@@ -45,71 +46,74 @@ export const Main = React.memo(() => {
   };
 
   return (
-    <View
-      activePanel={activeView}
-      modal={<RootModals goForward={goForward} />}
-      onSwipeBack={handleBack}
-      history={history}
-    >
-      <Panel
-        id={MainView.Board}
-        className={css({
-          background: dark
-            ? undefined
-            : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
-          '>div': {
+    <>
+      <View
+        activePanel={activeView}
+        modal={<RootModals goForward={goForward} />}
+        onSwipeBack={handleBack}
+        history={history}
+      >
+        <Panel
+          id={MainView.Board}
+          className={css({
             background: dark
               ? undefined
               : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
-          },
-        } as any)}
-      >
-        <BoardLayout />
-      </Panel>
-      <Panel id={MainView.Offline}>
-        <Offline />
-      </Panel>
-      <Panel id={MainView.ListMembership}>
-        <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>
-          <Text
-            weight="semibold"
-            className={`useMonrope ${css({
-              fontSize: '18px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              lineHeight: '24px',
-            })}`}
-          >
-            Доступ
-          </Text>
-        </PanelHeader>
-        <ListMembershipLayout />
-      </Panel>
-      <Panel id={MainView.About}>
-        <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>
-          <Text
-            weight="semibold"
-            className={`useMonrope ${css({
-              fontSize: '18px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              lineHeight: '24px',
-            })}`}
-          >
-            О приложении
-          </Text>
-        </PanelHeader>
-        <Premium />
-      </Panel>
-      <Panel id={MainView.ListSharePreview}>
-        <PanelHeader separator={false} />
-        <MembershipPreview handleBack={handleBack} />
-      </Panel>
-      <Panel id={MainView.Welcome}>
-        <Welcome />
-      </Panel>
-    </View>
+            '>div': {
+              background: dark
+                ? undefined
+                : 'linear-gradient(180deg, #FFFFFF 12.81%, #FBFBFB 100%) !important',
+            },
+          } as any)}
+        >
+          <BoardLayout />
+        </Panel>
+        <Panel id={MainView.Offline}>
+          <Offline />
+        </Panel>
+        <Panel id={MainView.ListMembership}>
+          <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>
+            <Text
+              weight="semibold"
+              className={`useMonrope ${css({
+                fontSize: '18px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                lineHeight: '24px',
+              })}`}
+            >
+              Доступ
+            </Text>
+          </PanelHeader>
+          <ListMembershipLayout />
+        </Panel>
+        <Panel id={MainView.About}>
+          <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>
+            <Text
+              weight="semibold"
+              className={`useMonrope ${css({
+                fontSize: '18px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                lineHeight: '24px',
+              })}`}
+            >
+              О приложении
+            </Text>
+          </PanelHeader>
+          <Premium />
+        </Panel>
+        <Panel id={MainView.ListSharePreview}>
+          <PanelHeader separator={false} />
+          <MembershipPreview handleBack={handleBack} />
+        </Panel>
+        <Panel id={MainView.Welcome}>
+          <Welcome />
+        </Panel>
+      </View>
+      <SnakbarsErr />
+    </>
   );
 });
