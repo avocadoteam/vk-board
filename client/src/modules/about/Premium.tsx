@@ -11,6 +11,7 @@ import { isPlatformIOS } from 'core/selectors/settings';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 import { useTransition, useChain, animated } from 'react-spring';
 import { hasUserPremium, isPaymentUpdating } from 'core/selectors/payment';
+import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
 
 const itemsToAppear = [
   {
@@ -65,7 +66,13 @@ export const Premium = React.memo(() => {
       <Button mode="primary" stretched className={btnCss} disabled before={<Icon16Lock />} square>
         Недоступно на iOS
       </Button>
-    ) : hasPremium ? null : (
+    ) : hasPremium ? (
+      <Button mode="primary" stretched className={btnCss} before={<Icon24LogoGoogle />} square>
+        <a href="/google/auth" target="_blank" className={css({ textDecoration: 'none' })}>
+          Синхронизировать с Google Tasks
+        </a>
+      </Button>
+    ) : (
       <Button
         mode="primary"
         stretched

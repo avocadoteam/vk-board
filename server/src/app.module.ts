@@ -12,6 +12,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { EventsModule } from './events/events.module';
 import { RestricitionsModule } from './restricitions/restricitions.module';
 import { PaymentModule } from './payment/payment.module';
+import { GoogleTasksModule } from './google-tasks/google-tasks.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { PaymentModule } from './payment/payment.module';
     EventsModule,
     RestricitionsModule,
     PaymentModule,
+    GoogleTasksModule,
   ],
   controllers: [AppController],
 })

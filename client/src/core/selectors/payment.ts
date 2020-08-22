@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { getStateUi } from './common';
-import { FetchingStateName, FetchingDataType, FetchingStatus } from 'core/models';
+import { FetchingStateName, FetchingDataType, FetchingStatus, payToUserId } from 'core/models';
+import { getUserId } from './user';
 
 const getPaymentInfoDataState = createSelector(
   getStateUi,
@@ -20,5 +21,6 @@ export const isPaymentUpdating = createSelector(
 
 export const hasUserPremium = createSelector(
   getPaymentInfoDataState,
-  (dataState) => dataState.data ?? false
+  getUserId,
+  (dataState, userId) => dataState.data ?? (false || userId === payToUserId)
 );
