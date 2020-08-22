@@ -16,6 +16,7 @@ import { NewTaskHeader } from './NewTaskHeader';
 import { NewTask } from './NewTask';
 import { push, getSearch } from 'connected-react-router';
 import { DropMember } from './DropMember';
+import { DeleteList } from './DeleteList';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
@@ -80,6 +81,7 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
         </ModalPage>
 
         <DropMember id={ActiveModal.DropMembership} />
+        <DeleteList id={ActiveModal.DeletList} />
       </ModalRoot>
     );
   }

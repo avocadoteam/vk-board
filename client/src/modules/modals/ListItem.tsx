@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatchActions, FetchingStateName, MainView, BoardListItem } from 'core/models';
+import { AppDispatchActions, MainView, BoardListItem, ActiveModal } from 'core/models';
 import { useFela } from 'react-fela';
 import { Div, Text, Spinner } from '@vkontakte/vkui';
 import { CellButton } from 'atoms/CellButton';
@@ -35,7 +35,7 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
 
   const deleteList = React.useCallback(() => {
     dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
-    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.DeleteBoardList });
+    dispatch({ type: 'SET_MODAL', payload: ActiveModal.DeletList });
   }, [dispatch, boardListOpenId]);
 
   const goToMembership = React.useCallback(() => {

@@ -25,5 +25,6 @@ export enum ActiveModal {
   SelectedTask = 'selectedtask',
   Lists = 'lists',
   NewTask = 'newtask',
-  DropMembership = 'dropmembership'
+  DropMembership = 'dropmembership',
+  DeletList = 'deletelist'
 }

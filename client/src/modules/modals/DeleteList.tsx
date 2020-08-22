@@ -4,26 +4,28 @@ import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { getUserFirstNameToDelete } from 'core/selectors/membership';
+import { AppDispatchActions, FetchingStateName, ActiveModal } from 'core/models';
 
-export const DropMember = React.memo<{ id: string }>(({ id }) => {
+export const DeleteList = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
   const dark = useSelector(isThemeDrak);
   const dispatch = useDispatch<AppDispatchActions>();
-  const name = useSelector(getUserFirstNameToDelete);
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });
   }, [dispatch]);
 
-  const dropMember = React.useCallback(() => {
-    closeModal();
+  const back = React.useCallback(() => {
+    dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
+  }, [dispatch]);
+
+  const deleteList = React.useCallback(() => {
+    dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
     dispatch({
       type: 'SET_UPDATING_DATA',
-      payload: FetchingStateName.DropMembership,
+      payload: FetchingStateName.DeleteBoardList,
     });
-  }, [closeModal, dispatch]);
+  }, [dispatch]);
 
   return (
     <ModalPage
@@ -54,20 +56,20 @@ export const DropMember = React.memo<{ id: string }>(({ id }) => {
               textAlign: 'center',
             })}`}
           >
-            {name} потеряет доступ к списку навсегда.
+            Это удалит список, вернуть его не получится.
           </Text>
         </MiniInfoCell>
       </Div>
       <Div className={css({ padding: '12px 24px', display: 'flex' })}>
         <Button
           mode="overlay_outline"
-          onClick={closeModal}
+          onClick={back}
           size="xl"
           className={css({ marginRight: '10px' })}
         >
           Назад
         </Button>
-        <Button onClick={dropMember} mode="destructive" size="xl">
+        <Button onClick={deleteList} mode="destructive" size="xl">
           Удалить
         </Button>
       </Div>
