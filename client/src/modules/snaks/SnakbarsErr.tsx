@@ -4,12 +4,14 @@ import Icon24ErrorCircle from '@vkontakte/icons/dist/24/error_circle';
 import { useSelector, useDispatch } from 'react-redux';
 import { getStateUi } from 'core/selectors/common';
 import { AppDispatchActions } from 'core/models';
+import { useFela } from 'react-fela';
 
 export const SnakbarsErr = React.memo(() => {
   const [visible, setVisible] = React.useState(false);
   const [humanError, setError] = React.useState('');
   const dispatch = useDispatch<AppDispatchActions>();
   const errorsQueue = useSelector(getStateUi).errorsQueue;
+  const { css } = useFela();
 
   React.useEffect(() => {
     if (errorsQueue.length > 0 && !visible) {
@@ -36,6 +38,7 @@ export const SnakbarsErr = React.memo(() => {
             <Icon24ErrorCircle fill="#FF4848" width={24} height={24} />
           </Avatar>
         }
+        className={css({ zIndex: 105 })}
       >
         {humanError}
       </Snackbar>
