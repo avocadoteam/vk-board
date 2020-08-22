@@ -60,5 +60,8 @@ export const getSelectedList = createSelector(getBoardUiState, (board) => board.
 export const getSelectedListTasks = createSelector(getSelectedList, (list) =>
   list.tasks.filter((t) => t.finished === null)
 );
+export const getFinishedListTasks = createSelector(getSelectedList, (list) =>
+  list.tasks.filter((t) => t.finished !== null)
+);
 export const getSelectedListId = createSelector(getSelectedList, (list) => list.id);
 export const selectedBoardListInfo = createSelector(getSelectedList, (list) => list.data);

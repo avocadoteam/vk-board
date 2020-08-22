@@ -7,19 +7,20 @@ import {
   BoardTaskItem,
   FINISH_TASK_TIMER_VALUE,
   EditTaskModel,
+  UNFINISH_TASK_TIMER_VALUE,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap, auditTime, exhaustMap } from 'rxjs/operators';
 import { getNewTaskValues, getEditTaskValues } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
-import { from, concat, of, iif } from 'rxjs';
+import { from, concat, of, iif, empty } from 'rxjs';
 import {
   captureFetchErrorUserErr,
   captureFetchError,
   captureFetchErrorMoreActions,
 } from './errors';
 import { safeCombineEpics } from './combine';
-import { postNewTask, getTasks, finishTasks, deleteTask, putEditTask } from 'core/operations/task';
+import * as ops from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedTaskId, getSelectedTaskGUID } from 'core/selectors/task';
 import { getSelectedListId } from 'core/selectors/boardLists';
@@ -42,7 +43,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
       };
     }),
     switchMap(({ q, data }) =>
-      postNewTask(data, q).pipe(
+      ops.postNewTask(data, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
@@ -88,7 +89,7 @@ const fetchTasksEpic: AppEpic = (action$, state$) =>
       listId: getSelectedListId(state$.value),
     })),
     switchMap(({ q, listId }) =>
-      getTasks(listId, q).pipe(
+      ops.getTasks(listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<BoardTaskItem[]>>).pipe(
@@ -139,7 +140,7 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
           type: 'SET_FINISH_TASK_TIMER',
           payload: FINISH_TASK_TIMER_VALUE,
         } as AppDispatch),
-        finishTasks(taskIds, listId, q).pipe(
+        ops.finishTasks(taskIds, listId, q).pipe(
           switchMap((response) => {
             if (response.ok) {
               return concat(
@@ -184,7 +185,7 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
       };
     }),
     switchMap(({ q, selectedTaskId, listId }) =>
-      deleteTask(selectedTaskId, listId, q).pipe(
+      ops.deleteTask(selectedTaskId, listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return concat(
@@ -231,7 +232,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
       };
     }),
     switchMap(({ q, dataModel }) =>
-      putEditTask(dataModel, q).pipe(
+      ops.putEditTask(dataModel, q).pipe(
         switchMap((response) => {
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
@@ -270,10 +271,52 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const unfinishTasksEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('UNFINISH_TASK'),
+    auditTime(UNFINISH_TASK_TIMER_VALUE),
+    map(() => {
+      const state = state$.value;
+      const { tasksToBeUnfinished } = getBoardUiState(state);
+
+      return {
+        q: getQToQuery(state),
+        taskIds: tasksToBeUnfinished,
+        listId: getSelectedListId(state),
+      };
+    }),
+    exhaustMap(({ q, taskIds, listId }) =>
+      iif(
+        () => !taskIds.length,
+        empty(),
+        ops.unfinishTasks(taskIds, listId, q).pipe(
+          switchMap((response) => {
+            if (response.ok) {
+              return concat(
+                of({
+                  type: 'SET_UPDATING_DATA',
+                  payload: FetchingStateName.Tasks,
+                } as AppDispatch),
+                of({
+                  type: 'RESET_UNFINISH_TASKS',
+                  payload: [],
+                } as AppDispatch)
+              );
+            } else {
+              throw new Error(`Http ${response.status} on ${response.url}`);
+            }
+          }),
+          captureFetchError(FetchingStateName.FinishTasks)
+        )
+      )
+    )
+  );
+
 export const taskEpics = safeCombineEpics(
   postNewTaskEpic,
   fetchTasksEpic,
   finishTasksEpic,
   deleteTaskEpic,
-  putEditTaskEpic
+  putEditTaskEpic,
+  unfinishTasksEpic
 );

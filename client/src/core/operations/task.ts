@@ -9,6 +9,9 @@ export const getTasks = (listId: number, q: string) =>
 
 export const finishTasks = (taskIds: number[], listId: number, q: string) =>
   request(`/list/tasks${q}`, Method.Put, { taskIds, listId });
+  
+export const unfinishTasks = (taskIds: number[], listId: number, q: string) =>
+  request(`/list/tasks${q}`, Method.Delete, { taskIds, listId });
 
 export const deleteTask = (taskId: number, listId: number, q: string) =>
   request(`/list/task${q}&taskId=${taskId}&listId=${listId}`, Method.Delete);

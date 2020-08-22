@@ -40,6 +40,7 @@ export type BoardState = {
     dueDate: string | null;
   };
   tasksToBeFinished: number[];
+  tasksToBeUnfinished: number[];
   tasksToBeFinishedTimer: number;
   selectedTask: TaskInfo;
   editedTask: TaskInfo;

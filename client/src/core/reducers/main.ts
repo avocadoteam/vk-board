@@ -44,6 +44,7 @@ export const initialState: models.AppState['ui'] = {
       dueDate: '',
       name: '',
     },
+    tasksToBeUnfinished: [],
     tasksToBeFinished: [],
     tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
     selectedTask: {
@@ -253,12 +254,41 @@ export const reducer = (
         },
       };
     }
+    case 'UNFINISH_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeUnfinished: [...state.board.tasksToBeUnfinished, dispatch.payload],
+        },
+      };
+    }
+    case 'REMOVE_UNFINISH_TASK': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeUnfinished: state.board.tasksToBeUnfinished.filter(
+            (tId) => tId !== dispatch.payload
+          ),
+        },
+      };
+    }
     case 'RESET_FINISH_TASKS': {
       return {
         ...state,
         board: {
           ...state.board,
           tasksToBeFinished: dispatch.payload,
+        },
+      };
+    }
+    case 'RESET_UNFINISH_TASKS': {
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          tasksToBeUnfinished: dispatch.payload,
         },
       };
     }

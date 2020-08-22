@@ -71,6 +71,22 @@ export class ListController {
     await this.taskService.finishTasks(model.taskIds, vkUserId, model.listId);
   }
 
+  @Delete('/tasks')
+  async unfinishTasks(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Body()
+    model: FinishTasksModel,
+  ) {
+    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+      throw new BadRequestException();
+    }
+    await this.taskService.unfinishTasks(model.taskIds, vkUserId, model.listId);
+  }
+
   @Post('/task')
   async createTask(
     @Query(

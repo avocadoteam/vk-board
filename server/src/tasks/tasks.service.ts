@@ -128,6 +128,11 @@ export class TasksService {
 
     await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
   }
+  async unfinishTasks(taskIds: number[], vkUserId: number, listId: number) {
+    await this.tableTask.update(taskIds, { finished: null });
+
+    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
+  }
   async deleteTask(taskId: number, vkUserId: number, listId: number) {
     const now = new Date();
 

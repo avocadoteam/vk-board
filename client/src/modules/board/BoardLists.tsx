@@ -13,6 +13,7 @@ import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
 import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boardLists';
 import { AdsBanner } from 'modules/ads';
 import { BoardEmpty } from './BoardEmpty';
+import { BoardFinishedTasks } from './BoardFinishedTasks';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -122,18 +123,7 @@ export const BoardLists = React.memo(() => {
         <BoardEmpty />
         {!updatingListOfTasks && taskRender}
         {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
-        {showFinished && (
-          <List>
-            <Cell onClick={() => {}} expandable>
-              <Text className={`useMonrope ${css({ color: '#959595' })}`} weight="medium">
-                Готово{' '}
-                <span className={`useMonrope ${css({ color: dark ? '#5F5F5F' : '#CFCFCF' })}`}>
-                  {finishedCount}
-                </span>
-              </Text>
-            </Cell>
-          </List>
-        )}
+        <BoardFinishedTasks />
       </Div>
     </>
   );

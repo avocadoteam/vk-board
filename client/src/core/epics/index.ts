@@ -19,7 +19,7 @@ export const rootEpic: Epic = (action$, store$, dependencies) =>
     socketEpics
   )(action$, store$, dependencies).pipe(
     catchError((error, source) => {
-      console.error(error);
+      console.error('Error in root epic', error);
       captureUrlEvent(`Error in root epic ${errMap(error)}`);
       return source;
     })
