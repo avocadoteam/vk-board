@@ -1,15 +1,16 @@
 import React from 'react';
-import { Div, CardGrid, Card, Text, MiniInfoCell } from '@vkontakte/vkui';
+import { Div, CardGrid, Card, Text, MiniInfoCell, Spinner } from '@vkontakte/vkui';
 import { useFela, CssFelaStyle } from 'react-fela';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { Button } from 'atoms/Button';
-import { appV } from 'core/models';
+import { appV, AppDispatchActions, FetchingStateName } from 'core/models';
 import { Notifications } from './Notifications';
 import { isPlatformIOS } from 'core/selectors/settings';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 import { useTransition, useChain, animated } from 'react-spring';
+import { hasUserPremium, isPaymentUpdating } from 'core/selectors/payment';
 
 const itemsToAppear = [
   {
@@ -40,7 +41,18 @@ const itemsToAppear = [
 
 export const Premium = React.memo(() => {
   const dark = useSelector(isThemeDrak);
+  const updating = useSelector(isPaymentUpdating);
+  const hasPremium = useSelector(hasUserPremium);
   const { css } = useFela({ dark });
+  const transRef = React.useRef<any>();
+  const dispatch = useDispatch<AppDispatchActions>();
+
+  const handleBuy = React.useCallback(() => {
+    dispatch({
+      type: 'SET_UPDATING_DATA',
+      payload: FetchingStateName.PaymentProccess,
+    });
+  }, [dispatch]);
 
   const cellInfoCss = css(infoStyle, textStyle);
   const textCss = css(textStyle);
@@ -48,17 +60,24 @@ export const Premium = React.memo(() => {
     marginTop: '31px',
   });
 
-  const buyButton = isPlatformIOS() ? (
-    <Button mode="primary" stretched className={btnCss} disabled before={<Icon16Lock />} square>
-      Недоступно на iOS
-    </Button>
-  ) : (
-    <Button mode="primary" stretched className={btnCss} square>
-      Купить 228 ₽
-    </Button>
-  );
-
-  const transRef = React.useRef<any>();
+  const buyButton =
+    isPlatformIOS() && !hasPremium ? (
+      <Button mode="primary" stretched className={btnCss} disabled before={<Icon16Lock />} square>
+        Недоступно на iOS
+      </Button>
+    ) : hasPremium ? null : (
+      <Button
+        mode="primary"
+        stretched
+        className={btnCss}
+        square
+        onClick={handleBuy}
+        disabled={updating}
+        before={updating ? <Spinner className={css({ color: dark ? '#222327' : '#fff' })} /> : null}
+      >
+        Купить 228 ₽
+      </Button>
+    );
 
   const transition = useTransition(itemsToAppear, {
     from: {
@@ -125,7 +144,8 @@ export const Premium = React.memo(() => {
                 lineHeight: '24px',
               })}`}
             >
-              Купите <span className={css({ color: '#42A4FF' })}>премиум</span>
+              {hasPremium ? 'Вы уже купили ' : 'Купите '}
+              <span className={css({ color: '#42A4FF' })}>премиум</span>
             </Text>
             {transitionFragments}
           </div>

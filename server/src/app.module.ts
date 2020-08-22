@@ -11,6 +11,7 @@ import { BoardModule } from './board/board.module';
 import { TasksModule } from './tasks/tasks.module';
 import { EventsModule } from './events/events.module';
 import { RestricitionsModule } from './restricitions/restricitions.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { RestricitionsModule } from './restricitions/restricitions.module';
     TasksModule,
     EventsModule,
     RestricitionsModule,
+    PaymentModule,
   ],
   controllers: [AppController],
 })

@@ -35,14 +35,25 @@ const getUserInfo: AppEpic = (action$, state$) =>
             },
             {
               type: 'SET_UPDATING_DATA',
+              payload: FetchingStateName.PaymentInfo,
+            },
+            {
+              type: 'SET_UPDATING_DATA',
               payload: FetchingStateName.UserSKeys,
             },
           ] as AppDispatch[];
         }),
-        captureFetchErrorMoreActions(FetchingStateName.User, {
-          type: 'SET_UPDATING_DATA',
-          payload: FetchingStateName.UserSKeys,
-        })
+        captureFetchErrorMoreActions(
+          FetchingStateName.User,
+          {
+            type: 'SET_UPDATING_DATA',
+            payload: FetchingStateName.UserSKeys,
+          },
+          {
+            type: 'SET_UPDATING_DATA',
+            payload: FetchingStateName.PaymentInfo,
+          }
+        )
       )
     )
   );

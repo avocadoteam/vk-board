@@ -8,6 +8,7 @@ import { boardEpics } from './board';
 import { taskEpics } from './tasks';
 import { membershipEpics } from './membership';
 import { socketEpics } from './socket';
+import { paymentEpics } from './payment';
 
 export const rootEpic: Epic = (action$, store$, dependencies) =>
   combineEpics(
@@ -16,7 +17,8 @@ export const rootEpic: Epic = (action$, store$, dependencies) =>
     boardEpics,
     taskEpics,
     membershipEpics,
-    socketEpics
+    socketEpics,
+    paymentEpics
   )(action$, store$, dependencies).pipe(
     catchError((error, source) => {
       console.error('Error in root epic', error);

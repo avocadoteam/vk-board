@@ -99,6 +99,8 @@ export enum FetchingStateName {
   DropMembership = 'drop_membership',
   SaveMembership = 'save_membership',
   ListMembershipPreview = 'list_membership_preview',
+  PaymentProccess = 'payment_proccess',
+  PaymentInfo = 'payment_info'
 }
 
 export enum FetchingStatus {

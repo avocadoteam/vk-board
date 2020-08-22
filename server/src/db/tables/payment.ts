@@ -10,14 +10,21 @@ export class Payment {
     type: 'int8',
     transformer: new ColumnNumericTransformer(),
   })
-  user_id!: number;
+  user_id: number;
 
   @Column({
     type: 'timestamp',
   })
   created: Date;
 
-  constructor() {
+  @Column({
+    type: 'text',
+  })
+  amount: string;
+
+  constructor(amount: string, userId: number) {
     this.created = new Date();
+    this.amount = amount;
+    this.user_id = userId;
   }
 }

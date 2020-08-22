@@ -1,8 +1,14 @@
 import { createSelector } from 'reselect';
 import { getStateUi, getBoardUiState } from './common';
-import { FetchingStateName, FetchingDataType, FetchingStatus, MaxFreeListsPerPerson } from 'core/models';
+import {
+  FetchingStateName,
+  FetchingDataType,
+  FetchingStatus,
+  MaxFreeListsPerPerson,
+} from 'core/models';
 import { isBoardUpdating, getBoardLists } from './board';
 import { getUserId } from './user';
+import { hasUserPremium } from './payment';
 
 const getNewListDataState = createSelector(
   getStateUi,
@@ -70,5 +76,7 @@ export const selectedBoardListInfo = createSelector(getSelectedList, (list) => l
 export const canUserContinueCreateLists = createSelector(
   getBoardLists,
   getUserId,
-  (data, userId) => data.filter(d => d.createdBy === userId).length < MaxFreeListsPerPerson
-)
+  hasUserPremium,
+  (data, userId, hasPremium) =>
+    data.filter((d) => d.createdBy === userId).length < MaxFreeListsPerPerson || hasPremium
+);
