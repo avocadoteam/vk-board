@@ -17,7 +17,7 @@ export const NoTasks = React.memo<Props>(({ className = '', style = {} }) => {
         className={className}
         style={style}
       >
-        <g clip-path="url(#clip0)">
+        <g clipPath="url(#clip0)">
           <mask
             id="mask0"
             mask-type="alpha"
@@ -145,9 +145,9 @@ export const NoTasks = React.memo<Props>(({ className = '', style = {} }) => {
             y2="28.0347"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#808080" stop-opacity="0.25" />
-            <stop offset="0.54" stop-color="#808080" stop-opacity="0.12" />
-            <stop offset="1" stop-color="#808080" stop-opacity="0.1" />
+            <stop stopColor="#808080" stopOpacity="0.25" />
+            <stop offset="0.54" stopColor="#808080" stopOpacity="0.12" />
+            <stop offset="1" stopColor="#808080" stopOpacity="0.1" />
           </linearGradient>
           <linearGradient
             id="paint1_linear"
@@ -157,9 +157,9 @@ export const NoTasks = React.memo<Props>(({ className = '', style = {} }) => {
             y2="22661"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#808080" stop-opacity="0.25" />
-            <stop offset="0.54" stop-color="#808080" stop-opacity="0.12" />
-            <stop offset="1" stop-color="#808080" stop-opacity="0.1" />
+            <stop stopColor="#808080" stopOpacity="0.25" />
+            <stop offset="0.54" stopColor="#808080" stopOpacity="0.12" />
+            <stop offset="1" stopColor="#808080" stopOpacity="0.1" />
           </linearGradient>
           <clipPath id="clip0">
             <rect width="176.817" height="168.333" fill="white" transform="translate(0.0915527)" />

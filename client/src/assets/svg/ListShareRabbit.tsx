@@ -20,7 +20,7 @@ export const ListShareRabbit = React.memo<Props>(({ className = '', style = {} }
       >
         <circle cx="44.5" cy="44.5" r="43.5" fill="url(#pattern0)" stroke="#F0F0F0" />
         <rect x="65.5" y="64.5" width="23.1818" height="23.1818" rx="11.5909" fill="white" />
-        <g clip-path="url(#clip0)">
+        <g clipPath="url(#clip0)">
           <path
             d="M79.1809 71.4925L80.8531 73.1647L79.1809 74.8368"
             stroke="#42A4FF"
