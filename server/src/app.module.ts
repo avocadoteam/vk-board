@@ -14,7 +14,7 @@ import { RestricitionsModule } from './restricitions/restricitions.module';
 import { PaymentModule } from './payment/payment.module';
 import { GoogleTasksModule } from './google-tasks/google-tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { NotificationsService } from './notifications/notifications.service';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -51,8 +51,8 @@ import { NotificationsService } from './notifications/notifications.service';
     RestricitionsModule,
     PaymentModule,
     GoogleTasksModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [NotificationsService],
 })
 export class AppModule {}

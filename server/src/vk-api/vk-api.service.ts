@@ -1,7 +1,7 @@
 import { Injectable, HttpService, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { buildQueryString } from 'src/utils/api';
-import { vkApiV } from 'src/constants';
+import { vkApiV, notificationMessage } from 'src/constants';
 
 @Injectable()
 export class VkApiService {
@@ -69,6 +69,42 @@ export class VkApiService {
       this.logger.log(`updateWithAvatars error`);
       this.logger.error(error);
       return [];
+    }
+  }
+
+  async notifyPersonsForIncomingTasks(userIds: number[]) {
+    try {
+      const result = await this.httpService
+        .post(
+          `https://api.vk.com/method/notifications.sendMessage${buildQueryString(
+            [
+              { user_ids: userIds.join(',') },
+              { message: notificationMessage },
+              {
+                access_token: this.configService.get<string>(
+                  'integration.vkServiceKey',
+                  '',
+                ),
+              },
+              { v: vkApiV },
+            ],
+          )}`,
+        )
+        .toPromise();
+
+      if (result.data.error) {
+        this.logger.log(`notification failed ${result.data.error?.error_msg}`);
+      }
+      if (result.data.response[0] && result.data.response[0].error) {
+        this.logger.log(
+          `notification failed ${result.data.response[0]?.error}`,
+        );
+      }
+
+      this.logger.log(`notification sent`);
+    } catch (error) {
+      this.logger.log(`notification error`);
+      this.logger.error(error);
     }
   }
 }
