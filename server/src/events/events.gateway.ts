@@ -63,14 +63,18 @@ export class EventsGateway implements OnGatewayInit {
       this.logger.log(`emit task ${taskId}`);
       initServer.to(listGUID).emit(SocketEvents.new_task, taskId);
     };
-
+    const stopGsync = (userId: number) => {
+      initServer.to(userId.toString()).emit(SocketEvents.stop_g_sync);
+    };
+    
+    EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
   }
 
   @SubscribeMessage('joinRoom')
   async joinRoom(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() listGUID: string,
+    @MessageBody() { listGUID, userId }: { listGUID: string; userId: number },
   ) {
     await this.autoLeaveRooms(socket);
 
@@ -82,6 +86,14 @@ export class EventsGateway implements OnGatewayInit {
         this.logger.error(error);
       } else {
         this.logger.log(`joined room ${listGUID}`);
+      }
+    });
+    adapter.remoteJoin(socket.id, userId.toString(), (error: Error) => {
+      if (error) {
+        this.logger.log(`joined room failed ${userId}`);
+        this.logger.error(error);
+      } else {
+        this.logger.log(`joined room ${userId}`);
       }
     });
 

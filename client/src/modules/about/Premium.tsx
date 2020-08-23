@@ -67,6 +67,13 @@ export const Premium = React.memo(() => {
     });
   }, [dispatch]);
 
+  const startSync = React.useCallback(() => {
+    dispatch({
+      type: 'SET_GOOGLE_SYNC',
+      payload: true,
+    });
+  }, [dispatch]);
+
   const cellInfoCss = css(infoStyle, textStyle);
   const textCss = css(textStyle);
   const btnCss = css({
@@ -84,7 +91,7 @@ export const Premium = React.memo(() => {
         stretched
         className={btnCss}
         before={
-          updating ? (
+          gUpdating ? (
             <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
           ) : (
             <Icon24LogoGoogle />
@@ -92,6 +99,7 @@ export const Premium = React.memo(() => {
         }
         square
         disabled={gUpdating || gHrs < 24}
+        onClick={startSync}
       >
         <a
           href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}

@@ -116,7 +116,7 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
       )
     )
   );
-const lasGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
+const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('SET_UPDATING_DATA'),
     filter(({ payload }) => payload === FetchingStateName.LastGoogleSync),
@@ -150,5 +150,5 @@ const lasGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
 export const paymentEpics = safeCombineEpics(
   userMakePaymentEpic,
   ensurePaymentEpic,
-  lasGoogleSyncInfoEpic
+  lastGoogleSyncInfoEpic
 );

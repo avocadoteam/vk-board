@@ -25,7 +25,7 @@ export class GoogleTasksController {
   getPolicy(@Res() res: Response) {
     res.redirect('https://vk.com/privacy');
   }
-  
+
   @Get('/terms')
   getTerms(@Res() res: Response) {
     res.redirect('https://vk.com/terms');

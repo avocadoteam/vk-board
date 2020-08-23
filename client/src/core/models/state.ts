@@ -30,6 +30,7 @@ export type AppState = {
     membership: MembershipState;
     showAds: boolean;
     errorsQueue: string[];
+    googleSyncProccess: boolean;
   };
   router: RouterState;
 };
@@ -67,6 +68,7 @@ export type AppDispatch =
   | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
   | { type: 'SET_ADS'; payload: boolean }
   | { type: 'SET_FIRST_BOARD_LIST_NAME'; payload: string }
+  | { type: 'SET_GOOGLE_SYNC'; payload: boolean }
   | ErrorEnqueue
   | ErrorDequeue
   | LocationChangeAction;

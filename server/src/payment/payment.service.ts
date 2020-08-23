@@ -6,6 +6,8 @@ import { premiumPrice, syncRestrictionHours } from 'src/constants/premium';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey, dayTTL } from 'src/contracts/cache';
 import * as moment from 'moment';
+import { EventBus } from 'src/events/events.bus';
+import { BusEvents } from 'src/contracts/enum';
 
 @Injectable()
 export class PaymentService {
@@ -70,6 +72,8 @@ export class PaymentService {
 
     await this.cache.del(cacheKey.googleSync(user_id));
     await this.cache.del(cacheKey.boardList(String(user_id)));
+
+    EventBus.emit(BusEvents.STOP_G_SYNC, user_id);
   }
 
   async getDurationOf24HoursBeforeNewSync(user_id: number) {
