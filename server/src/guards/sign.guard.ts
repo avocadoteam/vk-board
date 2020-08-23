@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   Inject,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
@@ -13,6 +14,8 @@ import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class SignGuard implements CanActivate {
+  private readonly logger = new Logger(SignGuard.name);
+
   constructor(
     @Inject(integrationConfig.KEY)
     private config: ConfigType<typeof integrationConfig>,
@@ -26,7 +29,7 @@ export class SignGuard implements CanActivate {
     const ordered: { [key: string]: any } = {};
     Object.keys(request.query)
       .sort()
-      .forEach(key => {
+      .forEach((key) => {
         if (key.slice(0, 3) === 'vk_') {
           ordered[key] = request.query[key];
         }
@@ -43,7 +46,7 @@ export class SignGuard implements CanActivate {
       .replace(/=$/, '');
 
     const signed = paramsHash === request.query.sign;
-    console.log(`[SignGuard] controller ${request.path} result`, signed);
+    this.logger.log(`controller ${request.path} result ${signed}`);
 
     return signed;
   }

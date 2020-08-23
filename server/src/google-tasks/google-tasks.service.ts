@@ -1,4 +1,4 @@
-import { Injectable, HttpService, Scope } from '@nestjs/common';
+import { Injectable, HttpService, Scope, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { buildQueryString } from 'src/utils/api';
 import { google, tasks_v1 } from 'googleapis';
@@ -22,6 +22,8 @@ const scopes = [
 
 @Injectable({ scope: Scope.REQUEST })
 export class GoogleTasksService {
+  private readonly logger = new Logger(GoogleTasksService.name);
+
   constructor(
     private httpService: HttpService,
     private config: ConfigService,
@@ -82,10 +84,7 @@ export class GoogleTasksService {
       .toPromise();
 
     if (result.data.error) {
-      console.log(
-        '[GoogleTasksService] access_token failed',
-        result.data.error?.error_msg,
-      );
+      this.logger.log(`access_token failed ${result.data.error?.error_msg}`);
       return '';
     }
 
@@ -149,7 +148,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -227,7 +226,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

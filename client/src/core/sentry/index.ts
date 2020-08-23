@@ -5,11 +5,11 @@ import { UserInfo } from '@vkontakte/vk-bridge';
 import { appV } from 'core/models';
 
 export const captureUrlEvent = (message: string, request: sentry.Request = {}) => {
-  sentry.captureEvent({
-    message,
-    request,
-    level: Severity.Error,
-  });
+  // sentry.captureEvent({
+  //   message,
+  //   request,
+  //   level: Severity.Error,
+  // });
 };
 
 const beforeSend: sentry.BrowserOptions['beforeSend'] = (event) => {

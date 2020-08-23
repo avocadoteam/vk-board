@@ -1,4 +1,4 @@
-import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
+import { Injectable, CACHE_MANAGER, Inject, Logger } from '@nestjs/common';
 import { Task } from 'src/db/tables/task';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
@@ -10,6 +10,7 @@ import { cacheKey } from 'src/contracts/cache';
 
 @Injectable()
 export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
   constructor(
     @InjectRepository(Task)
     private tableTask: Repository<Task>,
@@ -53,7 +54,7 @@ export class TasksService {
 
       return newTask.id;
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -86,7 +87,7 @@ export class TasksService {
         cacheKey.tasks(String(vkUserId), String(model.listId)),
       );
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

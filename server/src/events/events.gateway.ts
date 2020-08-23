@@ -9,7 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { NameSpaces, SocketEvents, BusEvents } from 'src/contracts/enum';
 import { EventBus } from './events.bus';
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import * as qs from 'querystring';
 import * as crypto from 'crypto';
 import integrationConfig from 'src/config/integration.config';
@@ -18,6 +18,7 @@ import { RedisAdapter } from 'socket.io-redis';
 
 @WebSocketGateway({ namespace: NameSpaces.SelctedList })
 export class EventsGateway implements OnGatewayInit {
+  private readonly logger = new Logger(EventsGateway.name);
   constructor(
     @Inject(integrationConfig.KEY)
     private config: ConfigType<typeof integrationConfig>,
@@ -50,7 +51,7 @@ export class EventsGateway implements OnGatewayInit {
         .replace(/=$/, '');
 
       const signed = paramsHash === query.sign;
-      console.log(`[SignWSGuard] ws result`, signed);
+      this.logger.log(`ws result ${signed}`);
       if (!signed) {
         next(new Error('Authentication error'));
       } else {
@@ -59,7 +60,7 @@ export class EventsGateway implements OnGatewayInit {
     });
 
     const newTask = (taskId: number, listGUID: string) => {
-      console.log('emit task', taskId);
+      this.logger.log(`emit task ${taskId}`);
       initServer.to(listGUID).emit(SocketEvents.new_task, taskId);
     };
 
@@ -77,17 +78,16 @@ export class EventsGateway implements OnGatewayInit {
 
     adapter.remoteJoin(socket.id, listGUID, (error: Error) => {
       if (error) {
-        console.info('joined room failed', listGUID);
-        console.error('joined room error', error);
+        this.logger.log(`joined room failed ${listGUID}`);
+        this.logger.error(error);
       } else {
-        console.info('joined room ', listGUID);
-        console.log('socket in', socket.rooms);
+        this.logger.log(`joined room ${listGUID}`);
       }
     });
 
     if (socket.listeners('disconnect').length < 3) {
       socket.once('disconnect', () => {
-        console.info('list socket disconnected');
+        this.logger.log('list socket disconnected');
         this.autoLeaveRooms(socket);
         socket.leaveAll();
       });
@@ -103,7 +103,7 @@ export class EventsGateway implements OnGatewayInit {
     if (!!listGUID) {
       adapter.remoteLeave(socket.id, listGUID, (err: Error) => {
         if (err) {
-          console.error(err);
+          this.logger.error(err);
         }
       });
     }
@@ -114,12 +114,12 @@ export class EventsGateway implements OnGatewayInit {
       const adapter = socket.adapter as RedisAdapter;
       adapter.clientRooms(socket.id, (err: Error, rooms: string[]) => {
         if (err) {
-          console.error(err);
+          this.logger.error(err);
         } else if (rooms?.length) {
           rooms.reduce((r) => {
             adapter.remoteLeave(socket.id, r, (err: Error) => {
               if (err) {
-                console.error(err);
+                this.logger.error(err);
               }
             });
             return '';

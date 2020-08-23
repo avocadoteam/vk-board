@@ -1,10 +1,11 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable, HttpService, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { buildQueryString } from 'src/utils/api';
 import { vkApiV } from 'src/constants';
 
 @Injectable()
 export class VkApiService {
+  private readonly logger = new Logger(VkApiService.name);
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,
@@ -29,16 +30,14 @@ export class VkApiService {
         .toPromise();
 
       if (result.data.error) {
-        console.log(
-          '[VkApiService] updateWithAvatars failed',
-          result.data.error?.error_msg,
+        this.logger.log(
+          `updateWithAvatars failed ${result.data.error?.error_msg}`,
         );
         return [];
       }
       if (result.data.response && result.data.response.error) {
-        console.log(
-          '[VkApiService] updateWithAvatars failed',
-          result.data.response?.error,
+        this.logger.log(
+          `updateWithAvatars failed ${result.data.response?.error}`,
         );
         return [];
       }
@@ -61,13 +60,14 @@ export class VkApiService {
         avatar: a.photo_100,
         name: `${a.first_name || ''} ${a.last_name || ''}`,
         firstName: a.first_name || '',
-        lastName: a.first_name || ''
+        lastName: a.first_name || '',
       }));
 
-      console.log('[VkApiService] updateWithAvatars done');
+      this.logger.log(`updateWithAvatars done`);
       return updatedUsers;
     } catch (error) {
-      console.log('[VkApiService] updateWithAvatars error', error);
+      this.logger.log(`updateWithAvatars error`);
+      this.logger.error(error);
       return [];
     }
   }

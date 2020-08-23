@@ -13,6 +13,8 @@ import { EventsModule } from './events/events.module';
 import { RestricitionsModule } from './restricitions/restricitions.module';
 import { PaymentModule } from './payment/payment.module';
 import { GoogleTasksModule } from './google-tasks/google-tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsService } from './notifications/notifications.service';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { GoogleTasksModule } from './google-tasks/google-tasks.module';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     ListModule,
     BoardModule,
     TasksModule,
@@ -50,5 +53,6 @@ import { GoogleTasksModule } from './google-tasks/google-tasks.module';
     GoogleTasksModule,
   ],
   controllers: [AppController],
+  providers: [NotificationsService],
 })
 export class AppModule {}

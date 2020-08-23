@@ -3,6 +3,7 @@ import {
   Inject,
   CACHE_MANAGER,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
@@ -21,6 +22,8 @@ import { VkApiService } from 'src/vk-api/vk-api.service';
 
 @Injectable()
 export class ListService {
+  private readonly logger = new Logger(ListService.name);
+
   constructor(
     @InjectRepository(List)
     private tableList: Repository<List>,
@@ -106,7 +109,7 @@ export class ListService {
 
       return newList.id;
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -268,7 +271,7 @@ export class ListService {
 
       return list.id;
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

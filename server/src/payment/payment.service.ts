@@ -1,4 +1,4 @@
-import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
+import { Injectable, Inject, CACHE_MANAGER, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/db/tables/payment';
 import { Repository, Connection } from 'typeorm';
@@ -9,6 +9,8 @@ import * as moment from 'moment';
 
 @Injectable()
 export class PaymentService {
+  private readonly logger = new Logger(PaymentService.name);
+
   constructor(
     @InjectRepository(Payment)
     private tablePayment: Repository<Payment>,
@@ -53,7 +55,7 @@ export class PaymentService {
 
       return true;
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -63,7 +65,7 @@ export class PaymentService {
 
   async updatePremiumGoogleSync(user_id: number) {
     var now = new Date();
-    console.log('Final step for g sync for user', user_id);
+    this.logger.log(`Final step for g sync for user ${user_id}`);
     await this.tablePayment.update({ user_id }, { last_g_sync: now });
 
     await this.cache.del(cacheKey.googleSync(user_id));
@@ -96,7 +98,7 @@ export class PaymentService {
       await this.cache.set(cacheKey.googleSync(user_id), hrs, { ttl: 60 });
       return hrs;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       return syncRestrictionHours;
     }
   }
