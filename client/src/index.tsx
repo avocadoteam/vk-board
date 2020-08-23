@@ -16,12 +16,9 @@ import 'core/fire-callbacks';
 import 'core/global-listen';
 import 'assets/css/theme.css';
 import 'assets/fonts/style.css';
-import { vkBridge } from 'core/vk-bridge/instance';
 // if (process.env.NODE_ENV === 'development') {
 import('./eruda').then(({ default: eruda }) => {}); //runtime download
 // }
-
-vkBridge.send('VKWebAppInit');
 
 const felaRenderer = configureFela();
 

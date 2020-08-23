@@ -21,6 +21,8 @@ const App = React.memo(() => {
     });
   };
   React.useEffect(() => {
+    
+    vkBridge.send('VKWebAppInit');
     vkBridge.subscribe(({ detail: { type, data } }) => {
       if (type === 'VKWebAppUpdateConfig') {
         const dataScheme = (data as any).scheme;
