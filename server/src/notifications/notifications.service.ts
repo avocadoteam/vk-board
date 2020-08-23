@@ -18,7 +18,7 @@ export class NotificationsService {
   @Cron('0 30 11 * * *')
   // @Cron('55 * * * * *')
   async handleCron() {
-    this.logger.debug('Called when the current second is 55');
+    this.logger.debug('Called cron job for notifications');
     const userIds = await this.fetchUserIdsFromTasksDayBeforeTheEnd();
 
     if (userIds.length) {
@@ -27,16 +27,17 @@ export class NotificationsService {
     }
   }
 
-  async fetchUserIdsFromTasksDayBeforeTheEnd() {
-    const tasks = await this.tableTask
-      .createQueryBuilder('task')
-      .where(
-        `deleted is null and due_date is not null and date_trunc('day', now() + INTERVAL '1 day') = date_trunc('day', due_date)`,
-      )
-      .select(['task.createdBy'])
-      .distinctOn(['task.createdBy'])
-      .getMany();
+  async fetchUserIdsFromTasksDayBeforeTheEnd(): Promise<number[]> {
+    const userIdsToNotify = await this.tableTask.query(`
+      select distinct lm.joined_id
+        from task t 
+        inner join list l on l.id = t.list_id and l.deleted is null
+        inner join list_membership lm on lm.list_id = l.id and lm.left_date is null
+        where t.deleted is null and t.due_date is not null and date_trunc('day', now() + INTERVAL '1 day') = date_trunc('day', t.due_date)
+    `);
 
-    return tasks.map((t) => t.createdBy);
+    return (userIdsToNotify as { joined_id: string }[]).map((u) =>
+      Number(u.joined_id),
+    );
   }
 }
