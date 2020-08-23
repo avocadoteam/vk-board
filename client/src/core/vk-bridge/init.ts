@@ -4,6 +4,8 @@ import { ClientTheme } from 'core/models';
 // import { selectedBoardListInfo } from 'core/selectors/boardLists';
 // import { joinRoom, leaveRoom } from 'core/socket/list';
 
+vkBridge.send('VKWebAppInit');
+
 // set client theme
 vkBridge.subscribe(({ detail: { type, data } }) => {
   if (type === 'VKWebAppUpdateConfig') {
@@ -44,6 +46,3 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   //   // }
   // }
 });
-
-// Init VK  Mini App
-vkBridge.send('VKWebAppInit');
