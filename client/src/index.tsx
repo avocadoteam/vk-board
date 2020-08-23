@@ -8,7 +8,6 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import { Provider as Redux } from 'react-redux';
 import { store, history } from 'core/store';
-import 'core/vk-bridge/init';
 import { RendererProvider as Fela } from 'react-fela';
 import { ConnectedRouter } from 'connected-react-router';
 import { configureFela } from 'core/fela';
@@ -17,9 +16,12 @@ import 'core/fire-callbacks';
 import 'core/global-listen';
 import 'assets/css/theme.css';
 import 'assets/fonts/style.css';
+import { vkBridge } from 'core/vk-bridge/instance';
 // if (process.env.NODE_ENV === 'development') {
 import('./eruda').then(({ default: eruda }) => {}); //runtime download
 // }
+
+vkBridge.send('VKWebAppInit');
 
 const felaRenderer = configureFela();
 
