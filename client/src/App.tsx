@@ -21,7 +21,6 @@ const App = React.memo(() => {
     });
   };
   React.useEffect(() => {
-    
     vkBridge.send('VKWebAppInit');
     vkBridge.subscribe(({ detail: { type, data } }) => {
       if (type === 'VKWebAppUpdateConfig') {
@@ -50,6 +49,8 @@ const App = React.memo(() => {
     });
     initSentry();
   }, []);
+
+  console.log(theme, 'THEME TYT');
 
   return (
     <ConfigProvider isWebView scheme={theme}>
