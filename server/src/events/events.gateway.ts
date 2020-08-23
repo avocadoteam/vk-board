@@ -104,8 +104,6 @@ export class EventsGateway implements OnGatewayInit {
       adapter.remoteLeave(socket.id, listGUID, (err: Error) => {
         if (err) {
           console.error(err);
-        } else {
-          console.log(socket.id, 'left room', listGUID);
         }
       });
     }
@@ -118,13 +116,10 @@ export class EventsGateway implements OnGatewayInit {
         if (err) {
           console.error(err);
         } else if (rooms?.length) {
-          console.log(socket.id, 'Socket rooms', rooms);
           rooms.reduce((r) => {
             adapter.remoteLeave(socket.id, r, (err: Error) => {
               if (err) {
                 console.error(err);
-              } else {
-                console.log(socket.id, 'left room', r);
               }
             });
             return '';
