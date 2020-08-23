@@ -95,7 +95,7 @@ export const Premium = React.memo(() => {
         disabled={gUpdating || gHrs < 24}
       >
         <a
-          href={gUpdating || gHrs < 24 ? undefined : '/google/auth'}
+          href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}
           target="_blank"
           className={css({ textDecoration: 'none', color: 'inherit' })}
         >
@@ -201,7 +201,7 @@ export const Premium = React.memo(() => {
                 disabled={gUpdating || gHrs < 24}
               >
                 <a
-                  href={gUpdating || gHrs < 24 ? undefined : '/google/auth'}
+                  href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}
                   target="_blank"
                   className={css({ textDecoration: 'none', color: 'inherit' })}
                 >
