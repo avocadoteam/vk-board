@@ -6,7 +6,7 @@ import { from, of, concat } from 'rxjs';
 import { buyPremium } from 'core/vk-bridge/user';
 import { devTimeout } from './addons';
 import { captureFetchErrorWithTaptic, captureFetchError } from './errors';
-import { createPayment, paymentInfo } from 'core/operations/payment';
+import { createPayment, paymentInfo, lastGoogleSyncInfo } from 'core/operations/payment';
 import { getQToQuery } from 'core/selectors/user';
 import { getSearch } from 'connected-react-router';
 
@@ -56,6 +56,10 @@ const userMakePaymentEpic: AppEpic = (action$, state$) =>
                   of({
                     type: 'SET_UPDATING_DATA',
                     payload: FetchingStateName.PaymentInfo,
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_UPDATING_DATA',
+                    payload: FetchingStateName.LastGoogleSync,
                   } as AppDispatch)
                 );
               } else {
@@ -89,13 +93,19 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<boolean>>).pipe(
               switchMap((r) => {
-                return of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.PaymentInfo,
-                    data: r?.data,
-                  },
-                } as AppDispatch);
+                return concat(
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.PaymentInfo,
+                      data: r?.data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_UPDATING_DATA',
+                    payload: FetchingStateName.LastGoogleSync,
+                  } as AppDispatch)
+                );
               })
             );
           } else {
@@ -106,5 +116,39 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
       )
     )
   );
+const lasGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.LastGoogleSync),
+    map(() => ({
+      q: getSearch(state$.value),
+    })),
+    switchMap(({ q }) =>
+      lastGoogleSyncInfo(q).pipe(
+        switchMap((response) => {
+          if (response.ok) {
+            return from(response.json() as Promise<FetchResponse<number>>).pipe(
+              switchMap((r) => {
+                return of({
+                  type: 'SET_READY_DATA',
+                  payload: {
+                    name: FetchingStateName.LastGoogleSync,
+                    data: r?.data ?? 24,
+                  },
+                } as AppDispatch);
+              })
+            );
+          } else {
+            throw new Error(`Http ${response.status} on ${response.url}`);
+          }
+        }),
+        captureFetchError(FetchingStateName.LastGoogleSync)
+      )
+    )
+  );
 
-export const paymentEpics = safeCombineEpics(userMakePaymentEpic, ensurePaymentEpic);
+export const paymentEpics = safeCombineEpics(
+  userMakePaymentEpic,
+  ensurePaymentEpic,
+  lasGoogleSyncInfoEpic
+);

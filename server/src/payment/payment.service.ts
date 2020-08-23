@@ -2,9 +2,10 @@ import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/db/tables/payment';
 import { Repository, Connection } from 'typeorm';
-import { premiumPrice } from 'src/constants/premium';
+import { premiumPrice, syncRestrictionHours } from 'src/constants/premium';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey, dayTTL } from 'src/contracts/cache';
+import * as moment from 'moment';
 
 @Injectable()
 export class PaymentService {
@@ -16,7 +17,9 @@ export class PaymentService {
   ) {}
 
   async hasUserPremium(vkUserId: number) {
-    const cacheHas = await this.cache.get<boolean>(cacheKey.hasPremium(vkUserId));
+    const cacheHas = await this.cache.get<boolean>(
+      cacheKey.hasPremium(vkUserId),
+    );
 
     if (cacheHas) {
       return cacheHas;
@@ -55,6 +58,45 @@ export class PaymentService {
       throw new Error(err);
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async updatePremiumGoogleSync(user_id: number) {
+    var now = new Date();
+    console.log('Final step for g sync for user', user_id);
+    await this.tablePayment.update({ user_id }, { last_g_sync: now });
+
+    await this.cache.del(cacheKey.googleSync(user_id));
+  }
+
+  async getDurationOf24HoursBeforeNewSync(user_id: number) {
+    try {
+      const cachedHrs = await this.cache.get<number>(
+        cacheKey.googleSync(user_id),
+      );
+      if (cachedHrs) {
+        return cachedHrs;
+      }
+      const paymentTime = await this.tablePayment.findOne({ user_id });
+
+      if (!paymentTime || paymentTime.last_g_sync === null) {
+        return syncRestrictionHours;
+      }
+
+      const computedDuration = moment.duration({
+        from: moment().add(
+          moment.duration(moment(paymentTime.last_g_sync).diff(moment())),
+        ),
+        to: moment(),
+      });
+
+      const hrs = computedDuration.asHours();
+
+      await this.cache.set(cacheKey.googleSync(user_id), hrs, { ttl: 60 });
+      return hrs;
+    } catch (error) {
+      console.error(error);
+      return syncRestrictionHours;
     }
   }
 }

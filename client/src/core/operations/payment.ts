@@ -5,3 +5,4 @@ export const createPayment = (amount: string, q: string) =>
     amount,
   });
 export const paymentInfo = (q: string) => request(`/payment${q}`, Method.Get);
+export const lastGoogleSyncInfo = (q: string) => request(`/payment/gSync${q}`, Method.Get);

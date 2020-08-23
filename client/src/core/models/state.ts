@@ -100,7 +100,8 @@ export enum FetchingStateName {
   SaveMembership = 'save_membership',
   ListMembershipPreview = 'list_membership_preview',
   PaymentProccess = 'payment_proccess',
-  PaymentInfo = 'payment_info'
+  PaymentInfo = 'payment_info',
+  LastGoogleSync = 'last_google_sync'
 }
 
 export enum FetchingStatus {

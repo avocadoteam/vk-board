@@ -11,6 +11,7 @@ import { List } from './list';
 import { TaskMembership } from './taskMembership';
 import { v4 } from 'uuid';
 import { ColumnNumericTransformer } from '../transform/int8';
+import { GList } from './gList';
 
 @Entity()
 export class Task {
@@ -51,7 +52,7 @@ export class Task {
     type: 'timestamp',
     nullable: true,
   })
-  finished!: Date | null;
+  finished: Date | null;
 
   @Column({
     type: 'timestamp',
@@ -66,6 +67,13 @@ export class Task {
   })
   dueDate: Date | null;
 
+  @Column({
+    type: 'text',
+    name: 'g_task_id',
+    nullable: true
+  })
+  g_task_id: string | null;
+
   @OneToMany((type) => TaskMembership, (tm) => tm.task)
   memberships!: TaskMembership[];
 
@@ -76,12 +84,22 @@ export class Task {
   @Index()
   list: List;
 
+  @ManyToOne((type) => GList, (glist) => glist.tasks)
+  @JoinColumn({
+    name: 'g_list_id',
+  })
+  @Index()
+  gList: GList | null;
+
   constructor(
     name: string,
     createdBy: number,
     list: List,
     description: string | null = null,
     dueDate: string | null = null,
+    g_task_id: string | null = null,
+    gList: GList | null = null,
+    finished: string | null = null,
   ) {
     this.name = name;
     this.createdBy = createdBy;
@@ -90,5 +108,8 @@ export class Task {
     this.list = list;
     this.taskGUID = v4();
     this.description = description;
+    this.g_task_id = g_task_id;
+    this.gList = gList;
+    this.finished = finished ? new Date(finished) : null;
   }
 }

@@ -12,6 +12,11 @@ const getPaymentProccessDataState = createSelector(
   (ui) => (ui.fetchingDatas[FetchingStateName.PaymentProccess] ?? {}) as FetchingDataType<boolean>
 );
 
+const getLastGoogleSyncProccessDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.LastGoogleSync] ?? {}) as FetchingDataType<number>
+);
+
 export const isPaymentUpdating = createSelector(
   getPaymentInfoDataState,
   getPaymentProccessDataState,
@@ -23,4 +28,14 @@ export const hasUserPremium = createSelector(
   getPaymentInfoDataState,
   getUserId,
   (dataState, userId) => dataState.data ?? (false || userId === payToUserId)
+);
+
+export const getLastGoogleSyncHrs = createSelector(
+  getLastGoogleSyncProccessDataState,
+  (dataState) => dataState.data ?? 24
+);
+
+export const isLastGoogleSyncUpdating = createSelector(
+  getLastGoogleSyncProccessDataState,
+  (info) => info.status === FetchingStatus.Updating
 );

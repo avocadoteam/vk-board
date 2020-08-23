@@ -9,5 +9,6 @@ import { RedisCacheModule } from 'src/redis-cache/redis-cache.module';
   imports: [TypeOrmModule.forFeature([Payment]), RedisCacheModule],
   controllers: [PaymentController],
   providers: [PaymentService],
+  exports: [PaymentService],
 })
 export class PaymentModule {}

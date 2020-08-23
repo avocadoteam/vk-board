@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { Task } from './task';
 import { ColumnNumericTransformer } from '../transform/int8';
 import { ListMembership } from './listMembership';
 import { v4 } from 'uuid';
+import { GList } from './gList';
 
 @Entity()
 export class List {
@@ -41,6 +42,9 @@ export class List {
 
   @OneToMany((type) => Task, (task) => task.list)
   tasks!: Task[];
+
+  @OneToOne((type) => GList, (task) => task.list)
+  gList!: GList;
 
   @OneToMany((type) => ListMembership, (lm) => lm.list)
   memberships!: ListMembership[];

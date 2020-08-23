@@ -1,5 +1,5 @@
 import React from 'react';
-import { Div, CardGrid, Card, Text, MiniInfoCell, Spinner } from '@vkontakte/vkui';
+import { Div, CardGrid, Card, Text, MiniInfoCell, Spinner, Subhead } from '@vkontakte/vkui';
 import { useFela, CssFelaStyle } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
@@ -10,9 +10,15 @@ import { Notifications } from './Notifications';
 import { isPlatformIOS } from 'core/selectors/settings';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 import { useTransition, useChain, animated } from 'react-spring';
-import { hasUserPremium, isPaymentUpdating } from 'core/selectors/payment';
+import {
+  hasUserPremium,
+  isPaymentUpdating,
+  isLastGoogleSyncUpdating,
+  getLastGoogleSyncHrs,
+} from 'core/selectors/payment';
 import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
 import { getUserId } from 'core/selectors/user';
+import { ruSyntaxHelper } from 'core/helpers';
 
 const itemsToAppear = [
   {
@@ -45,10 +51,15 @@ export const Premium = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const updating = useSelector(isPaymentUpdating);
   const hasPremium = useSelector(hasUserPremium);
+  const gUpdating = useSelector(isLastGoogleSyncUpdating);
+  const gHrs = useSelector(getLastGoogleSyncHrs);
   const { css } = useFela({ dark });
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
-  const km = useSelector(getUserId) === payToUserId;
+  const userId = useSelector(getUserId);
+  const km = userId === payToUserId;
+  const computedTime = Math.trunc(24 - gHrs);
+  const humanTime = computedTime > 1 ? computedTime : 1;
 
   const handleBuy = React.useCallback(() => {
     dispatch({
@@ -69,8 +80,25 @@ export const Premium = React.memo(() => {
         Недоступно на iOS
       </Button>
     ) : hasPremium ? (
-      <Button mode="primary" stretched className={btnCss} before={<Icon24LogoGoogle />} square>
-        <a href="/google/auth" target="_blank" className={css({ textDecoration: 'none' })}>
+      <Button
+        mode="primary"
+        stretched
+        className={btnCss}
+        before={
+          updating ? (
+            <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
+          ) : (
+            <Icon24LogoGoogle />
+          )
+        }
+        square
+        disabled={gUpdating || gHrs < 24}
+      >
+        <a
+          href={gUpdating || gHrs < 24 ? undefined : '/google/auth'}
+          target="_blank"
+          className={css({ textDecoration: 'none', color: 'inherit' })}
+        >
           Синхронизировать с Google Tasks
         </a>
       </Button>
@@ -162,13 +190,41 @@ export const Premium = React.memo(() => {
                 mode="primary"
                 stretched
                 className={btnCss}
-                before={<Icon24LogoGoogle />}
+                before={
+                  updating ? (
+                    <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
+                  ) : (
+                    <Icon24LogoGoogle />
+                  )
+                }
                 square
+                disabled={gUpdating || gHrs < 24}
               >
-                <a href="/google/auth" target="_blank" className={css({ textDecoration: 'none' })}>
+                <a
+                  href={gUpdating || gHrs < 24 ? undefined : '/google/auth'}
+                  target="_blank"
+                  className={css({ textDecoration: 'none', color: 'inherit' })}
+                >
                   Синхронизировать с Google Tasks
                 </a>
               </Button>
+            )}
+            {hasPremium && gHrs < 24 && (
+              <Div>
+                <Subhead
+                  weight="regular"
+                  className={css({ color: 'var(--text_secondary)', margin: 0 })}
+                >
+                  Вы сможете синхронизировать google tasks снова только через{' '}
+                  {`${humanTime} ${
+                    ruSyntaxHelper(humanTime) === 'single'
+                      ? 'час'
+                      : ruSyntaxHelper(humanTime) === 'singlePlural'
+                      ? 'часа'
+                      : 'часов'
+                  }`}
+                </Subhead>
+              </Div>
             )}
           </div>
         </Card>

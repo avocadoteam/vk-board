@@ -22,9 +22,21 @@ export class Payment {
   })
   amount: string;
 
-  constructor(amount: string, userId: number) {
+  @Column({
+    type: 'timestamp',
+    name: 'last_g_sync',
+    nullable: true,
+  })
+  last_g_sync: Date | null;
+
+  constructor(
+    amount: string,
+    userId: number,
+    last_g_sync: string | null = null,
+  ) {
     this.created = new Date();
     this.amount = amount;
     this.user_id = userId;
+    this.last_g_sync = last_g_sync ? new Date(last_g_sync) : null;
   }
 }
