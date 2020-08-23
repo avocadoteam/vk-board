@@ -1,6 +1,5 @@
 import 'core-js/features/map';
 import 'core-js/features/set';
-import 'core/vk-bridge/init';
 import 'whatwg-fetch';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import 'promise-polyfill/src/polyfill';
@@ -9,6 +8,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import { Provider as Redux } from 'react-redux';
 import { store, history } from 'core/store';
+import 'core/vk-bridge/init';
 import { RendererProvider as Fela } from 'react-fela';
 import { ConnectedRouter } from 'connected-react-router';
 import { configureFela } from 'core/fela';
