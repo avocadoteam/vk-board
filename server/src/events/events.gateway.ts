@@ -85,11 +85,13 @@ export class EventsGateway implements OnGatewayInit {
       }
     });
 
-    socket.once('disconnect', () => {
-      console.info('list socket disconnected');
-      this.autoLeaveRooms(socket);
-      socket.leaveAll();
-    });
+    if (socket.listeners('disconnect').length < 3) {
+      socket.once('disconnect', () => {
+        console.info('list socket disconnected');
+        this.autoLeaveRooms(socket);
+        socket.leaveAll();
+      });
+    }
   }
 
   @SubscribeMessage('leaveRoom')

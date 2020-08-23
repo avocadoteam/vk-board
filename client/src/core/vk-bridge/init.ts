@@ -25,11 +25,11 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   }
 
   if (type === 'VKWebAppViewRestore') {
-    const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
-    store.dispatch({
-      type: 'SET_HASH',
-      payload: hashListGUID ?? null,
-    });
+    // const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
+    // store.dispatch({
+    //   type: 'SET_HASH',
+    //   payload: hashListGUID ?? null,
+    // });
 
     const { listguid } = selectedBoardListInfo(store.getState());
     if (listguid) {
