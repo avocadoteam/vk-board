@@ -16,6 +16,7 @@ export class NotificationsService {
   ) {}
 
   @Cron('0 30 11 * * *')
+  // @Cron('55 * * * * *')
   async handleCron() {
     this.logger.debug('Called when the current second is 55');
     const userIds = await this.fetchUserIdsFromTasksDayBeforeTheEnd();
