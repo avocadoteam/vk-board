@@ -67,6 +67,7 @@ export class PaymentService {
     await this.tablePayment.update({ user_id }, { last_g_sync: now });
 
     await this.cache.del(cacheKey.googleSync(user_id));
+    await this.cache.del(cacheKey.boardList(String(user_id)));
   }
 
   async getDurationOf24HoursBeforeNewSync(user_id: number) {
