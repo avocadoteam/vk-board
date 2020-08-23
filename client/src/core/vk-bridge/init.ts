@@ -1,8 +1,8 @@
 import { vkBridge } from './instance';
 import { store } from 'core/store';
 import { ClientTheme } from 'core/models';
-import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { joinRoom, leaveRoom } from 'core/socket/list';
+// import { selectedBoardListInfo } from 'core/selectors/boardLists';
+// import { joinRoom, leaveRoom } from 'core/socket/list';
 
 // set client theme
 vkBridge.subscribe(({ detail: { type, data } }) => {
@@ -37,12 +37,12 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   //   }
   // }
 
-  if (type === 'VKWebAppViewHide') {
-    const { listguid } = selectedBoardListInfo(store.getState());
-    if (listguid) {
-      leaveRoom(listguid);
-    }
-  }
+  // if (type === 'VKWebAppViewHide') {
+  //   const { listguid } = selectedBoardListInfo(store.getState());
+  //   if (listguid) {
+  //     leaveRoom(listguid);
+  //   }
+  // }
 });
 
 // Init VK  Mini App
