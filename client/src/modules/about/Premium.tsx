@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { Button } from 'atoms/Button';
-import { appV, AppDispatchActions, FetchingStateName, payToUserId } from 'core/models';
+import { appV, AppDispatchActions, FetchingStateName } from 'core/models';
 import { Notifications } from './Notifications';
 import { isPlatformIOS } from 'core/selectors/settings';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
@@ -57,7 +57,6 @@ export const Premium = React.memo(() => {
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
   const userId = useSelector(getUserId);
-  const km = userId === payToUserId;
   const computedTime = Math.trunc(24 - gHrs);
   const humanTime = computedTime > 1 ? computedTime : 1;
 
@@ -185,30 +184,6 @@ export const Premium = React.memo(() => {
               <span className={css({ color: '#42A4FF' })}>премиум</span>
             </Text>
             {transitionFragments}
-            {km && (
-              <Button
-                mode="primary"
-                stretched
-                className={btnCss}
-                before={
-                  updating ? (
-                    <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
-                  ) : (
-                    <Icon24LogoGoogle />
-                  )
-                }
-                square
-                disabled={gUpdating || gHrs < 24}
-              >
-                <a
-                  href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}
-                  target="_blank"
-                  className={css({ textDecoration: 'none', color: 'inherit' })}
-                >
-                  Синхронизировать с Google Tasks
-                </a>
-              </Button>
-            )}
             {hasPremium && gHrs < 24 && (
               <Div>
                 <Subhead
