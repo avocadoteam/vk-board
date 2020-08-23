@@ -11,7 +11,12 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   if (type === 'VKWebAppUpdateConfig') {
     const schemeAttribute = document.createAttribute('scheme');
     const unknownData = data as any;
-    const theme = unknownData.scheme ? unknownData.scheme : 'client_light';
+
+    console.log('VKWebAppUpdateConfig', unknownData.scheme);
+
+    const stateTheme = store.getState().ui.theme;
+
+    const theme = unknownData.scheme ? unknownData.scheme : stateTheme;
     schemeAttribute.value = theme;
     document.body.attributes.setNamedItem(schemeAttribute);
 
