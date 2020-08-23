@@ -124,6 +124,9 @@ export type FetchigReadyPayload = { name: FetchingStateName; data: any };
 export type EditBoardNamePayload = { name: string; id?: number };
 
 export enum ClientTheme {
+  /**
+   * @deprecated
+   */
   oldLight = 'client_light',
   Light = 'bright_light',
   Dark = 'space_gray',
