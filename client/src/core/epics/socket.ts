@@ -13,9 +13,7 @@ const joinRoomEpic: AppEpic = (action$, state$) =>
       const { listguid } = payload.data!;
       const userId = getUserId(state$.value);
       console.log('go to room', listguid);
-      if (listguid) {
-        joinRoom(listguid, userId);
-      }
+      joinRoom(userId, listguid);
     }),
     ignoreElements()
   );

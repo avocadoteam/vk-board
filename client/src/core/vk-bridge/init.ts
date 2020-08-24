@@ -36,9 +36,7 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
 
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
-    if (listguid) {
-      joinRoom(listguid, userId);
-    }
+    joinRoom(userId, listguid);
   }
 
   if (type === 'VKWebAppViewHide') {

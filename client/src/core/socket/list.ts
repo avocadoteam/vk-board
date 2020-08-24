@@ -23,7 +23,7 @@ export const connectListSocket = (query: string) => {
   });
 };
 
-export const joinRoom = (listGUID: string, userId: number) => {
+export const joinRoom = (userId: number, listGUID?: string, ) => {
   socket.emit('joinRoom', { listGUID, userId });
 };
 export const leaveRoom = (listGUID: string) => {
