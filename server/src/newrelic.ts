@@ -9,7 +9,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['vk-board-1.0'],
+  app_name: ['vk-board-production-1.0'],
   /**
    * Your New Relic license key.
    */
