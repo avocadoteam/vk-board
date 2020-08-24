@@ -40,7 +40,7 @@ export const AdsBanner = React.memo(() => {
       >
         <div style={{ minHeight: 28 }}>
           <PromoBanner
-            className={css({ outline: 'none' })}
+            className={css({ outline: 'none !important', border: 'none !important' })}
             onClose={hideAds}
             bannerData={adsData}
           />
