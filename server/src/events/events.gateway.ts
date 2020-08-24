@@ -64,9 +64,10 @@ export class EventsGateway implements OnGatewayInit {
       initServer.to(listGUID).emit(SocketEvents.new_task, taskId);
     };
     const stopGsync = (userId: number) => {
+      this.logger.log(`emit stopGsync for user ${userId}`);
       initServer.to(userId.toString()).emit(SocketEvents.stop_g_sync);
     };
-    
+
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
   }
@@ -74,20 +75,23 @@ export class EventsGateway implements OnGatewayInit {
   @SubscribeMessage('joinRoom')
   async joinRoom(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() { listGUID, userId }: { listGUID: string; userId: number },
+    @MessageBody() { listGUID, userId }: { listGUID?: string; userId: number },
   ) {
     await this.autoLeaveRooms(socket);
 
     const adapter = socket.adapter as RedisAdapter;
 
-    adapter.remoteJoin(socket.id, listGUID, (error: Error) => {
-      if (error) {
-        this.logger.log(`joined room failed ${listGUID}`);
-        this.logger.error(error);
-      } else {
-        this.logger.log(`joined room ${listGUID}`);
-      }
-    });
+    if (listGUID) {
+      adapter.remoteJoin(socket.id, listGUID, (error: Error) => {
+        if (error) {
+          this.logger.log(`joined room failed ${listGUID}`);
+          this.logger.error(error);
+        } else {
+          this.logger.log(`joined room ${listGUID}`);
+        }
+      });
+    }
+
     adapter.remoteJoin(socket.id, userId.toString(), (error: Error) => {
       if (error) {
         this.logger.log(`joined room failed ${userId}`);
