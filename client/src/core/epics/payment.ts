@@ -93,19 +93,29 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<boolean>>).pipe(
               switchMap((r) => {
-                return concat(
-                  of({
-                    type: 'SET_READY_DATA',
-                    payload: {
-                      name: FetchingStateName.PaymentInfo,
-                      data: r?.data,
-                    },
-                  } as AppDispatch),
-                  of({
-                    type: 'SET_UPDATING_DATA',
-                    payload: FetchingStateName.LastGoogleSync,
-                  } as AppDispatch)
-                );
+                if (r?.data) {
+                  return concat(
+                    of({
+                      type: 'SET_READY_DATA',
+                      payload: {
+                        name: FetchingStateName.PaymentInfo,
+                        data: r?.data,
+                      },
+                    } as AppDispatch),
+                    of({
+                      type: 'SET_UPDATING_DATA',
+                      payload: FetchingStateName.LastGoogleSync,
+                    } as AppDispatch)
+                  );
+                }
+
+                return of({
+                  type: 'SET_READY_DATA',
+                  payload: {
+                    name: FetchingStateName.PaymentInfo,
+                    data: r?.data,
+                  },
+                } as AppDispatch);
               })
             );
           } else {
