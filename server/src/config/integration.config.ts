@@ -5,4 +5,5 @@ export default registerAs('integration', () => ({
   vkSecretKey: process.env.VK_SECRET_KEY,
   gClientSecret: process.env.G_CLIENT_SECRET,
   gClient: process.env.G_CLIENT,
+  sentryDNS: process.env.SENTRY_DNS,
 }));

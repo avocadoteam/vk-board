@@ -5,11 +5,11 @@ import { UserInfo } from '@vkontakte/vk-bridge';
 import { appV } from 'core/models';
 
 export const captureUrlEvent = (message: string, request: sentry.Request = {}) => {
-  // sentry.captureEvent({
-  //   message,
-  //   request,
-  //   level: Severity.Error,
-  // });
+  sentry.captureEvent({
+    message,
+    request,
+    level: Severity.Error,
+  });
 };
 
 const beforeSend: sentry.BrowserOptions['beforeSend'] = (event) => {
@@ -41,8 +41,7 @@ const beforeSend: sentry.BrowserOptions['beforeSend'] = (event) => {
 
 export async function initSentry() {
   return sentry.init({
-    // dsn: 'https://e0a9247786274dd8bf9f8ce968cd182b@sr.testfriendship.special.vk-apps.com/2',
-    dsn: '',
+    dsn: 'https://7803710a8c20402f927abd8f048eb230@sr.testfriendship.special.vk-apps.com/4',
     release: appV.toString(),
     beforeSend,
     enabled: process.env.NODE_ENV === 'production',
