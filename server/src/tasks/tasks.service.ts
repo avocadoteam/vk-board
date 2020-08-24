@@ -48,9 +48,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      await this.cache.del(
-        cacheKey.tasks(String(vkUserId), String(model.listId)),
-      );
+      await this.cache.del(cacheKey.tasks(String(model.listId)));
 
       return newTask.id;
     } catch (err) {
@@ -83,9 +81,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      await this.cache.del(
-        cacheKey.tasks(String(vkUserId), String(model.listId)),
-      );
+      await this.cache.del(cacheKey.tasks(String(model.listId)));
     } catch (err) {
       this.logger.error(err);
       await queryRunner.rollbackTransaction();
@@ -122,24 +118,24 @@ export class TasksService {
     return list?.tasks ?? [];
   }
 
-  async finishTasks(taskIds: number[], vkUserId: number, listId: number) {
+  async finishTasks(taskIds: number[], listId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskIds, { finished: now });
 
-    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
   }
-  async unfinishTasks(taskIds: number[], vkUserId: number, listId: number) {
+  async unfinishTasks(taskIds: number[], listId: number) {
     await this.tableTask.update(taskIds, { finished: null });
 
-    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
   }
-  async deleteTask(taskId: number, vkUserId: number, listId: number) {
+  async deleteTask(taskId: number, listId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskId, { deleted: now });
 
-    await this.cache.del(cacheKey.tasks(String(vkUserId), String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
   }
 
   async hasTasksMembership(taskIds: number[], vkUserId: number) {

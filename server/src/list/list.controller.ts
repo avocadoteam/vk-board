@@ -71,7 +71,7 @@ export class ListController {
     if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
-    await this.taskService.finishTasks(model.taskIds, vkUserId, model.listId);
+    await this.taskService.finishTasks(model.taskIds, model.listId);
   }
 
   @Delete('/tasks')
@@ -87,7 +87,7 @@ export class ListController {
     if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
-    await this.taskService.unfinishTasks(model.taskIds, vkUserId, model.listId);
+    await this.taskService.unfinishTasks(model.taskIds, model.listId);
   }
 
   @Post('/task')
@@ -144,7 +144,7 @@ export class ListController {
       throw new BadRequestException();
     }
 
-    await this.taskService.deleteTask(taskId, vkUserId, listId);
+    await this.taskService.deleteTask(taskId, listId);
   }
 
   @Delete('/membership')
