@@ -11,6 +11,7 @@ import { store, history } from 'core/store';
 import { RendererProvider as Fela } from 'react-fela';
 import { ConnectedRouter } from 'connected-react-router';
 import { configureFela } from 'core/fela';
+import 'core/vk-bridge/init';
 import '@vkontakte/vkui/dist/vkui.css';
 import 'core/fire-callbacks';
 import 'core/global-listen';
