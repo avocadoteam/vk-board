@@ -1,11 +1,11 @@
 import React from 'react';
-import { Div, CardGrid, Card, List, Cell, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
+import { Div, CardGrid, Card, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
 import { isBoardUpdating } from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
 import { AppDispatchActions, BoardTaskItem } from 'core/models';
-import { isTasksUpdating, getFinishedTasksCount } from 'core/selectors/task';
+import { isTasksUpdating } from 'core/selectors/task';
 import { ListMembershipStack } from 'modules/board-list';
 import { isThemeDrak } from 'core/selectors/common';
 import { useTransition, animated, useChain } from 'react-spring';
@@ -14,6 +14,7 @@ import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boar
 import { AdsBanner } from 'modules/ads';
 import { BoardEmpty } from './BoardEmpty';
 import { BoardFinishedTasks } from './BoardFinishedTasks';
+import { TasksRefresher } from 'modules/task/TasksRefresher';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -22,8 +23,6 @@ export const BoardLists = React.memo(() => {
   const tasks = useSelector(getSelectedListTasks);
   const updatingListOfTasks = useSelector(isTasksUpdating);
   const boardUpdating = useSelector(isBoardUpdating);
-  const finishedCount = useSelector(getFinishedTasksCount);
-  const showFinished = finishedCount > 0;
   const transRef = React.useRef<any>();
 
   const { css } = useFela();
@@ -121,7 +120,7 @@ export const BoardLists = React.memo(() => {
       >
         <AdsBanner />
         <BoardEmpty />
-        {!updatingListOfTasks && taskRender}
+        {!updatingListOfTasks && <TasksRefresher>{taskRender}</TasksRefresher>}
         {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
         <BoardFinishedTasks />
       </Div>
