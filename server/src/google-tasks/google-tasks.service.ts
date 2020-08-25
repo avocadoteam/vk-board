@@ -91,24 +91,32 @@ export class GoogleTasksService {
     return result.data.access_token ?? '';
   }
 
-  async getGoogleTaskLists(access_token: string, userId: number) {
-    let taskLists: tasks_v1.Schema$TaskList[] = [];
-
+  async fetchGoogleLists(access_token: string) {
     const response = await tasks.tasklists.list({
       access_token,
       maxResults: 100,
     });
-    taskLists = response.data.items ?? [];
+    return response.data.items ?? [];
+  }
+
+  async fetchGoogleTasks(access_token: string, listId: string) {
+    const response = await tasks.tasks.list({
+      tasklist: listId,
+      access_token,
+      maxResults: 100,
+    });
+    return response.data.items ?? [];
+  }
+
+  async getGoogleTaskLists(access_token: string, userId: number) {
+    let taskLists: tasks_v1.Schema$TaskList[] = [];
 
     while (taskLists.length === 100) {
-      const subResponse = await tasks.tasklists.list({
-        access_token,
-        maxResults: 100,
-      });
-      taskLists = subResponse.data.items ?? [];
+      taskLists = await this.fetchGoogleLists(access_token);
+      if (taskLists.length) {
+        await this.createLists(taskLists, userId);
+      }
     }
-
-    await this.createLists(taskLists, userId);
 
     await this.getGoogleTasks(
       access_token,
@@ -164,21 +172,12 @@ export class GoogleTasksService {
     for (const listId of listIds) {
       let tasksList: tasks_v1.Schema$Task[] = [];
 
-      const response = await tasks.tasks.list({
-        tasklist: listId,
-        access_token,
-        maxResults: 100,
-      });
-      tasksList = response.data.items ?? [];
-
       while (tasksList.length === 100) {
-        const subResponse = await tasks.tasks.list({
-          access_token,
-          maxResults: 100,
-        });
-        tasksList = subResponse.data.items ?? [];
+        tasksList = await this.fetchGoogleTasks(access_token, listId);
+        if (tasksList.length) {
+          await this.createTasks(tasksList, userId, listId);
+        }
       }
-      await this.createTasks(tasksList, userId, listId);
     }
   }
 
