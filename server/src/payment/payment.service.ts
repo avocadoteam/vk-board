@@ -43,6 +43,10 @@ export class PaymentService {
   }
 
   async makePremium(vkUserId: number, amount: string) {
+    if (await this.hasUserPremium(vkUserId)) {
+      this.logger.log(`User ${vkUserId} already bought the premium`);
+      return;
+    }
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
@@ -53,7 +57,11 @@ export class PaymentService {
 
       await queryRunner.commitTransaction();
 
+      this.logger.log(`User ${vkUserId} made a premium for ${amount}`);
+
       await this.cache.del(cacheKey.hasPremium(vkUserId));
+
+      EventBus.emit(BusEvents.PAYMENT_COMPLETE, vkUserId);
 
       return true;
     } catch (err) {

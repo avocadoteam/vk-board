@@ -67,9 +67,14 @@ export class EventsGateway implements OnGatewayInit {
       this.logger.log(`emit stopGsync for user ${userId}`);
       initServer.to(userId.toString()).emit(SocketEvents.stop_g_sync);
     };
+    const paymentComplete = (userId: number) => {
+      this.logger.log(`emit paymentComplete for user ${userId}`);
+      initServer.to(userId.toString()).emit(SocketEvents.payment_complete);
+    };
 
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
+    EventBus.on(BusEvents.PAYMENT_COMPLETE, paymentComplete);
   }
 
   @SubscribeMessage('joinRoom')
