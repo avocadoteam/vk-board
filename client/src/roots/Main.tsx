@@ -38,7 +38,7 @@ export const Main = React.memo(() => {
   }, [dispatch, goForward, search]);
 
   const handleBack = () => {
-    if (activeView === MainView.ListMembership) {
+    if (activeView === MainView.ListMembership || activeView === MainView.About) {
       dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
     }
     swipeBack();
