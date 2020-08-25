@@ -2,7 +2,14 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { FormLayout, Input, Spinner, FormStatus, withModalRootContext } from '@vkontakte/vkui';
+import {
+  FormLayout,
+  Input,
+  Spinner,
+  FormStatus,
+  withModalRootContext,
+  Textarea,
+} from '@vkontakte/vkui';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
 import { Button } from 'atoms/Button';
@@ -46,7 +53,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
     }
   }, [before, wrongDate]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
     dispatch({ type: 'UPDATE_NEW_TASK', payload: { name, value } });
   };
@@ -73,8 +80,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
               color: dark ? '#5F5F5F' : '#CFCFCF',
             })}
           />
-          <Input
-            type="text"
+          <Textarea
             placeholder="Введите описание"
             minLength={1}
             maxLength={1024}
@@ -85,7 +91,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
                 border: 'none !important',
                 background: 'transparent !important',
               },
-              '>input': {
+              '>textarea': {
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
@@ -95,6 +101,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             onChange={onChange}
             disabled={updating}
             value={formValues.description ?? ''}
+            grow
+            onResize={updateModalHeight}
           />
         </span>
         <span className={css({ display: 'flex' })}>

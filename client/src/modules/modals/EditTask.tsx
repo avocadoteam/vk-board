@@ -2,7 +2,15 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { FormLayout, Input, withModalRootContext, Div, FormStatus, Spinner } from '@vkontakte/vkui';
+import {
+  FormLayout,
+  Input,
+  withModalRootContext,
+  Div,
+  FormStatus,
+  Spinner,
+  Textarea,
+} from '@vkontakte/vkui';
 import { getEditTaskValues } from 'core/selectors/board';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
@@ -53,7 +61,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
     }
   }, [before, wrongDate]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
     dispatch({ type: 'EDIT_TASK', payload: { name, value } });
   };
@@ -80,11 +88,10 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
               color: dark ? '#5F5F5F' : '#CFCFCF',
             })}
           />
-          <Input
-            type="text"
+          <Textarea
             placeholder="Введите описание"
             minLength={1}
-            maxLength={256}
+            maxLength={1024}
             className={css({
               marginLeft: '0 !important',
               width: '100%',
@@ -92,7 +99,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
                 border: 'none !important',
                 background: 'transparent !important',
               },
-              '>input': {
+              '>textarea': {
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
@@ -102,6 +109,8 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             onChange={onChange}
             disabled={updating}
             value={formValues.description ?? ''}
+            grow
+            onResize={updateModalHeight}
           />
         </span>
         <span className={css({ display: 'flex' })}>
