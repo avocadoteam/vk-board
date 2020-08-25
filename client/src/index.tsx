@@ -1,5 +1,6 @@
 import 'core-js/features/map';
 import 'core-js/features/set';
+import 'core-js/features/object';
 import 'whatwg-fetch';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import 'promise-polyfill/src/polyfill';

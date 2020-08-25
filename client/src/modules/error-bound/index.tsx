@@ -1,7 +1,8 @@
 import React from 'react';
 import { PanelHeader, Group, Div, Title, Text } from '@vkontakte/vkui';
 import { AlienOffline } from 'assets/svg/AlienOffline';
-import { captureException } from '@sentry/browser';
+import { errMap } from 'core/utils';
+import { captureUrlEvent } from 'core/sentry';
 
 type LocalState = {
   hasError: boolean;
@@ -13,12 +14,12 @@ export class ErrorBoundary extends React.Component<unknown, LocalState> {
 
   static getDerivedStateFromError(error: any) {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true, error };
+    return { hasError: true, error: errMap(error) };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error) {
     // You can also log the error to an error reporting service
-    captureException(error);
+    captureUrlEvent(JSON.stringify(error));
   }
 
   render() {
