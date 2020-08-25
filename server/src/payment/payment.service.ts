@@ -64,12 +64,13 @@ export class PaymentService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const newPayment = new Payment(amount, vkUserId);
+      const amountToNormal = `${Number(amount) / 1000}`;
+      const newPayment = new Payment(amountToNormal, vkUserId);
       await queryRunner.manager.save(newPayment);
 
       await queryRunner.commitTransaction();
 
-      this.logger.log(`User ${vkUserId} made a premium for ${amount}`);
+      this.logger.log(`User ${vkUserId} made a premium for ${amountToNormal}`);
 
       await this.cache.del(cacheKey.hasPremium(vkUserId));
 

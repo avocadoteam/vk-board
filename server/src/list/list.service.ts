@@ -58,7 +58,6 @@ export class ListService {
           .take(1)
           .getQuery()} is not null`,
       )
-      .setParameter('registered', true)
       .orderBy({
         'list.created': 'ASC',
       })
