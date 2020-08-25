@@ -75,6 +75,7 @@ export class PaymentController {
     res: Response,
   ) {
     if (model.type === 'confirmation') {
+      res.setHeader('content-type', 'text/plain');
       return res.send(this.config.vkConfirmCode);
     }
 
