@@ -24,9 +24,6 @@ export class VkCallbackGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    this.logger.log(`incoming secret ${request.body.secret}`);
-    this.logger.log(`to verify secret ${this.config.vkCbSecret}`);
-
     const sameSecret = request.body.secret === this.config.vkCbSecret;
 
     this.logger.log(`controller ${request.path} result ${sameSecret}`);

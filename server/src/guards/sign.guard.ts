@@ -45,7 +45,6 @@ export class SignGuard implements CanActivate {
       .replace(/\//g, '_')
       .replace(/=$/, '');
 
-    this.logger.log(`request key ${this.config.vkSecretKey}`);
     const signed = paramsHash === request.query.sign;
     this.logger.log(`controller ${request.path} result ${signed}`);
 
