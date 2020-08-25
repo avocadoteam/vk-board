@@ -2,7 +2,6 @@ import React from 'react';
 import { ModalRoot, ModalPage, Separator, List } from '@vkontakte/vkui';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
-import { getActiveModal } from 'core/selectors/common';
 import { useFela } from 'react-fela';
 import { NewList } from './NewList';
 import { Lists } from './Lists';
@@ -14,9 +13,10 @@ import { DeletePreview } from './DeletePreview';
 import { EditTask } from './EditTask';
 import { NewTaskHeader } from './NewTaskHeader';
 import { NewTask } from './NewTask';
-import { push, getSearch } from 'connected-react-router';
+import { push, getSearch, goBack } from 'connected-react-router';
 import { DropMember } from './DropMember';
 import { DeleteList } from './DeleteList';
+import { getActiveModalRoute, getActiveMainView } from 'core/selectors/router';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
@@ -25,19 +25,21 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
     const [highlight, setHighlight] = React.useState(false);
 
     const search = useSelector(getSearch);
-    const activeModal = useSelector(getActiveModal);
+    const activeModal = useSelector(getActiveModalRoute);
+    const mainView = useSelector(getActiveMainView);
     const dispatch = useDispatch<AppDispatchActions>();
     const { css } = useFela();
 
     const closeModal = React.useCallback(() => {
-      dispatch({ type: 'SET_MODAL', payload: null });
-    }, [dispatch]);
+      if (mainView === MainView.Board || mainView === MainView.ListMembership) {
+        dispatch(goBack() as any);
+      }
+    }, [dispatch, mainView]);
 
     const goToAbout = React.useCallback(() => {
-      closeModal();
       goForward(MainView.About);
       dispatch(push(`/${MainView.About}${search}`) as any);
-    }, [dispatch, goForward, closeModal, search]);
+    }, [dispatch, goForward, search]);
 
     return (
       <ModalRoot activeModal={activeModal} onClose={closeModal}>

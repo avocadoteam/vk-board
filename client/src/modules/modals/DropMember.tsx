@@ -6,6 +6,7 @@ import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { getUserFirstNameToDelete } from 'core/selectors/membership';
+import { goBack } from 'connected-react-router';
 
 export const DropMember = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
@@ -14,7 +15,7 @@ export const DropMember = React.memo<{ id: string }>(({ id }) => {
   const name = useSelector(getUserFirstNameToDelete);
 
   const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
+    dispatch(goBack() as any);
   }, [dispatch]);
 
   const dropMember = React.useCallback(() => {

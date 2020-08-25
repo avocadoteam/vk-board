@@ -11,6 +11,7 @@ import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { tapticSelected } from 'core/vk-bridge/taptic';
+import { goBack } from 'connected-react-router';
 
 type Props = {
   listItem: BoardListItem & {
@@ -43,15 +44,11 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
     { delay: 2000 }
   );
 
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
-
   const handleClickList = () => {
     if (selectedBoardListId !== listItem.id) {
       dispatch({ type: 'SELECT_BOARD_LIST', payload: { id: listItem.id, data: listItem } });
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
-      closeModal();
+      dispatch(goBack() as any);
     }
   };
 

@@ -3,7 +3,7 @@ import { View, Panel, PanelHeader, PanelHeaderBack, Text } from '@vkontakte/vkui
 import { Offline } from './Offline';
 import { useSelector, useDispatch } from 'react-redux';
 import { getActiveMainView } from 'core/selectors/router';
-import { MainView, AppDispatchActions, ActiveModal } from 'core/models';
+import { MainView, AppDispatchActions } from 'core/models';
 import { BoardLayout } from 'modules/board';
 import { RootModals } from 'modules/modals/Root';
 import { ListMembershipLayout } from 'modules/board-list';
@@ -38,9 +38,6 @@ export const Main = React.memo(() => {
   }, [dispatch, goForward, search]);
 
   const handleBack = () => {
-    if (activeView === MainView.ListMembership || activeView === MainView.About) {
-      dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
-    }
     swipeBack();
     dispatch(goBack() as any);
   };

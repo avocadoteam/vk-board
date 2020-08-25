@@ -166,7 +166,6 @@ export const reducer = (
       return {
         ...state,
         onlineHandleActivate: dispatch.payload,
-        activeModal: null,
       };
     }
 
@@ -301,7 +300,6 @@ export const reducer = (
           selectedTask: dispatch.payload,
           editedTask: dispatch.payload,
         },
-        activeModal: ActiveModal.SelectedTask,
       };
     }
     case 'EDIT_TASK': {

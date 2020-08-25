@@ -50,7 +50,7 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
           </MiniInfoCell>
         </Div>
       )}
-      {info.dueDate !== null && (
+      {!!info.dueDate && (
         <Div>
           <MiniInfoCell
             before={

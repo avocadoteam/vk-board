@@ -24,6 +24,7 @@ import * as ops from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedTaskId, getSelectedTaskGUID } from 'core/selectors/task';
 import { getSelectedListId } from 'core/selectors/boardLists';
+import { goBack } from 'connected-react-router';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -49,10 +50,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
               switchMap((data) => {
                 return concat(
-                  of({
-                    type: 'SET_MODAL',
-                    payload: null,
-                  } as AppDispatch),
+                  of(goBack() as any),
                   of({
                     type: 'RESET_NEW_TASK',
                     payload: null,
@@ -200,10 +198,7 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
                   data: true,
                 },
               } as AppDispatch),
-              of({
-                type: 'SET_MODAL',
-                payload: null,
-              } as AppDispatch)
+              of(goBack() as any)
             );
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);

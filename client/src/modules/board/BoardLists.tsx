@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isBoardUpdating } from 'core/selectors/board';
 import { useFela } from 'react-fela';
 import { TaskCheckLabel, TaskInfo } from 'modules/task';
-import { AppDispatchActions, BoardTaskItem } from 'core/models';
+import { AppDispatchActions, BoardTaskItem, MainView, ActiveModal } from 'core/models';
 import { isTasksUpdating } from 'core/selectors/task';
 import { ListMembershipStack } from 'modules/board-list';
 import { isThemeDrak } from 'core/selectors/common';
@@ -15,6 +15,7 @@ import { AdsBanner } from 'modules/ads';
 import { BoardEmpty } from './BoardEmpty';
 import { BoardFinishedTasks } from './BoardFinishedTasks';
 import { TasksRefresher } from 'modules/task/TasksRefresher';
+import { getSearch, push } from 'connected-react-router';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
@@ -23,6 +24,7 @@ export const BoardLists = React.memo(() => {
   const tasks = useSelector(getSelectedListTasks);
   const updatingListOfTasks = useSelector(isTasksUpdating);
   const boardUpdating = useSelector(isBoardUpdating);
+  const search = useSelector(getSearch);
   const transRef = React.useRef<any>();
 
   const { css } = useFela();
@@ -47,8 +49,9 @@ export const BoardLists = React.memo(() => {
         type: 'SELECT_TASK',
         payload: task,
       });
+      dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
     },
-    [dispatch]
+    [dispatch, search]
   );
 
   const transition = useTransition(tasks, {

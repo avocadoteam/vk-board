@@ -5,11 +5,12 @@ import Icon24Add from '@vkontakte/icons/dist/24/add';
 import { useFela } from 'react-fela';
 import { Button } from 'atoms/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions, ActiveModal } from 'core/models';
+import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
 import { isBoardUpdating } from 'core/selectors/board';
 import { ListProgress } from 'modules/board-list';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedListId } from 'core/selectors/boardLists';
+import { push, getSearch } from 'connected-react-router';
 
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
@@ -17,19 +18,15 @@ export const BoardActions = React.memo(() => {
   const selectedBoardListId = useSelector(getSelectedListId);
   const boardUpadting = useSelector(isBoardUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
+  const search = useSelector(getSearch);
 
   const openListsModal = React.useCallback(() => {
-    dispatch({
-      type: 'SET_MODAL',
-      payload: ActiveModal.Lists,
-    });
-  }, [dispatch]);
+    dispatch(push(`/${MainView.Board}/${ActiveModal.Lists}${search}`) as any);
+  }, [dispatch, search]);
+
   const openNewTaskModal = React.useCallback(() => {
-    dispatch({
-      type: 'SET_MODAL',
-      payload: ActiveModal.NewTask,
-    });
-  }, [dispatch]);
+    dispatch(push(`/${MainView.Board}/${ActiveModal.NewTask}${search}`) as any);
+  }, [dispatch, search]);
 
   return (
     <FixedLayout vertical="bottom" filled>

@@ -15,11 +15,13 @@ import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak, getBoardUiState } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName, WelcomeView } from 'core/models';
+import { AppDispatchActions, FetchingStateName, WelcomeView, MainView } from 'core/models';
 import { KanbanBoard } from 'assets/svg/KanbanBoard';
 import { useViewChange } from 'core/hooks';
 import { useTransition, useChain, animated } from 'react-spring';
 import { isFirstListUpdating } from 'core/selectors/boardLists';
+import { getWelcomeView } from 'core/selectors/router';
+import { getSearch, goBack, push } from 'connected-react-router';
 
 const suggestions = ['Важные задачи', 'Работа', 'Цели', 'Дом', 'Игры', 'Спорт'];
 
@@ -29,8 +31,20 @@ export const Welcome = React.memo(() => {
   const updating = useSelector(isFirstListUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
   const { firstBoardListName } = useSelector(getBoardUiState);
-  const { activeView, goForward } = useViewChange(WelcomeView, 'Greetings');
+  const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings');
+  const activeView = useSelector(getWelcomeView);
   const transRef = React.useRef<any>();
+  const search = useSelector(getSearch);
+
+  const nextView = React.useCallback(() => {
+    goForward(WelcomeView.TaskCreation);
+    dispatch(push(`/${MainView.Welcome}/${WelcomeView.TaskCreation}${search}`) as any);
+  }, [dispatch, search]);
+
+  const back = React.useCallback(() => {
+    swipeBack();
+    dispatch(goBack() as any);
+  }, [dispatch, search]);
 
   const handleChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +100,7 @@ export const Welcome = React.memo(() => {
   }, [dispatch]);
 
   return (
-    <View activePanel={activeView}>
+    <View activePanel={activeView} onSwipeBack={back} history={history}>
       <Panel id={WelcomeView.Greetings}>
         <PanelHeader separator={false} />
         <Group separator="hide" className={css({ height: '40vh' })}>
@@ -134,12 +148,7 @@ export const Welcome = React.memo(() => {
             Stuff — мини-приложение для отслеживания своих задач.
           </Text>
           <span className={css({ padding: '0 25px', display: 'flex', marginBottom: '.5rem' })}>
-            <Button
-              mode="primary"
-              stretched
-              size="xl"
-              onClick={() => goForward(WelcomeView.TaskCreation)}
-            >
+            <Button mode="primary" stretched size="xl" onClick={nextView}>
               Продолжить
             </Button>
           </span>

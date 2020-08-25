@@ -8,6 +8,7 @@ import {
   FetchReadyAction,
   Skeys,
   AppUser,
+  MainView,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -19,6 +20,7 @@ import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
 import { selectedBoardListInfo, getSelectedListId } from 'core/selectors/boardLists';
 import { useTapticEpic, setStorageValueEpic } from './addons';
+import { replace } from 'connected-react-router';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -302,6 +304,7 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
                   data: true,
                 },
               } as AppDispatch),
+              of(replace(`/${MainView.Board}${q}`) as any),
               setStorageValueEpic(Skeys.appUser, AppUser.Yes)
             );
           } else {

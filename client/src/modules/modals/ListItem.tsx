@@ -29,20 +29,15 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
 
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
-
   const deleteList = React.useCallback(() => {
     dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
-    dispatch({ type: 'SET_MODAL', payload: ActiveModal.DeletList });
-  }, [dispatch, boardListOpenId]);
+    dispatch(push(`/${MainView.Board}/${ActiveModal.DeletList}${search}`) as any);
+  }, [dispatch, boardListOpenId, search]);
 
   const goToMembership = React.useCallback(() => {
-    closeModal();
     goForward(MainView.ListMembership);
     dispatch(push(`/${MainView.ListMembership}${search}`) as any);
-  }, [dispatch, goForward, closeModal, search]);
+  }, [dispatch, goForward, search]);
 
   const sharePost = React.useCallback(
     async (listguid: string) => {

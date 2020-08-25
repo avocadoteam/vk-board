@@ -1,8 +1,9 @@
 import React from 'react';
 import './styleCbx.css';
 import { useFela } from 'react-fela';
-import { useDispatch } from 'react-redux';
-import { AppDispatchActions, BoardTaskItem } from 'core/models';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatchActions, BoardTaskItem, MainView, ActiveModal } from 'core/models';
+import { getSearch, push } from 'connected-react-router';
 
 type Props = {
   task: BoardTaskItem;
@@ -12,6 +13,7 @@ export const TaskCheckLabel = React.memo<Props>(({ task }) => {
   const { css } = useFela();
   const uniqId = `${task.id}-${task.name}`;
   const dispatch = useDispatch<AppDispatchActions>();
+  const search = useSelector(getSearch);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -33,6 +35,7 @@ export const TaskCheckLabel = React.memo<Props>(({ task }) => {
       type: 'SELECT_TASK',
       payload: task,
     });
+    dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
   };
 
   return (

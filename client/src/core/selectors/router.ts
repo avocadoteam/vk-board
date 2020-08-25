@@ -1,7 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { getStateRouter, getStateUi } from './common';
 import { matchPath } from 'react-router';
-import { AppState, appId, MainView } from 'core/models';
+import { AppState, appId, MainView, ActiveModal, WelcomeView } from 'core/models';
 
 export const getLocationNotificationEnabled = createSelector(
   getStateRouter,
@@ -64,3 +64,48 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
       return MainView.Board;
   }
 });
+
+export const getActiveModalRoute = createSelector(
+  getActiveMainView,
+  getLocationSubPath,
+  (mainView, subPath) => {
+    if (mainView !== MainView.Board && mainView !== MainView.ListMembership) {
+      return null;
+    }
+
+    switch (subPath) {
+      case ActiveModal.NewTask:
+        return ActiveModal.NewTask;
+      case ActiveModal.SelectedTask:
+        return ActiveModal.SelectedTask;
+      case ActiveModal.Lists:
+        return ActiveModal.Lists;
+      case ActiveModal.DropMembership:
+        return ActiveModal.DropMembership;
+      case ActiveModal.DeletList:
+        return ActiveModal.DeletList;
+
+      default:
+        return null;
+    }
+  }
+);
+
+export const getWelcomeView = createSelector(
+  getActiveMainView,
+  getLocationSubPath,
+  (mainView, subPath) => {
+    if (mainView !== MainView.Welcome) {
+      return WelcomeView.Greetings;
+    }
+
+    switch (subPath) {
+      case WelcomeView.Greetings:
+        return WelcomeView.Greetings;
+      case WelcomeView.TaskCreation:
+        return WelcomeView.TaskCreation;
+      default:
+        return WelcomeView.Greetings;
+    }
+  }
+);

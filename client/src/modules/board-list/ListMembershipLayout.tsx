@@ -5,9 +5,10 @@ import { getMembershipList, isDropMembershipUpdating } from 'core/selectors/memb
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { useFela } from 'react-fela';
 import { isThemeDrak, getMembershipUiState } from 'core/selectors/common';
-import { AppDispatchActions, ActiveModal } from 'core/models';
+import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
 import { isListMembershipOpenedByOwner } from 'core/selectors/boardLists';
 import { NoMembers } from 'assets/svg/NoMembers';
+import { getSearch, push } from 'connected-react-router';
 
 export const ListMembershipLayout = React.memo(() => {
   const list = useSelector(getMembershipList);
@@ -98,6 +99,7 @@ const DropMembershipItem: React.FC<Props> = ({ userId, updating }) => {
   const dark = useSelector(isThemeDrak);
   const canDropMembership = useSelector(isListMembershipOpenedByOwner);
   const dispatch = useDispatch<AppDispatchActions>();
+  const search = useSelector(getSearch);
 
   const handleDropMembership = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
@@ -111,10 +113,7 @@ const DropMembershipItem: React.FC<Props> = ({ userId, updating }) => {
       type: 'DROP_MEMBER_SHIP_ID',
       payload: userId,
     });
-    dispatch({
-      type: 'SET_MODAL',
-      payload: ActiveModal.DropMembership,
-    });
+    dispatch(push(`/${MainView.ListMembership}/${ActiveModal.DropMembership}${search}`) as any);
   };
 
   if (!canDropMembership) {
