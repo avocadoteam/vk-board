@@ -11,6 +11,9 @@ export class VkApiService {
     private configService: ConfigService,
   ) {}
   async updateWithAvatars(userIds: number[]) {
+    if (!userIds.length) {
+      return [];
+    }
     try {
       const ids = userIds.join(',');
       const result = await this.httpService
@@ -73,6 +76,9 @@ export class VkApiService {
   }
 
   async notifyPersonsForIncomingTasks(userIds: number[]) {
+    if (!userIds.length) {
+      return;
+    }
     try {
       const result = await this.httpService
         .post(
