@@ -87,7 +87,7 @@ export const BoardLists = React.memo(() => {
             })}
           >
             <div style={{ minHeight: 28 }}>
-              <TaskCheckLabel id={t.id} name={t.name} />
+              <TaskCheckLabel task={t} />
               <TaskInfo task={t} />
             </div>
           </Card>
