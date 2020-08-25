@@ -81,7 +81,7 @@ export class PaymentController {
 
     if (model.type === 'confirmation') {
       res.setHeader('content-type', 'text/plain');
-      return res.send(`${this.config.vkConfirmCode}`);
+      return res.status(HttpStatus.OK).send(`${this.config.vkConfirmCode}`);
     }
 
     if (model.type === 'vkpay_transaction' && model.object) {
