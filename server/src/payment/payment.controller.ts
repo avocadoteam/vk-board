@@ -11,15 +11,16 @@ import {
   Body,
   Res,
   Inject,
+  BadRequestException,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { PaymentService } from './payment.service';
-import { NewPaymentModel } from 'src/contracts/payment';
 import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
 import { Response } from 'express';
 import integrationConfig from 'src/config/integration.config';
 import { ConfigType } from '@nestjs/config';
+import { avacadoGroupId } from 'src/constants';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -74,9 +75,13 @@ export class PaymentController {
     @Res()
     res: Response,
   ) {
+    if (model.group_id !== avacadoGroupId) {
+      throw new BadRequestException();
+    }
+
     if (model.type === 'confirmation') {
       res.setHeader('content-type', 'text/plain');
-      return res.send(this.config.vkConfirmCode);
+      return res.send(`${this.config.vkConfirmCode}`);
     }
 
     if (model.type === 'vkpay_transaction' && model.object) {
