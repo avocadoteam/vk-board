@@ -28,10 +28,9 @@ export class RestricitionsService {
     }
 
     const can =
+      (await this.paymentService.hasUserPremium(vkUserId)) ||
       (await this.tableList.count({ createdBy: vkUserId, deleted: null })) <
-        MaxFreeListsPerPerson ||
-      (await this.paymentService.hasUserPremium(vkUserId));
-
+        MaxFreeListsPerPerson;
     await this.cache.set(cacheKey.canCreateList(vkUserId), can, {
       ttl: dayTTL,
     });
@@ -60,8 +59,8 @@ export class RestricitionsService {
       .getOne();
 
     const can =
-      (list?.memberships.length ?? 0) < MaxFreeMembershipInList ||
-      (await this.paymentService.hasUserPremium(list?.createdBy ?? 0));
+      (await this.paymentService.hasUserPremium(list?.createdBy ?? 0)) ||
+      (list?.memberships.length ?? 0) < MaxFreeMembershipInList;
 
     await this.cache.set(cacheKey.canJoinList(vkUserId, listId), can, {
       ttl: dayTTL,
