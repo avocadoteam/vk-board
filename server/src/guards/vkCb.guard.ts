@@ -7,8 +7,6 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import * as qs from 'querystring';
-import * as crypto from 'crypto';
 import integrationConfig from '../config/integration.config';
 import { ConfigType } from '@nestjs/config';
 
@@ -26,8 +24,10 @@ export class VkCallbackGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    console.log(request.body, request.headers);
+    const sameSecret = request.body.secret === this.config.vkCbSecret;
 
-    return true;
+    this.logger.log(`controller ${request.path} result ${sameSecret}`);
+
+    return sameSecret;
   }
 }
