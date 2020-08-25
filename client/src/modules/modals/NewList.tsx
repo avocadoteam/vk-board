@@ -17,14 +17,22 @@ import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
+  const [highlight, setHighlight] = React.useState(false);
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const updating = useSelector(isNewListUpdating);
+  const name = useSelector((state) => state.ui.board.boardListName);
   const created = useSelector(isNewListCreated) && !updating;
   const canCreateLists = useSelector(canUserContinueCreateLists);
   const dark = useSelector(isThemeDrak);
 
   const platform = usePlatform();
+
+  React.useEffect(() => {
+    if (name && highlight) {
+      setHighlight(false);
+    }
+  }, [name, highlight]);
 
   const handleClick = () => {
     if (platform === OS.IOS) {
@@ -33,12 +41,19 @@ export const NewList = React.memo(() => {
     setClicked(true);
   };
 
-  const handleChangeName = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const createList = React.useCallback(() => {
+    if (!name) {
+      setHighlight(true);
+    } else {
       dispatch({
         type: 'SET_UPDATING_DATA',
         payload: FetchingStateName.NewBoardList,
       });
+    }
+  }, [dispatch, name]);
+
+  const handleChangeName = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({
         type: 'SET_BOARD_LIST_NAME',
         payload: e.target.value,
@@ -70,7 +85,12 @@ export const NewList = React.memo(() => {
 
   if (click) {
     return (
-      <span className={`useMonrope ${css({ display: 'flex' })}`}>
+      <span
+        className={`useMonrope ${css({
+          display: 'flex',
+          borderBottom: highlight ? '1px solid #e64646 !important' : undefined,
+        })}`}
+      >
         <Input
           type="text"
           placeholder="Введите название"
@@ -90,6 +110,7 @@ export const NewList = React.memo(() => {
           } as any)}
           autoFocus
           onChange={handleChangeName}
+          value={name}
         />
         {updating && (
           <Spinner
@@ -101,6 +122,21 @@ export const NewList = React.memo(() => {
           <Icon24DoneOutline
             className={css({ marginRight: '24px', marginTop: '16px', color: '#42A4FF' })}
           />
+        )}
+        {!updating && !created && (
+          <Text
+            weight="medium"
+            onClick={createList}
+            className={css({
+              color: '#42A4FF',
+              fontSize: '13px',
+              alignSelf: 'center',
+              marginTop: '8px',
+              marginRight: '16px',
+            })}
+          >
+            Создать
+          </Text>
         )}
       </span>
     );

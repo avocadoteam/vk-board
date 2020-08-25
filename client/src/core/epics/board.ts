@@ -110,8 +110,8 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
 
 const saveBoardListEpic: AppEpic = (action$, state$) =>
   action$.pipe(
-    ofType('SET_BOARD_LIST_NAME'),
-    debounceTime(1500),
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.NewBoardList),
     map(() => ({
       q: getQToQuery(state$.value),
       listName: state$.value.ui.board.boardListName,
@@ -129,19 +129,33 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
         newBoardList(listName, q).pipe(
           switchMap((response) => {
             if (response.ok) {
-              return concat(
-                of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Board,
-                } as AppDispatch),
-                of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.NewBoardList,
-                    data: true,
-                  },
-                } as AppDispatch),
-                useTapticEpic('success')
+              return from(response.json() as Promise<FetchResponse<number>>).pipe(
+                switchMap((response) => {
+                  return concat(
+                    of({
+                      type: 'SELECT_BOARD_LIST',
+                      payload: {
+                        id: response.data,
+                      },
+                    } as AppDispatch),
+                    of({
+                      type: 'SET_UPDATING_DATA',
+                      payload: FetchingStateName.Board,
+                    } as AppDispatch),
+                    of({
+                      type: 'SET_READY_DATA',
+                      payload: {
+                        name: FetchingStateName.NewBoardList,
+                        data: true,
+                      },
+                    } as AppDispatch),
+                    useTapticEpic('success'),
+                    of({
+                      type: 'SET_BOARD_LIST_NAME',
+                      payload: '',
+                    } as AppDispatch)
+                  );
+                })
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
