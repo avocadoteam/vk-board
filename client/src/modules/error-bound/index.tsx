@@ -19,7 +19,7 @@ export class ErrorBoundary extends React.Component<unknown, LocalState> {
 
   componentDidCatch(error: Error) {
     // You can also log the error to an error reporting service
-    captureUrlEvent(JSON.stringify(error));
+    captureUrlEvent(errMap(error));
   }
 
   render() {

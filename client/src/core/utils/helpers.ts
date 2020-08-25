@@ -11,6 +11,7 @@ export const errMap = (error: any) =>
     'error_type',
     'error_data',
     'statusCode',
+    'stack',
   ]);
 
 export const platform = () => (/android/i.test(navigator.userAgent) ? OS.ANDROID : OS.IOS);

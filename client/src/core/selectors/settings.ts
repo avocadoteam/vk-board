@@ -1,6 +1,7 @@
 import { createSelector, defaultMemoize } from 'reselect';
 import { getStateUi } from './common';
-import { platform, OS } from '@vkontakte/vkui';
+import { OS } from '@vkontakte/vkui';
+import { platform } from 'core/utils';
 
 export const getNotifications = createSelector(getStateUi, (ui) => ui.notifications);
 
