@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   HttpStatus,
   Post,
-  ConflictException,
   Body,
   Res,
   Inject,
@@ -21,6 +20,7 @@ import { Response } from 'express';
 import integrationConfig from 'src/config/integration.config';
 import { ConfigType } from '@nestjs/config';
 import { avacadoGroupId } from 'src/constants';
+import { VkCallbackGuard } from 'src/guards/vkCb.guard';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -59,6 +59,7 @@ export class PaymentController {
     return this.paymentService.getDurationOf24HoursBeforeNewSync(vkUserId);
   }
 
+  @UseGuards(VkCallbackGuard)
   @Post('/finished')
   makePayment(
     @Body()
