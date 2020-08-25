@@ -29,16 +29,19 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const { css } = useFela();
   const platform = usePlatform();
 
-  const detections = useLongPress<HTMLButtonElement>(() => {
-    if (platform === OS.IOS) {
-      tapticSelected();
-    }
-    dispatch({
-      type: 'EDIT_BOARD_LIST_NAME',
-      payload: { name: listItem.name },
-    });
-    setClicked(true);
-  });
+  const detections = useLongPress<HTMLButtonElement>(
+    () => {
+      if (platform === OS.IOS) {
+        tapticSelected();
+      }
+      dispatch({
+        type: 'EDIT_BOARD_LIST_NAME',
+        payload: { name: listItem.name },
+      });
+      setClicked(true);
+    },
+    { delay: 2000 }
+  );
 
   const closeModal = React.useCallback(() => {
     dispatch({ type: 'SET_MODAL', payload: null });
