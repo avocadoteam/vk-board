@@ -11,13 +11,13 @@ import {
 export class NewTaskModel {
   @IsString()
   @IsNotEmpty()
-  @Length(1, 1024)
+  @Length(1, 256)
   name!: string;
 
   @ValidateIf((o) => o.description !== null)
   @IsString()
   @IsNotEmpty()
-  @Length(1, 2048)
+  @Length(1, 1024)
   description!: string | null;
 
   @IsNumber()

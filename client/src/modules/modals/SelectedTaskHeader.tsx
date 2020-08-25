@@ -49,7 +49,7 @@ export const SelectedTaskHeader = React.memo<Props>(({ editable, deletedPreview 
         type="text"
         placeholder="Введите название"
         minLength={1}
-        maxLength={1024}
+        maxLength={256}
         className={`${css({
           '>div': {
             border: 'none !important',

@@ -8,6 +8,7 @@ import { List } from 'src/db/tables/list';
 import { Task } from 'src/db/tables/task';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { PaymentService } from 'src/payment/payment.service';
+import { errMap } from 'src/utils/errors';
 
 const tasks = google.tasks('v1');
 
@@ -156,7 +157,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -225,7 +226,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

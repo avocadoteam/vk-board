@@ -41,7 +41,9 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
           >
             <Text
               weight="medium"
-              className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}
+              className={`useMonrope ${css({
+                color: dark ? '#fff' : '#000',
+              })}`}
             >
               {info.description}
             </Text>

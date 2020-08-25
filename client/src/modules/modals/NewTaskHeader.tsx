@@ -28,15 +28,18 @@ export const NewTaskHeader = React.memo<Props>(({ setHighlight, highlight }) => 
   };
 
   return (
-    <FormLayout className={'useMonrope'}>
+    <FormLayout>
       <Input
         type="text"
         placeholder="Введите название"
         minLength={1}
-        maxLength={1024}
+        maxLength={256}
         className={`${css({
+          borderBottom: highlight ? '1px solid #FF4848 !important' : undefined,
+          boxSizing: 'border-box',
+          transition: '.2s ease',
           '>div': {
-            border: highlight ? '1px solid #e64646 !important' : 'none !important',
+            border: 'none !important',
             background: 'transparent !important',
           },
           '>input': {

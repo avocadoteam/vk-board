@@ -77,7 +77,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             type="text"
             placeholder="Введите описание"
             minLength={1}
-            maxLength={2048}
+            maxLength={1024}
             className={css({
               marginLeft: '0 !important',
               width: '100%',

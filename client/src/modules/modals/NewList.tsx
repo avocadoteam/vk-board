@@ -88,14 +88,16 @@ export const NewList = React.memo(() => {
       <span
         className={`useMonrope ${css({
           display: 'flex',
-          borderBottom: highlight ? '1px solid #e64646 !important' : undefined,
+          borderBottom: highlight ? '1px solid #FF4848 !important' : undefined,
+          boxSizing: 'border-box',
+          transition: '.2s ease',
         })}`}
       >
         <Input
           type="text"
           placeholder="Введите название"
           minLength={1}
-          maxLength={512}
+          maxLength={64}
           className={css({
             width: '100%',
             marginTop: '8px',

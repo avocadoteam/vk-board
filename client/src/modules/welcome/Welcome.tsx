@@ -178,7 +178,7 @@ export const Welcome = React.memo(() => {
               type="text"
               placeholder="Придумайте название"
               minLength={1}
-              maxLength={512}
+              maxLength={64}
               className={css({
                 marginTop: '2rem',
                 marginBottom: '1rem',

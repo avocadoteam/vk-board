@@ -7,6 +7,7 @@ import { List } from 'src/db/tables/list';
 import { TaskMembership } from 'src/db/tables/taskMembership';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class TasksService {
@@ -52,7 +53,7 @@ export class TasksService {
 
       return newTask.id;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -83,7 +84,7 @@ export class TasksService {
 
       await this.cache.del(cacheKey.tasks(String(model.listId)));
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

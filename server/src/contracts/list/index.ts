@@ -3,7 +3,7 @@ import { IsString, Length, IsNotEmpty, IsNumber, IsUUID } from 'class-validator'
 export class NewListModel {
   @IsString()
   @IsNotEmpty()
-  @Length(1, 512)
+  @Length(1, 64)
   name!: string;
 }
 

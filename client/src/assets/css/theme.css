@@ -51,3 +51,9 @@ body {
 .FormLayout__row {
   padding-bottom: 0;
 }
+
+.MiniInfoCell__content {
+  max-height: unset !important;
+  display: flex !important;
+  height: 100%;
+}

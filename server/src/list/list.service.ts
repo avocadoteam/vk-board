@@ -19,6 +19,7 @@ import { cacheKey } from 'src/contracts/cache';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { uniq, unnest } from 'ramda';
 import { VkApiService } from 'src/vk-api/vk-api.service';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class ListService {
@@ -108,7 +109,7 @@ export class ListService {
 
       return newList.id;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -270,7 +271,7 @@ export class ListService {
 
       return list.id;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

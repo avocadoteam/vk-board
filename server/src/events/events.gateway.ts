@@ -15,6 +15,7 @@ import * as crypto from 'crypto';
 import integrationConfig from 'src/config/integration.config';
 import { ConfigType } from '@nestjs/config';
 import { RedisAdapter } from 'socket.io-redis';
+import { errMap } from 'src/utils/errors';
 
 @WebSocketGateway({ namespace: NameSpaces.SelctedList })
 export class EventsGateway implements OnGatewayInit {
@@ -90,7 +91,7 @@ export class EventsGateway implements OnGatewayInit {
       adapter.remoteJoin(socket.id, listGUID, (error: Error) => {
         if (error) {
           this.logger.log(`joined room failed ${listGUID}`);
-          this.logger.error(error);
+          this.logger.error(errMap(error));
         } else {
           this.logger.log(`joined room ${listGUID}`);
         }
@@ -100,7 +101,7 @@ export class EventsGateway implements OnGatewayInit {
     adapter.remoteJoin(socket.id, userId.toString(), (error: Error) => {
       if (error) {
         this.logger.log(`joined room failed ${userId}`);
-        this.logger.error(error);
+        this.logger.error(errMap(error));
       } else {
         this.logger.log(`joined room ${userId}`);
       }
@@ -124,7 +125,7 @@ export class EventsGateway implements OnGatewayInit {
     if (!!listGUID) {
       adapter.remoteLeave(socket.id, listGUID, (err: Error) => {
         if (err) {
-          this.logger.error(err);
+          this.logger.error(errMap(err));
         }
       });
     }
@@ -135,12 +136,12 @@ export class EventsGateway implements OnGatewayInit {
       const adapter = socket.adapter as RedisAdapter;
       adapter.clientRooms(socket.id, (err: Error, rooms: string[]) => {
         if (err) {
-          this.logger.error(err);
+          this.logger.error(errMap(err));
         } else if (rooms?.length) {
           rooms.reduce((r) => {
             adapter.remoteLeave(socket.id, r, (err: Error) => {
               if (err) {
-                this.logger.error(err);
+                this.logger.error(errMap(err));
               }
             });
             return '';

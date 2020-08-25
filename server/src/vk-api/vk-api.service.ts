@@ -2,6 +2,7 @@ import { Injectable, HttpService, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { buildQueryString } from 'src/utils/api';
 import { vkApiV, notificationMessage } from 'src/constants';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class VkApiService {
@@ -70,7 +71,7 @@ export class VkApiService {
       return updatedUsers;
     } catch (error) {
       this.logger.log(`updateWithAvatars error`);
-      this.logger.error(error);
+      this.logger.error(errMap(error));
       return [];
     }
   }
@@ -110,7 +111,7 @@ export class VkApiService {
       this.logger.log(`notification sent`);
     } catch (error) {
       this.logger.log(`notification error`);
-      this.logger.error(error);
+      this.logger.error(errMap(error));
     }
   }
 }

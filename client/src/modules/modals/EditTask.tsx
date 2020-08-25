@@ -84,7 +84,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
             type="text"
             placeholder="Введите описание"
             minLength={1}
-            maxLength={2048}
+            maxLength={256}
             className={css({
               marginLeft: '0 !important',
               width: '100%',

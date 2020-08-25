@@ -12,6 +12,7 @@ import { cacheKey, dayTTL } from 'src/contracts/cache';
 import * as moment from 'moment';
 import { EventBus } from 'src/events/events.bus';
 import { BusEvents } from 'src/contracts/enum';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class PaymentService {
@@ -78,7 +79,7 @@ export class PaymentService {
 
       return true;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -123,7 +124,7 @@ export class PaymentService {
       await this.cache.set(cacheKey.googleSync(user_id), hrs, { ttl: 60 });
       return hrs;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(errMap(error));
       return syncRestrictionHours;
     }
   }

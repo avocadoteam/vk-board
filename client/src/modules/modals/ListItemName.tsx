@@ -85,7 +85,7 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
           type="text"
           placeholder="Введите название"
           minLength={1}
-          maxLength={512}
+          maxLength={64}
           className={css({
             width: '100%',
             height: '50px',
