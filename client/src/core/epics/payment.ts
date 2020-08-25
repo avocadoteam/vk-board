@@ -1,5 +1,5 @@
 import { safeCombineEpics } from './combine';
-import { AppEpic, FetchingStateName, AppDispatch, premiumPrice, FetchResponse } from 'core/models';
+import { AppEpic, FetchingStateName, AppDispatch, FetchResponse } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map } from 'rxjs/operators';
 import { from, of, concat, empty } from 'rxjs';
@@ -17,28 +17,12 @@ const userMakePaymentEpic: AppEpic = (action$, state$) =>
       from(buyPremium()).pipe(
         devTimeout(),
         switchMap((pr) => {
-          console.log(pr);
-          let amount = '';
           if ('result' in pr) {
-            if (pr.result.status && pr.result.amount === premiumPrice.toString()) {
-              amount = pr.result.amount;
-            }
             if (!pr.result.status) {
               throw new Error(`Платеж не завершен`);
             }
-            if (pr.result.amount !== premiumPrice.toString()) {
-              amount = pr.result.amount;
-            }
-          } else {
-            if (pr.status && pr.amount === premiumPrice.toString()) {
-              amount = pr.amount;
-            }
-            if (!pr.status) {
-              throw new Error(`Платеж не завершен`);
-            }
-            if (pr.amount !== premiumPrice.toString()) {
-              amount = pr.amount;
-            }
+          } else if (!pr.status) {
+            throw new Error(`Платеж не завершен`);
           }
           return empty();
         }),
