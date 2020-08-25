@@ -16,9 +16,10 @@ const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
 type Props = {
   updateModalHeight?: () => void;
+  setHighlight: (p: boolean) => void;
 };
 
-const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
+const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
@@ -47,9 +48,13 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
     dispatch({ type: 'UPDATE_NEW_TASK', payload: { name, value } });
   };
 
-  const submitForm = React.useCallback(() => {
-    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.NewTask });
-  }, [dispatch]);
+  const submitForm = () => {
+    if (!formValues.name) {
+      setHighlight(true);
+    } else {
+      dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.NewTask });
+    }
+  };
 
   const showError = hasError && <FormStatus header={error} mode="error" />;
 
@@ -126,7 +131,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight }) => {
           size="xl"
           stretched
           before={updating ? <Spinner /> : <Icon24Add />}
-          disabled={!formValues.name || updating}
+          disabled={updating}
           onClick={submitForm}
         >
           Создать задачу

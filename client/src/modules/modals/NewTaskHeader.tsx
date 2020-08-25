@@ -7,12 +7,20 @@ import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
 
-export const NewTaskHeader = React.memo(() => {
+type Props = { setHighlight: (p: boolean) => void; highlight: boolean };
+
+export const NewTaskHeader = React.memo<Props>(({ setHighlight, highlight }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
   const { updating } = useSelector(getNewTaskInfo);
+
+  React.useEffect(() => {
+    if (formValues.name && highlight) {
+      setHighlight(false);
+    }
+  }, [formValues.name, highlight]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -28,7 +36,7 @@ export const NewTaskHeader = React.memo(() => {
         maxLength={1024}
         className={`${css({
           '>div': {
-            border: 'none !important',
+            border: highlight ? '1px solid #e64646 !important' : 'none !important',
             background: 'transparent !important',
           },
           '>input': {

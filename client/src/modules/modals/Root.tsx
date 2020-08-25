@@ -22,6 +22,8 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
   ({ goForward }) => {
     const [deletedPreview, setDelete] = React.useState(false);
     const [editable, setEditable] = React.useState(false);
+    const [highlight, setHighlight] = React.useState(false);
+
     const search = useSelector(getSearch);
     const activeModal = useSelector(getActiveModal);
     const dispatch = useDispatch<AppDispatchActions>();
@@ -59,10 +61,10 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
         <ModalPage
           id={ActiveModal.NewTask}
           onClose={closeModal}
-          header={<NewTaskHeader />}
+          header={<NewTaskHeader highlight={highlight} setHighlight={setHighlight} />}
           dynamicContentHeight
         >
-          <NewTask />
+          <NewTask setHighlight={setHighlight} />
         </ModalPage>
 
         <ModalPage
