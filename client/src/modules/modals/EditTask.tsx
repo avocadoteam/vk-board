@@ -99,10 +99,12 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
                 border: 'none !important',
                 background: 'transparent !important',
               },
-              '>textarea': {
+              '>.Textarea__el': {
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
+                minHeight: '52px !important',
+                maxHeight: 'unset !important',
               },
             } as any)}
             name="description"
