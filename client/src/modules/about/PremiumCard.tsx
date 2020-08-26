@@ -98,6 +98,7 @@ export const PremiumCard = React.memo(() => {
         href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}
         target="_blank"
         className={css({ textDecoration: 'none', color: 'inherit' })}
+        rel="noopener noreferrer"
       >
         Синхронизировать с Google Tasks
       </a>

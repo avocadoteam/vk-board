@@ -1,11 +1,5 @@
 import * as models from 'core/models';
-import {
-  FetchingStatus,
-  ClientTheme,
-  ActiveModal,
-  appId,
-  FINISH_TASK_TIMER_VALUE,
-} from 'core/models';
+import { FetchingStatus, ClientTheme, appId, FINISH_TASK_TIMER_VALUE } from 'core/models';
 
 const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
 
