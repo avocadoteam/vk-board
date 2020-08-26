@@ -7,13 +7,13 @@ export const postNewTask = (data: NewTaskModel, q: string) =>
 export const getTasks = (listId: number, q: string) =>
   request(`/list/tasks${q}&listId=${listId}`, Method.Get);
 
-export const finishTasks = (taskIds: number[], listId: number, q: string) =>
+export const finishTasks = (taskIds: string[], listId: number, q: string) =>
   request(`/list/tasks${q}`, Method.Put, { taskIds, listId });
-  
-export const unfinishTasks = (taskIds: number[], listId: number, q: string) =>
+
+export const unfinishTasks = (taskIds: string[], listId: number, q: string) =>
   request(`/list/tasks${q}`, Method.Delete, { taskIds, listId });
 
-export const deleteTask = (taskId: number, listId: number, q: string) =>
+export const deleteTask = (taskId: string, listId: number, q: string) =>
   request(`/list/task${q}&taskId=${taskId}&listId=${listId}`, Method.Delete);
 
 export const putEditTask = (data: EditTaskModel, q: string) =>

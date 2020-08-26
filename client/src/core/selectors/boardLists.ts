@@ -70,6 +70,12 @@ export const getSelectedListTasks = createSelector(getSelectedList, (list) =>
 export const getFinishedListTasks = createSelector(getSelectedList, (list) =>
   list.tasks.filter((t) => t.finished !== null)
 );
+
+export const getFinishedTasksCount = createSelector(
+  getFinishedListTasks,
+  (tasks) => tasks.filter((t) => t.finished !== null).length
+);
+
 export const getSelectedListId = createSelector(getSelectedList, (list) => list.id);
 export const selectedBoardListInfo = createSelector(getSelectedList, (list) => list.data);
 

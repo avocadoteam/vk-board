@@ -7,7 +7,14 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { NameSpaces, SocketEvents, BusEvents } from 'src/contracts/enum';
+import {
+  NameSpaces,
+  SocketEvents,
+  BusEvents,
+  NewTaskParams,
+  FinishTaskParams,
+  UpdateTaskParams,
+} from 'src/contracts/enum';
 import { EventBus } from './events.bus';
 import { Inject, Logger } from '@nestjs/common';
 import * as qs from 'querystring';
@@ -60,9 +67,25 @@ export class EventsGateway implements OnGatewayInit {
       }
     });
 
-    const newTask = (taskId: number, listGUID: string) => {
-      this.logger.log(`emit task ${taskId}`);
-      initServer.to(listGUID).emit(SocketEvents.new_task, taskId);
+    const newTask = ({ task, listGUID }: NewTaskParams) => {
+      this.logger.log(`emit task ${task.id}`);
+      initServer.to(listGUID).emit(SocketEvents.new_task, task);
+    };
+    const updateTask = ({ task, listGUID }: UpdateTaskParams) => {
+      this.logger.log(`emit update task ${task.id}`);
+      initServer.to(listGUID).emit(SocketEvents.update_task, task);
+    };
+    const finishTasks = ({ taskIds, listGUID }: FinishTaskParams) => {
+      this.logger.log(`emit finish tasks`);
+      initServer.to(listGUID).emit(SocketEvents.finish_tasks, { taskIds });
+    };
+    const unfinishTasks = ({ taskIds, listGUID }: FinishTaskParams) => {
+      this.logger.log(`emit unfinish tasks`);
+      initServer.to(listGUID).emit(SocketEvents.unfinish_tasks, { taskIds });
+    };
+    const deleteTask = (taskId: string, listGUID: string) => {
+      this.logger.log(`emit delete tasks`);
+      initServer.to(listGUID).emit(SocketEvents.delete_task, taskId);
     };
     const stopGsync = (userId: number) => {
       this.logger.log(`emit stopGsync for user ${userId}`);
@@ -76,6 +99,10 @@ export class EventsGateway implements OnGatewayInit {
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
     EventBus.on(BusEvents.PAYMENT_COMPLETE, paymentComplete);
+    EventBus.on(BusEvents.FINISH_TASKS, finishTasks);
+    EventBus.on(BusEvents.UNFINISH_TASKS, unfinishTasks);
+    EventBus.on(BusEvents.UPDATE_TASK, updateTask);
+    EventBus.on(BusEvents.DELETE_TASK, deleteTask);
   }
 
   @SubscribeMessage('joinRoom')

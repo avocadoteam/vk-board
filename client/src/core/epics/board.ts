@@ -78,10 +78,6 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                         id,
                         data: boardDataList,
                       },
-                    } as AppDispatch),
-                    of({
-                      type: 'SET_UPDATING_DATA',
-                      payload: FetchingStateName.Tasks,
                     } as AppDispatch)
                   );
                 }

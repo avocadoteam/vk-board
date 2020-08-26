@@ -8,9 +8,10 @@ import {
   FINISH_TASK_TIMER_VALUE,
   EditTaskModel,
   UNFINISH_TASK_TIMER_VALUE,
+  TaskInfo,
 } from 'core/models';
 import { ofType } from 'redux-observable';
-import { filter, map, switchMap, auditTime, exhaustMap } from 'rxjs/operators';
+import { filter, map, switchMap, auditTime, exhaustMap, debounceTime } from 'rxjs/operators';
 import { getNewTaskValues, getEditTaskValues } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
 import { from, concat, of, iif, empty } from 'rxjs';
@@ -22,7 +23,7 @@ import {
 import { safeCombineEpics } from './combine';
 import * as ops from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
-import { getSelectedTaskId, getSelectedTaskGUID } from 'core/selectors/task';
+import { getSelectedTaskId } from 'core/selectors/task';
 import { getSelectedListId } from 'core/selectors/boardLists';
 import { goBack } from 'connected-react-router';
 
@@ -61,10 +62,6 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.NewTask,
                       data,
                     },
-                  } as AppDispatch),
-                  of({
-                    type: 'SET_UPDATING_DATA',
-                    payload: FetchingStateName.Tasks,
                   } as AppDispatch)
                 );
               })
@@ -143,10 +140,6 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
             if (response.ok) {
               return concat(
                 of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Tasks,
-                } as AppDispatch),
-                of({
                   type: 'SET_FINISH_TASK_TIMER',
                   payload: FINISH_TASK_TIMER_VALUE,
                 } as AppDispatch),
@@ -188,10 +181,6 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return concat(
               of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Tasks,
-              } as AppDispatch),
-              of({
                 type: 'SET_READY_DATA',
                 payload: {
                   name: FetchingStateName.DeleteTask,
@@ -221,6 +210,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
         dataModel: {
           ...formValues,
           dueDate: formValues.dueDate || null,
+          description: formValues.description || null,
           listId: getSelectedListId(state),
           id: getSelectedTaskId(state),
         } as EditTaskModel,
@@ -232,16 +222,17 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
               switchMap(() => {
+                const newTaskModel: TaskInfo = {
+                  id: dataModel.id,
+                  description: dataModel.description,
+                  dueDate: dataModel.dueDate,
+                  name: dataModel.name,
+                };
+
                 return concat(
                   of({
                     type: 'SELECT_TASK',
-                    payload: {
-                      id: dataModel.id,
-                      description: dataModel.description,
-                      dueDate: dataModel.dueDate,
-                      name: dataModel.name,
-                      taskGUID: getSelectedTaskGUID(state$.value),
-                    },
+                    payload: newTaskModel,
                   } as AppDispatch),
                   of({
                     type: 'SET_READY_DATA',
@@ -249,10 +240,6 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.EditTask,
                       data: true,
                     },
-                  } as AppDispatch),
-                  of({
-                    type: 'SET_UPDATING_DATA',
-                    payload: FetchingStateName.Tasks,
                   } as AppDispatch)
                 );
               })
@@ -269,7 +256,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
 const unfinishTasksEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('UNFINISH_TASK'),
-    auditTime(UNFINISH_TASK_TIMER_VALUE),
+    debounceTime(UNFINISH_TASK_TIMER_VALUE),
     map(() => {
       const state = state$.value;
       const { tasksToBeUnfinished } = getBoardUiState(state);
@@ -288,10 +275,6 @@ const unfinishTasksEpic: AppEpic = (action$, state$) =>
           switchMap((response) => {
             if (response.ok) {
               return concat(
-                of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Tasks,
-                } as AppDispatch),
                 of({
                   type: 'RESET_UNFINISH_TASKS',
                   payload: [],

@@ -33,11 +33,6 @@ export const isTasksUpdating = createSelector(
 
 export const getTasksData = createSelector(getTasksDataState, (dataState) => dataState.data ?? []);
 
-export const getFinishedTasksCount = createSelector(
-  getTasksData,
-  (tasks) => tasks.filter((t) => t.finished !== null).length
-);
-
 export const isNewTaskUpdating = createSelector(
   getPostNewTaskDataState,
   (dataState) => dataState.status === FetchingStatus.Updating
@@ -122,4 +117,3 @@ export const getEditTaskInfo = createStructuredSelector<
 
 export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);
 export const getSelectedTaskId = createSelector(getSelectedTaskInfo, (task) => task.id);
-export const getSelectedTaskGUID = createSelector(getSelectedTaskInfo, (task) => task.taskGUID);

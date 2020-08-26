@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatchActions } from 'core/models';
 
 type Props = {
-  id: number;
+  id: string;
   name: string;
 };
 

@@ -34,7 +34,7 @@ export class FinishTasksModel {
   @IsArray()
   @ArrayMinSize(1)
   @IsString({ each: true })
-  taskIds!: number[];
+  taskIds!: string[];
 
   @IsNumber()
   listId!: number;
@@ -43,5 +43,17 @@ export class FinishTasksModel {
 export class UpdateTaskModel extends NewTaskModel {
   @IsString()
   @IsNotEmpty()
-  id!: number;
+  id!: string;
 }
+
+export type BoardTaskItem = {
+  name: string;
+  description: string | null;
+  id: string;
+  created: string;
+  dueDate: string | null;
+  finished: string | null;
+  deleted: null;
+};
+
+export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description'>;

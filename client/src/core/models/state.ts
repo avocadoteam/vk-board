@@ -53,12 +53,12 @@ export type AppDispatch =
   | { type: 'OPEN_BOARD_LIST'; payload: number }
   | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
   | { type: 'RESET_NEW_TASK'; payload: null }
-  | { type: 'FINISH_TASK'; payload: number }
-  | { type: 'REMOVE_FINISH_TASK'; payload: number }
-  | { type: 'UNFINISH_TASK'; payload: number }
-  | { type: 'REMOVE_UNFINISH_TASK'; payload: number }
-  | { type: 'RESET_FINISH_TASKS'; payload: number[] }
-  | { type: 'RESET_UNFINISH_TASKS'; payload: number[] }
+  | { type: 'FINISH_TASK'; payload: string }
+  | { type: 'REMOVE_FINISH_TASK'; payload: string }
+  | { type: 'UNFINISH_TASK'; payload: string }
+  | { type: 'REMOVE_UNFINISH_TASK'; payload: string }
+  | { type: 'RESET_FINISH_TASKS'; payload: string[] }
+  | { type: 'RESET_UNFINISH_TASKS'; payload: string[] }
   | { type: 'SELECT_TASK'; payload: TaskInfo }
   | { type: 'EDIT_TASK'; payload: { name: string; value: string | null } }
   | { type: 'SET_BOARD_LIST_NAME'; payload: string }

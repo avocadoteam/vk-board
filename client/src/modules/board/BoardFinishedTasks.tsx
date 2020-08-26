@@ -1,11 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
-import { getFinishedTasksCount } from 'core/selectors/task';
 import { useFela } from 'react-fela';
 import { List, Cell, Text } from '@vkontakte/vkui';
 import Icon28ChevronDownOutline from '@vkontakte/icons/dist/28/chevron_down_outline';
-import { getFinishedListTasks } from 'core/selectors/boardLists';
+import { getFinishedListTasks, getFinishedTasksCount } from 'core/selectors/boardLists';
 import { TaskCheckedLabel } from 'modules/task';
 
 export const BoardFinishedTasks = React.memo(() => {

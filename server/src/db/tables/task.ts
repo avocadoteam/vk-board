@@ -16,7 +16,7 @@ import { GList } from './gList';
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn('increment', { type: 'int8' })
-  id!: number;
+  id!: string;
 
   @Column({
     type: 'uuid',
@@ -39,7 +39,7 @@ export class Task {
   @Column({
     type: 'timestamp',
   })
-  created: Date;
+  created: Date | string;
 
   @Column({
     type: 'int8',

@@ -42,18 +42,16 @@ export const initialState: models.AppState['ui'] = {
     tasksToBeFinished: [],
     tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
     selectedTask: {
-      id: 0,
+      id: '',
       name: '',
       description: '',
       dueDate: '',
-      taskGUID: '',
     },
     editedTask: {
-      id: 0,
+      id: '',
       name: '',
       description: '',
       dueDate: '',
-      taskGUID: '',
     },
   },
   membership: {
