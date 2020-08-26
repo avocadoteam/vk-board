@@ -130,7 +130,7 @@ export const BoardLists = React.memo(() => {
           <AdsBanner />
           <BoardEmpty />
           {updatingListOfTasks && showUpdating ? null : taskRender}
-          {updatingListOfTasks && showUpdating ? <LoadingCardChain cards={[112, 40, 70]} /> : null}
+          {updatingListOfTasks && showUpdating ? <LoadingCardChain cards={[60, 30, 60]} /> : null}
           <BoardFinishedTasks />
         </Div>
       </TasksRefresher>
