@@ -61,16 +61,21 @@ export const BoardLists = React.memo(() => {
     enter: {
       transform: 'scale(1)',
     },
+    leave: {
+      transform: 'scale(0)',
+      delay: 1,
+    },
     ref: transRef,
     unique: true,
-    trail: 400 / tasks.length,
+    trail: 150 / tasks.length,
+    key: (t) => t.id,
   });
 
   useChain([transRef], [0, 0.6]);
 
   const taskRender = transition((style, t) => {
     return (
-      <animated.div style={style} key={t.id}>
+      <animated.div style={style}>
         <CardGrid
           className={css({
             padding: 0,
@@ -124,8 +129,8 @@ export const BoardLists = React.memo(() => {
         >
           <AdsBanner />
           <BoardEmpty />
-          {!updatingListOfTasks && taskRender}
-          {updatingListOfTasks && showUpdating && <LoadingCardChain cards={[112, 40, 70]} />}
+          {updatingListOfTasks && showUpdating ? null : taskRender}
+          {updatingListOfTasks && showUpdating ? <LoadingCardChain cards={[112, 40, 70]} /> : null}
           <BoardFinishedTasks />
         </Div>
       </TasksRefresher>
