@@ -63,13 +63,16 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
                   );
                 }
 
-                return of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.PaymentInfo,
-                    data: r?.data,
-                  },
-                } as AppDispatch);
+                return concat(
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.PaymentInfo,
+                      data: r?.data,
+                    },
+                  } as AppDispatch),
+                  of({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Ads } as AppDispatch)
+                );
               })
             );
           } else {

@@ -41,6 +41,11 @@ const itemsToAppear = [
   },
   {
     id: 5,
+    text: 'Никакой рекламы',
+    type: 'info',
+  },
+  {
+    id: 6,
     type: 'btn',
   },
 ];
