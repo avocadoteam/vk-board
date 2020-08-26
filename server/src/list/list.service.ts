@@ -20,6 +20,12 @@ import { ListMembership } from 'src/db/tables/listMembership';
 import { uniq, unnest } from 'ramda';
 import { VkApiService } from 'src/vk-api/vk-api.service';
 import { errMap } from 'src/utils/errors';
+import { EventBus } from 'src/events/events.bus';
+import {
+  BusEvents,
+  ListUpdatedParams,
+  ListUpdatedType,
+} from 'src/contracts/enum';
 
 @Injectable()
 export class ListService {
@@ -230,6 +236,19 @@ export class ListService {
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
     await this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
+
+    const list = await this.tableList.findOne(model.listId, {
+      select: ['listguid'],
+    });
+    if (list) {
+      const avatars = await this.vkApiService.updateWithAvatars([model.userId]);
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.DropMember,
+        member: avatars[0],
+        userId: vkUserId
+      } as ListUpdatedParams);
+    }
   }
 
   async deleteList(listId: number, vkUserId: number) {
@@ -239,12 +258,33 @@ export class ListService {
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
     await this.cache.del(cacheKey.canCreateList(vkUserId));
+
+    const list = await this.tableList.findOne(listId, { select: ['listguid'] });
+    if (list) {
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.Deleted,
+        userId: vkUserId
+      } as ListUpdatedParams);
+    }
   }
 
   async editListName(model: EditListModel, vkUserId: number) {
     await this.tableList.update(model.listId, { name: model.name });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
+
+    const list = await this.tableList.findOne(model.listId, {
+      select: ['listguid'],
+    });
+    if (list) {
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.Name,
+        name: model.name,
+        userId: vkUserId
+      } as ListUpdatedParams);
+    }
   }
 
   async createMembership(model: CreateMembershipModel, vkUserId: number) {
@@ -268,6 +308,15 @@ export class ListService {
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
       await this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
+
+      const avatars = await this.vkApiService.updateWithAvatars([vkUserId]);
+
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.DropMember,
+        member: avatars[0],
+        userId: vkUserId
+      } as ListUpdatedParams);
 
       return list.id;
     } catch (err) {

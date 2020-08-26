@@ -14,6 +14,7 @@ import {
   NewTaskParams,
   FinishTaskParams,
   UpdateTaskParams,
+  ListUpdatedParams,
 } from 'src/contracts/enum';
 import { EventBus } from './events.bus';
 import { Inject, Logger } from '@nestjs/common';
@@ -95,6 +96,11 @@ export class EventsGateway implements OnGatewayInit {
       this.logger.log(`emit paymentComplete for user ${userId}`);
       initServer.to(userId.toString()).emit(SocketEvents.payment_complete);
     };
+    const listUpdated = (params: ListUpdatedParams) => {
+      this.logger.log(`emit listUpdated ${params.updatedType}`);
+      initServer.to(params.listGUID).emit(SocketEvents.list_updated, params);
+      initServer.to(params.userId.toString()).emit(SocketEvents.list_updated, params);
+    };
 
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
@@ -103,6 +109,7 @@ export class EventsGateway implements OnGatewayInit {
     EventBus.on(BusEvents.UNFINISH_TASKS, unfinishTasks);
     EventBus.on(BusEvents.UPDATE_TASK, updateTask);
     EventBus.on(BusEvents.DELETE_TASK, deleteTask);
+    EventBus.on(BusEvents.LIST_UPDATED, listUpdated);
   }
 
   @SubscribeMessage('joinRoom')

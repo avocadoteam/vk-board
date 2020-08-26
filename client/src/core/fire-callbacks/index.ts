@@ -1,8 +1,13 @@
 import { client } from 'core/callbacks';
 import { store } from 'core/store';
-import { FetchingStateName, BoardTaskItem } from 'core/models';
-import { getSelectedListTasks, getSelectedList } from 'core/selectors/boardLists';
+import { FetchingStateName, BoardTaskItem, ListUpdatedType, BoardListItem } from 'core/models';
+import {
+  getSelectedListTasks,
+  getSelectedList,
+  selectedBoardListInfo,
+} from 'core/selectors/boardLists';
 import { sortByCreated } from 'core/utils';
+import { getBoardListData } from 'core/selectors/board';
 
 client.new_task = (task) => {
   const currTasks = getSelectedListTasks(store.getState());
@@ -87,4 +92,135 @@ client.payment_complete = () => {
   });
   store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
   store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.LastGoogleSync });
+};
+
+client.list_updated = ({ updatedType, listGUID, name, member }) => {
+  const state = store.getState();
+  const boardLists = getBoardListData(state);
+
+  switch (updatedType) {
+    case ListUpdatedType.Name: {
+      const info = selectedBoardListInfo(state);
+
+      if (!name) {
+        break;
+      }
+
+      store.dispatch({
+        type: 'SELECT_BOARD_LIST',
+        payload: {
+          id: info.id,
+          data: {
+            ...info,
+            name,
+          },
+        },
+      });
+
+      const newBoardLists = boardLists.reduce((acc, list) => {
+        if (list.listguid === listGUID) {
+          return acc.concat({
+            ...list,
+            name,
+          });
+        }
+
+        return acc.concat(list);
+      }, [] as BoardListItem[]);
+
+      store.dispatch({
+        type: 'SET_READY_DATA',
+        payload: {
+          name: FetchingStateName.Board,
+          data: newBoardLists,
+        },
+      });
+      break;
+    }
+    case ListUpdatedType.Deleted:
+      const firstAvailList = boardLists.filter((l) => l.listguid !== listGUID)[0];
+      if (!firstAvailList) {
+        break;
+      }
+
+      store.dispatch({
+        type: 'SELECT_BOARD_LIST',
+        payload: {
+          id: firstAvailList.id,
+          data: firstAvailList,
+        },
+      });
+
+      const newBoardLists = boardLists.reduce((acc, list) => {
+        if (list.listguid === listGUID) {
+          return acc;
+        }
+
+        return acc.concat(list);
+      }, [] as BoardListItem[]);
+
+      store.dispatch({
+        type: 'SET_READY_DATA',
+        payload: {
+          name: FetchingStateName.Board,
+          data: newBoardLists,
+        },
+      });
+      break;
+    case ListUpdatedType.AddMember: {
+      if (!member) {
+        break;
+      }
+      const boardLists = getBoardListData(state);
+
+      const newBoardLists = boardLists.reduce((acc, list) => {
+        if (list.listguid === listGUID) {
+          return acc.concat({
+            ...list,
+            memberships: list.memberships.concat(member),
+          });
+        }
+
+        return acc.concat(list);
+      }, [] as BoardListItem[]);
+
+      store.dispatch({
+        type: 'SET_READY_DATA',
+        payload: {
+          name: FetchingStateName.Board,
+          data: newBoardLists,
+        },
+      });
+
+      break;
+    }
+
+    case ListUpdatedType.DropMember: {
+      if (!member) {
+        break;
+      }
+      const boardLists = getBoardListData(state);
+      const newBoardLists = boardLists.reduce((acc, list) => {
+        if (list.listguid === listGUID) {
+          return acc.concat({
+            ...list,
+            memberships: list.memberships.filter((m) => m.userId !== member.userId),
+          });
+        }
+
+        return acc.concat(list);
+      }, [] as BoardListItem[]);
+
+      store.dispatch({
+        type: 'SET_READY_DATA',
+        payload: {
+          name: FetchingStateName.Board,
+          data: newBoardLists,
+        },
+      });
+    }
+
+    default:
+      break;
+  }
 };

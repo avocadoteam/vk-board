@@ -12,6 +12,7 @@ export enum SocketEvents {
   unfinish_tasks = 'unfinish_tasks',
   update_task = 'update_task',
   delete_task = 'delete_task',
+  list_updated = 'list_updated',
 }
 
 export enum BusEvents {
@@ -22,6 +23,7 @@ export enum BusEvents {
   DELETE_TASK = 'delete_task',
   STOP_G_SYNC = 'stop_g_sync',
   PAYMENT_COMPLETE = 'payment_complete',
+  LIST_UPDATED = 'list_updated',
 }
 
 export type NewTaskParams = {
@@ -35,4 +37,27 @@ export type UpdateTaskParams = {
 export type FinishTaskParams = {
   taskIds: string[];
   listGUID: string;
+};
+
+export type ListUpdatedParams = {
+  listGUID: string;
+  updatedType: ListUpdatedType;
+  name?: string;
+  member?: MembershipItem;
+  userId: number;
+}
+
+export enum ListUpdatedType {
+  DropMember = 'dropMember',
+  AddMember = 'AddMember',
+  Deleted = 'deleted',
+  Name = 'name'
+}
+
+export type MembershipItem = {
+  avatar: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  name: string;
 };

@@ -44,10 +44,6 @@ const dropMembershipEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return concat(
               of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
-              of({
                 type: 'SET_READY_DATA',
                 payload: {
                   name: FetchingStateName.DropMembership,

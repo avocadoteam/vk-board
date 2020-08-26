@@ -1,5 +1,5 @@
 import { clientPerformCallback } from 'core/socket/callbacks';
-import { BoardTaskItem, TaskInfo } from 'core/models';
+import { BoardTaskItem, TaskInfo, ListUpdatedParams } from 'core/models';
 
 export const client = clientPerformCallback((m) => ({
   new_task: m<(task: BoardTaskItem) => void>(),
@@ -9,4 +9,5 @@ export const client = clientPerformCallback((m) => ({
   update_task: m<(task: TaskInfo) => void>(),
   delete_task: m<(taskId: string) => void>(),
   unfinish_tasks: m<({ taskIds }: { taskIds: string[] }) => void>(),
+  list_updated: m<(params: ListUpdatedParams) => void>(),
 }));

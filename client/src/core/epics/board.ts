@@ -63,25 +63,6 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                   );
                 }
 
-                if (boardDataList.name !== name) {
-                  return concat(
-                    of({
-                      type: 'SET_READY_DATA',
-                      payload: {
-                        name: FetchingStateName.Board,
-                        data,
-                      },
-                    } as AppDispatch),
-                    of({
-                      type: 'SELECT_BOARD_LIST',
-                      payload: {
-                        id,
-                        data: boardDataList,
-                      },
-                    } as AppDispatch)
-                  );
-                }
-
                 return concat(
                   of({
                     type: 'SET_READY_DATA',
@@ -185,10 +166,6 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return concat(
               of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
-              of({
                 type: 'SET_READY_DATA',
                 payload: {
                   name: FetchingStateName.DeleteBoardList,
@@ -229,10 +206,6 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
           switchMap((response) => {
             if (response.ok) {
               return concat(
-                of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Board,
-                } as AppDispatch),
                 of({
                   type: 'SET_READY_DATA',
                   payload: {
