@@ -61,7 +61,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const submitForm = () => {
     if (!formValues.name) {
       setHighlight(true);
-    } else {
+    } else if (!wrongDate) {
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.NewTask });
     }
   };

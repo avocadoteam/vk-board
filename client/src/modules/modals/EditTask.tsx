@@ -67,8 +67,10 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
   };
 
   const submitForm = React.useCallback(() => {
-    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
-  }, [dispatch]);
+    if (!wrongDate) {
+      dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
+    }
+  }, [dispatch, wrongDate]);
 
   const showError = errorVisible && <FormStatus header={errorName} mode="error" />;
 
