@@ -15,12 +15,12 @@ import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak, getBoardUiState } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName, WelcomeView, MainView } from 'core/models';
+import { AppDispatchActions, FetchingStateName, WelcomeView } from 'core/models';
 import { KanbanBoard } from 'assets/svg/KanbanBoard';
 import { useViewChange } from 'core/hooks';
 import { useTransition, useChain, animated } from 'react-spring';
 import { isFirstListUpdating } from 'core/selectors/boardLists';
-import { getWelcomeView } from 'core/selectors/router';
+import { getWelcomeView, getActiveMainView } from 'core/selectors/router';
 import { getSearch, goBack, push } from 'connected-react-router';
 
 const suggestions = ['Важные задачи', 'Работа', 'Цели', 'Дом', 'Игры', 'Спорт'];
@@ -30,6 +30,7 @@ export const Welcome = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const updating = useSelector(isFirstListUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
+  const mainView = useSelector(getActiveMainView);
   const { firstBoardListName } = useSelector(getBoardUiState);
   const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings', true);
   const activeView = useSelector(getWelcomeView);
@@ -38,7 +39,7 @@ export const Welcome = React.memo(() => {
 
   const nextView = React.useCallback(() => {
     goForward(WelcomeView.TaskCreation);
-    dispatch(push(`/${MainView.Welcome}/${WelcomeView.TaskCreation}${search}`) as any);
+    dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
   }, [dispatch, search, goForward]);
 
   const back = React.useCallback(() => {

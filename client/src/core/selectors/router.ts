@@ -91,21 +91,13 @@ export const getActiveModalRoute = createSelector(
   }
 );
 
-export const getWelcomeView = createSelector(
-  getActiveMainView,
-  getLocationSubPath,
-  (mainView, subPath) => {
-    if (mainView !== MainView.Welcome) {
+export const getWelcomeView = createSelector(getLocationSubPath, (subPath) => {
+  switch (subPath) {
+    case WelcomeView.Greetings:
       return WelcomeView.Greetings;
-    }
-
-    switch (subPath) {
-      case WelcomeView.Greetings:
-        return WelcomeView.Greetings;
-      case WelcomeView.TaskCreation:
-        return WelcomeView.TaskCreation;
-      default:
-        return WelcomeView.Greetings;
-    }
+    case WelcomeView.TaskCreation:
+      return WelcomeView.TaskCreation;
+    default:
+      return WelcomeView.Greetings;
   }
-);
+});
