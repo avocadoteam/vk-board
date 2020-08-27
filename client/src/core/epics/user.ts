@@ -76,7 +76,7 @@ const getUserSKeysEpic: AppEpic = (action$, state$) =>
         mergeMap((result) => {
           const isAppUser = result.keys.find((v) => v.key === Skeys.appUser)?.value === AppUser.Yes;
           const selectedListId =
-            result.keys.find((v) => v.key === Skeys.userSelectedListId)?.value ?? 0;
+            result.keys.find((v) => v.key === Skeys.userSelectedListId)?.value ?? 1;
           return [
             {
               type: 'SET_APP_USER',

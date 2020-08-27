@@ -31,7 +31,7 @@ export const Welcome = React.memo(() => {
   const updating = useSelector(isFirstListUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
   const { firstBoardListName } = useSelector(getBoardUiState);
-  const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings');
+  const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings', true);
   const activeView = useSelector(getWelcomeView);
   const transRef = React.useRef<any>();
   const search = useSelector(getSearch);
@@ -39,7 +39,7 @@ export const Welcome = React.memo(() => {
   const nextView = React.useCallback(() => {
     goForward(WelcomeView.TaskCreation);
     dispatch(push(`/${MainView.Welcome}/${WelcomeView.TaskCreation}${search}`) as any);
-  }, [dispatch, search]);
+  }, [dispatch, search, goForward]);
 
   const back = React.useCallback(() => {
     swipeBack();
