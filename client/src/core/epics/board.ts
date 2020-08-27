@@ -18,7 +18,7 @@ import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
 import { safeCombineEpics } from './combine';
 import { getQToQuery } from 'core/selectors/user';
 import { deletBoardList } from 'core/operations/boardList';
-import { selectedBoardListInfo, getSelectedListId } from 'core/selectors/boardLists';
+import { getSelectedListId } from 'core/selectors/boardLists';
 import { useTapticEpic, setStorageValueEpic } from './addons';
 import { replace } from 'connected-react-router';
 
@@ -37,7 +37,6 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
               map((v) => v?.data ?? []),
               switchMap((data) => {
                 const state = state$.value;
-                const { name } = selectedBoardListInfo(state);
                 const id = getSelectedListId(state);
                 const boardDataList = data.find((bl) => bl.id === id);
                 if (!boardDataList) {
@@ -69,6 +68,13 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                     payload: {
                       name: FetchingStateName.Board,
                       data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SELECT_BOARD_LIST',
+                    payload: {
+                      id: boardDataList.id,
+                      data: boardDataList,
                     },
                   } as AppDispatch),
                   of({

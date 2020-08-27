@@ -99,7 +99,9 @@ export class EventsGateway implements OnGatewayInit {
     const listUpdated = (params: ListUpdatedParams) => {
       this.logger.log(`emit listUpdated ${params.updatedType}`);
       initServer.to(params.listGUID).emit(SocketEvents.list_updated, params);
-      initServer.to(params.userId.toString()).emit(SocketEvents.list_updated, params);
+      initServer
+        .to(params.userId.toString())
+        .emit(SocketEvents.list_updated, params);
     };
 
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
@@ -140,22 +142,15 @@ export class EventsGateway implements OnGatewayInit {
         this.logger.log(`joined room ${userId}`);
       }
     });
-
-    if (socket.listeners('disconnect').length < 3) {
-      socket.once('disconnect', () => {
-        this.logger.log('list socket disconnected');
-        this.autoLeaveRooms(socket);
-        socket.leaveAll();
-      });
-    }
   }
 
   @SubscribeMessage('leaveRoom')
   leaveRoom(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() listGUID: string,
+    @MessageBody() { listGUID, userId }: { listGUID?: string; userId: number },
   ) {
     const adapter = socket.adapter as RedisAdapter;
+    this.logger.log('list socket leave room');
     if (!!listGUID) {
       adapter.remoteLeave(socket.id, listGUID, (err: Error) => {
         if (err) {
@@ -163,6 +158,12 @@ export class EventsGateway implements OnGatewayInit {
         }
       });
     }
+
+    adapter.remoteLeave(socket.id, userId.toString(), (err: Error) => {
+      if (err) {
+        this.logger.error(errMap(err));
+      }
+    });
   }
 
   autoLeaveRooms(socket: Socket) {

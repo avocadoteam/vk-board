@@ -1,19 +1,16 @@
 import { client } from 'core/callbacks';
 import { store } from 'core/store';
 import { FetchingStateName, BoardTaskItem, ListUpdatedType, BoardListItem } from 'core/models';
-import {
-  getSelectedListTasks,
-  getSelectedList,
-  selectedBoardListInfo,
-} from 'core/selectors/boardLists';
+import { getSelectedList, selectedBoardListInfo } from 'core/selectors/boardLists';
 import { sortByCreated } from 'core/utils';
 import { getBoardListData } from 'core/selectors/board';
 
 client.new_task = (task) => {
-  const currTasks = getSelectedListTasks(store.getState());
+  const { tasks } = getSelectedList(store.getState());
+
   store.dispatch({
     type: 'SET_BOARD_TASKS',
-    payload: [task, ...currTasks],
+    payload: [task, ...tasks],
   });
 };
 
@@ -57,7 +54,8 @@ client.unfinish_tasks = ({ taskIds }) => {
 };
 
 client.update_task = (updatedTask) => {
-  const tasks = getSelectedListTasks(store.getState());
+  const { tasks } = getSelectedList(store.getState());
+
   const updatedTasks = tasks.reduce((acc, task) => {
     if (task.id === updatedTask.id) {
       return acc.concat({ ...task, ...updatedTask });
@@ -70,16 +68,18 @@ client.update_task = (updatedTask) => {
   });
 };
 client.delete_task = (taskId) => {
-  const currentTasks = getSelectedListTasks(store.getState());
+  const { tasks } = getSelectedList(store.getState());
+
   store.dispatch({
     type: 'SET_BOARD_TASKS',
-    payload: currentTasks.filter((t) => t.id !== `${taskId}`),
+    payload: tasks.filter((t) => t.id !== `${taskId}`),
   });
 };
 
 client.stop_g_sync = () => {
   console.warn('stop_g_sync');
   store.dispatch({ type: 'SET_GOOGLE_SYNC', payload: false });
+  store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.LastGoogleSync });
 };
 client.payment_complete = () => {
   console.warn('payment_complete');
@@ -91,7 +91,6 @@ client.payment_complete = () => {
     },
   });
   store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
-  store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.LastGoogleSync });
 };
 
 client.list_updated = ({ updatedType, listGUID, name, member }) => {
@@ -139,17 +138,17 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
     }
     case ListUpdatedType.Deleted:
       const firstAvailList = boardLists.filter((l) => l.listguid !== listGUID)[0];
-      if (!firstAvailList) {
-        break;
-      }
+      const info = selectedBoardListInfo(state);
 
-      store.dispatch({
-        type: 'SELECT_BOARD_LIST',
-        payload: {
-          id: firstAvailList.id,
-          data: firstAvailList,
-        },
-      });
+      if (firstAvailList && info.listguid === listGUID) {
+        store.dispatch({
+          type: 'SELECT_BOARD_LIST',
+          payload: {
+            id: firstAvailList.id,
+            data: firstAvailList,
+          },
+        });
+      }
 
       const newBoardLists = boardLists.reduce((acc, list) => {
         if (list.listguid === listGUID) {

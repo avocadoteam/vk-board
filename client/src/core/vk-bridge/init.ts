@@ -2,7 +2,7 @@ import { vkBridge } from './instance';
 import { store } from 'core/store';
 import { ClientTheme } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { joinRoom, leaveRoom } from 'core/socket/list';
+import { leaveRoom } from 'core/socket/list';
 import { getUserId } from 'core/selectors/user';
 
 // set client theme
@@ -31,19 +31,14 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
       type: 'SET_HASH',
       payload: hashListGUID ?? null,
     });
+  }
 
+  if (type === 'VKWebAppViewHide') {
     const state = store.getState();
 
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
-    joinRoom(userId, listguid);
-  }
-
-  if (type === 'VKWebAppViewHide') {
-    const { listguid } = selectedBoardListInfo(store.getState());
-    if (listguid) {
-      leaveRoom(listguid);
-    }
+    leaveRoom(userId, listguid);
   }
 });
 
