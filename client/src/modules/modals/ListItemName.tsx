@@ -41,7 +41,7 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
       });
       setClicked(true);
     },
-    { delay: 2000 }
+    { delay: 1500 }
   );
 
   const handleClickList = () => {
