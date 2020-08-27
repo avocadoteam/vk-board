@@ -1,1 +1,1 @@
-export * from './Premium';
+export * from './About';

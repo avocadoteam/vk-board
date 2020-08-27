@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, SimpleCell, Switch, Div, Subhead } from '@vkontakte/vkui';
+import { SimpleCell, Switch, Div, Subhead } from '@vkontakte/vkui';
 import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { getNotifications } from 'core/selectors/settings';
@@ -32,7 +32,7 @@ export const Notifications = React.memo(() => {
     setRequest(false);
   };
   return (
-    <List>
+    <>
       <SimpleCell
         disabled
         after={<Switch onChange={handleToggle} checked={notifyEnabled} />}
@@ -47,6 +47,6 @@ export const Notifications = React.memo(() => {
           получат все пользователи, которые имеют доступ к задаче.
         </Subhead>
       </Div>
-    </List>
+    </>
   );
 });

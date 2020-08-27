@@ -1,9 +1,8 @@
-export const appV = '1.0.2';
+export const appV = '1.0.3';
 
 export const vkApiV = '5.122';
 
 export const appId = 7566928;
-// export const payToUserId = 11437372;
 export const payToGroupId = 197416979;
 // export const premiumPrice = 228;
 export const premiumPrice = 1;

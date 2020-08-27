@@ -17,3 +17,7 @@ export const buyPremium = () =>
     action: 'pay-to-group',
     params: { group_id: payToGroupId, amount: premiumPrice },
   });
+
+export const getAddToHomeInfo = () => vkBridge.send('VKWebAppAddToHomeScreenInfo');
+
+export const addToHome = () => vkBridge.send('VKWebAppAddToHomeScreen');

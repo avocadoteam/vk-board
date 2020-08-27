@@ -1,20 +1,24 @@
 import React from 'react';
-import { Div, Text } from '@vkontakte/vkui';
+import { Div, Text, List } from '@vkontakte/vkui';
 import { useFela, CssFelaStyle } from 'react-fela';
 import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { appV } from 'core/models';
 import { Notifications } from './Notifications';
 import { PremiumCard } from './PremiumCard';
+import { AddToHomeScreen } from './AddToHomeScreen';
 
-export const Premium = React.memo(() => {
+export const About = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const { css } = useFela({ dark });
 
   return (
     <Div>
       <PremiumCard />
-      <Notifications />
+      <List>
+        <AddToHomeScreen />
+        <Notifications />
+      </List>
       <Text
         weight="medium"
         className={`useMonrope ${css(textStyle, {

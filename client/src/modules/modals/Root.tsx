@@ -54,7 +54,7 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           <Separator wide />
           <List>
             <CellButton onClick={goToAbout}>
-              <Icon16InfoOutline className={css({ marginRight: '1rem' })} /> Информация
+              <Icon16InfoOutline className={css({ marginRight: '1rem' })} /> Настройки
             </CellButton>
           </List>
           <div className={css({ height: '10px' })} />

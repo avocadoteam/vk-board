@@ -11,7 +11,7 @@ import { useViewChange } from 'core/hooks';
 import { goBack, push, getSearch } from 'connected-react-router';
 import { useFela } from 'react-fela';
 import { isThemeDrak } from 'core/selectors/common';
-import { Premium } from 'modules/about';
+import { About } from 'modules/about';
 import { MembershipPreview } from 'modules/membership-preview';
 import { isPreviewMembershipReady } from 'core/selectors/membership';
 import { Welcome } from 'modules/welcome';
@@ -97,10 +97,10 @@ export const Main = React.memo(() => {
                 lineHeight: '24px',
               })}`}
             >
-              О приложении
+              Настройки
             </Text>
           </PanelHeader>
-          <Premium />
+          <About />
         </Panel>
         <Panel id={MainView.ListSharePreview}>
           <PanelHeader separator={false} />
