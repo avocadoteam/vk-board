@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import Icon16Add from '@vkontakte/icons/dist/16/add';
 import { CellButton } from 'atoms/CellButton';
-import { Input, Spinner, usePlatform, OS, Div, Text } from '@vkontakte/vkui';
+import { Input, Spinner, Div, Text } from '@vkontakte/vkui';
 import {
   isNewListUpdating,
   isNewListCreated,
@@ -14,6 +14,7 @@ import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { tapticSelected } from 'core/vk-bridge/taptic';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
@@ -26,8 +27,6 @@ export const NewList = React.memo(() => {
   const canCreateLists = useSelector(canUserContinueCreateLists);
   const dark = useSelector(isThemeDrak);
 
-  const platform = usePlatform();
-
   React.useEffect(() => {
     if (name && highlight) {
       setHighlight(false);
@@ -35,7 +34,7 @@ export const NewList = React.memo(() => {
   }, [name, highlight]);
 
   const handleClick = () => {
-    if (platform === OS.IOS) {
+    if (isPlatformIOS()) {
       tapticSelected();
     }
     setClicked(true);

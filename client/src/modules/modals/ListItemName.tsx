@@ -7,11 +7,12 @@ import { CellButton } from 'atoms/CellButton';
 import { getBoardUiState, isThemeDrak } from 'core/selectors/common';
 import * as sel from 'core/selectors/boardLists';
 import { useLongPress } from 'core/hooks';
-import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
+import { Input, Spinner } from '@vkontakte/vkui';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { tapticSelected } from 'core/vk-bridge/taptic';
 import { goBack } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 type Props = {
   listItem: BoardListItem & {
@@ -28,11 +29,10 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const created = useSelector(sel.isEditListCreated);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
-  const platform = usePlatform();
 
   const detections = useLongPress<HTMLButtonElement>(
     () => {
-      if (platform === OS.IOS) {
+      if (isPlatformIOS()) {
         tapticSelected();
       }
       dispatch({
