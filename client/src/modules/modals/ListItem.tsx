@@ -40,7 +40,7 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   }, [dispatch, goForward, search]);
 
   const sharePost = React.useCallback(
-    async (listguid: string) => {
+    (listguid: string) => {
       vkBridge.send('VKWebAppShare', { link: `https://vk.com/app${appId}#${listguid}` });
     },
     [appId]
