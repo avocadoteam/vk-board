@@ -4,13 +4,16 @@ import { FetchingStateName, BoardTaskItem, ListUpdatedType, BoardListItem } from
 import { getSelectedList, selectedBoardListInfo } from 'core/selectors/boardLists';
 import { sortByCreated } from 'core/utils';
 import { getBoardListData } from 'core/selectors/board';
+import { getUserId } from 'core/selectors/user';
 
 client.new_task = (task) => {
-  const { tasks } = getSelectedList(store.getState());
+  const state = store.getState();
+  const { tasks } = getSelectedList(state);
+  const userId = getUserId(state);
 
   store.dispatch({
     type: 'SET_BOARD_TASKS',
-    payload: [task, ...tasks],
+    payload: [{ ...task, notification: task.notificationUserId === userId }, ...tasks],
   });
 };
 

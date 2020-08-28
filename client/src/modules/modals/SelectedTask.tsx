@@ -51,7 +51,7 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
   };
 
   const handleChangeNotif = () => {
-    if (!notifyEnabled) {
+    if (!notifyEnabled && !notif) {
       changeNotificationsPermission().then(() => {
         dispatch({
           type: 'SET_UPDATING_DATA',
@@ -136,7 +136,10 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
             onClick={handleChangeNotif}
             mode="tertiary"
             disabled={notifUpdating}
-            className={css({ paddingRight: 0, color: dark ? '#959595' : '#AEAEAE' })}
+            className={css({
+              paddingRight: 0,
+              color: notif ? '#4bb34b' : dark ? '#959595' : '#AEAEAE',
+            })}
           >
             {notif ? <Icon28Notifications /> : <Icon28NotificationDisableOutline />}
           </Button>

@@ -64,6 +64,7 @@ export type BoardTaskItem = {
   dueDate: string | null;
   finished: string | null;
   deleted: null;
+  notificationUserId: number;
 };
 
 export type TaskInfo = Pick<
