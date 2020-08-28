@@ -22,6 +22,7 @@ import {
   NewTaskModel,
   UpdateTaskModel,
   UpdateTaskNotification,
+  DeleteTaskModel,
 } from 'src/contracts/task';
 import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
 import {
@@ -134,13 +135,8 @@ export class ListController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
     )
     vkUserId: number,
-    @Query('taskId')
-    taskId: string,
-    @Query(
-      'listId',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
-    )
-    listId: number,
+    @Body()
+    { listId, taskId }: DeleteTaskModel,
   ) {
     if (!(await this.listService.hasListMembership([listId], vkUserId))) {
       throw new BadRequestException();
@@ -156,26 +152,14 @@ export class ListController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
     )
     vkUserId: number,
-    @Query('taskId')
-    taskId: string,
-    @Query(
-      'listId',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
-    )
-    listId: number,
     @Body()
     model: UpdateTaskNotification,
   ) {
-    if (!(await this.listService.hasListMembership([listId], vkUserId))) {
+    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
 
-    await this.taskService.updateNotificationTask(
-      taskId,
-      vkUserId,
-      model,
-      listId,
-    );
+    await this.taskService.updateNotificationTask(vkUserId, model);
   }
 
   @Delete('/membership')

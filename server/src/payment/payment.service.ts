@@ -55,7 +55,7 @@ export class PaymentService {
     return has;
   }
 
-  async makePremium(vkUserId: number, amount: string) {
+  async makePremium(vkUserId: number, amount: number) {
     if (await this.hasUserPremium(vkUserId)) {
       this.logger.log(`User ${vkUserId} already bought the premium`);
       return;
@@ -65,7 +65,7 @@ export class PaymentService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const amountToNormal = `${Number(amount) / 1000}`;
+      const amountToNormal = `${amount / 1000}`;
       const newPayment = new Payment(amountToNormal, vkUserId);
       await queryRunner.manager.save(newPayment);
 

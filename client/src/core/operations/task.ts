@@ -14,7 +14,7 @@ export const unfinishTasks = (taskIds: string[], listId: number, q: string) =>
   request(`/list/tasks${q}`, Method.Delete, { taskIds, listId });
 
 export const deleteTask = (taskId: string, listId: number, q: string) =>
-  request(`/list/task${q}&taskId=${taskId}&listId=${listId}`, Method.Delete);
+  request(`/list/task${q}`, Method.Delete, { taskId, listId });
 
 export const putEditTask = (data: EditTaskModel, q: string) =>
   request(`/list/task${q}`, Method.Put, data);
@@ -25,6 +25,8 @@ export const putTaskNotification = (
   listId: number,
   q: string
 ) =>
-  request(`/list/task/notification${q}&taskId=${taskId}&listId=${listId}`, Method.Put, {
+  request(`/list/task/notification${q}`, Method.Put, {
     notification,
+    listId,
+    taskId,
   });

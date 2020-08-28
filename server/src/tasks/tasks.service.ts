@@ -211,12 +211,10 @@ export class TasksService {
     }
   }
   async updateNotificationTask(
-    taskId: string,
     vkUserId: number,
-    model: UpdateTaskNotification,
-    listId: number,
+    { taskId, listId, notification }: UpdateTaskNotification,
   ) {
-    if (model.notification) {
+    if (notification) {
       await this.insertUserNotificationTasks([taskId], vkUserId);
     } else {
       await this.removeUserNotificationTasks([taskId], vkUserId);

@@ -21,6 +21,7 @@ import integrationConfig from 'src/config/integration.config';
 import { ConfigType } from '@nestjs/config';
 import { avacadoGroupId } from 'src/constants';
 import { VkCallbackGuard } from 'src/guards/vkCb.guard';
+import { PaymentCBModel } from 'src/contracts/payment';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -63,16 +64,7 @@ export class PaymentController {
   @Post('/finished')
   makePayment(
     @Body()
-    model: {
-      type: 'vkpay_transaction' | 'confirmation';
-      group_id: number;
-      object?: {
-        from_id: number;
-        amount: string;
-        description?: string;
-        date: string;
-      };
-    },
+    model: PaymentCBModel,
     @Res()
     res: Response,
   ) {

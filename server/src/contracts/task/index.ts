@@ -12,6 +12,13 @@ import {
 export class UpdateTaskNotification {
   @IsBoolean()
   notification!: boolean;
+  
+  @IsString()
+  @IsNotEmpty()
+  taskId!: string;
+
+  @IsNumber()
+  listId!: number;
 }
 export class GeneralTaskModel {
   @IsString()
@@ -54,6 +61,15 @@ export class UpdateTaskModel extends GeneralTaskModel {
   @IsString()
   @IsNotEmpty()
   id!: string;
+}
+
+export class DeleteTaskModel {
+  @IsString()
+  @IsNotEmpty()
+  taskId!: string;
+
+  @IsNumber()
+  listId!: number;
 }
 
 export type BoardTaskItem = {
