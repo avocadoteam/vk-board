@@ -51,7 +51,7 @@ export type AppDispatch =
   | SelectBoardListAction
   | { type: 'SET_BOARD_TASKS'; payload: BoardTaskItem[] }
   | { type: 'OPEN_BOARD_LIST'; payload: number }
-  | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string } }
+  | { type: 'UPDATE_NEW_TASK'; payload: { name: string; value: string | boolean } }
   | { type: 'RESET_NEW_TASK'; payload: null }
   | { type: 'FINISH_TASK'; payload: string }
   | { type: 'REMOVE_FINISH_TASK'; payload: string }
@@ -75,7 +75,7 @@ export type AppDispatch =
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
 export type FetchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
-export type FetchUpdateAction = { type: 'SET_UPDATING_DATA'; payload: FetchingStateName };
+export type FetchUpdateAction = { type: 'SET_UPDATING_DATA'; payload: FetchingStateName, params?: any };
 export type SelectBoardListAction = {
   type: 'SELECT_BOARD_LIST';
   payload: { id: number; data?: BoardListItem };
@@ -97,6 +97,7 @@ export enum FetchingStateName {
   Tasks = 'tasks',
   FinishTasks = 'finish_tasks',
   DeleteTask = 'delete_task',
+  NotificationTask = 'notification_task',
   NewBoardList = 'new_board_list',
   FirstBoardList = 'first_board_list',
   EditBoardList = 'edit_board_list',

@@ -12,6 +12,7 @@ export type BoardListItem = {
 export type BoardTaskItem = {
   name: string;
   description: string | null;
+  notification: boolean;
   id: string;
   created: string;
   dueDate: string | null;
@@ -20,7 +21,10 @@ export type BoardTaskItem = {
   memberships: MembershipItem[];
 };
 
-export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description'>;
+export type TaskInfo = Pick<
+  BoardTaskItem,
+  'id' | 'dueDate' | 'name' | 'description' | 'notification'
+>;
 
 export type BoardState = {
   boardListName: string;
@@ -37,6 +41,7 @@ export type BoardState = {
     name: string;
     description: string | null;
     dueDate: string | null;
+    notification: boolean;
   };
   tasksToBeFinished: string[];
   tasksToBeUnfinished: string[];
@@ -50,6 +55,7 @@ export type NewTaskModel = {
   description: string;
   dueDate: string | null;
   listId: number;
+  notification: boolean;
 };
 
 export type EditTaskModel = {

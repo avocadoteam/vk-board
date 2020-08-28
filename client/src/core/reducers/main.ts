@@ -37,6 +37,7 @@ export const initialState: models.AppState['ui'] = {
       description: '',
       dueDate: '',
       name: '',
+      notification: false,
     },
     tasksToBeUnfinished: [],
     tasksToBeFinished: [],
@@ -46,12 +47,14 @@ export const initialState: models.AppState['ui'] = {
       name: '',
       description: '',
       dueDate: '',
+      notification: false,
     },
     editedTask: {
       id: '',
       name: '',
       description: '',
       dueDate: '',
+      notification: false,
     },
   },
   membership: {
@@ -222,6 +225,7 @@ export const reducer = (
             description: null,
             dueDate: null,
             name: '',
+            notification: state.notifications
           },
         },
       };

@@ -1,24 +1,25 @@
+import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
+import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
+import Icon24Add from '@vkontakte/icons/dist/24/add';
+import {
+  FormLayout,
+  FormStatus,
+  Input,
+  Spinner,
+  Textarea,
+  withModalRootContext,
+} from '@vkontakte/vkui';
+import { Button } from 'atoms/Button';
+import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { getNewTaskValues } from 'core/selectors/board';
+import { isThemeDrak } from 'core/selectors/common';
+import { getNewTaskInfo } from 'core/selectors/task';
+import { safeTrim } from 'core/utils';
+import { addDays, format, isBefore } from 'date-fns';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
-import {
-  FormLayout,
-  Input,
-  Spinner,
-  FormStatus,
-  withModalRootContext,
-  Textarea,
-} from '@vkontakte/vkui';
-import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
-import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
-import { Button } from 'atoms/Button';
-import Icon24Add from '@vkontakte/icons/dist/24/add';
-import { getNewTaskValues } from 'core/selectors/board';
-import { getNewTaskInfo } from 'core/selectors/task';
-import { format, isBefore, addDays } from 'date-fns';
-import { isThemeDrak } from 'core/selectors/common';
-import { safeTrim } from 'core/utils';
+import { NewTaskNotification } from './NewTaskNotification';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -149,6 +150,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             value={formValues.dueDate ?? ''}
           />
         </span>
+
+        <NewTaskNotification updateModalHeight={updateModalHeight!} />
 
         <Button
           mode="primary"

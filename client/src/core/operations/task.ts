@@ -18,3 +18,13 @@ export const deleteTask = (taskId: string, listId: number, q: string) =>
 
 export const putEditTask = (data: EditTaskModel, q: string) =>
   request(`/list/task${q}`, Method.Put, data);
+
+export const putTaskNotification = (
+  notification: boolean,
+  taskId: string,
+  listId: number,
+  q: string
+) =>
+  request(`/list/task/notification${q}&taskId=${taskId}&listId=${listId}`, Method.Put, {
+    notification,
+  });

@@ -6,9 +6,14 @@ import {
   ValidateIf,
   IsArray,
   ArrayMinSize,
+  IsBoolean,
 } from 'class-validator';
 
-export class NewTaskModel {
+export class UpdateTaskNotification {
+  @IsBoolean()
+  notification!: boolean;
+}
+export class GeneralTaskModel {
   @IsString()
   @IsNotEmpty()
   @Length(1, 256)
@@ -30,6 +35,11 @@ export class NewTaskModel {
   dueDate!: string | null;
 }
 
+export class NewTaskModel extends GeneralTaskModel {
+  @IsBoolean()
+  notification!: boolean;
+}
+
 export class FinishTasksModel {
   @IsArray()
   @ArrayMinSize(1)
@@ -40,7 +50,7 @@ export class FinishTasksModel {
   listId!: number;
 }
 
-export class UpdateTaskModel extends NewTaskModel {
+export class UpdateTaskModel extends GeneralTaskModel {
   @IsString()
   @IsNotEmpty()
   id!: string;
@@ -56,4 +66,7 @@ export type BoardTaskItem = {
   deleted: null;
 };
 
-export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description'>;
+export type TaskInfo = Pick<
+  BoardTaskItem,
+  'id' | 'dueDate' | 'name' | 'description'
+>;

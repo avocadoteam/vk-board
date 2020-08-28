@@ -70,7 +70,7 @@ export class Task {
   @Column({
     type: 'text',
     name: 'g_task_id',
-    nullable: true
+    nullable: true,
   })
   g_task_id: string | null;
 

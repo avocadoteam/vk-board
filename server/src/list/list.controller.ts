@@ -21,9 +21,14 @@ import {
   FinishTasksModel,
   NewTaskModel,
   UpdateTaskModel,
+  UpdateTaskNotification,
 } from 'src/contracts/task';
 import { TasksCacheInterceptor } from 'src/interceptors/cache.interceptor';
-import { DropMembershipModel, CreateMembershipModel, PreviewMembershipModel } from 'src/contracts/list';
+import {
+  DropMembershipModel,
+  CreateMembershipModel,
+  PreviewMembershipModel,
+} from 'src/contracts/list';
 import { RestricitionsService } from 'src/restricitions/restricitions.service';
 import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
 
@@ -71,7 +76,7 @@ export class ListController {
     if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
-    await this.taskService.finishTasks(model.taskIds, model.listId);
+    await this.taskService.finishTasks(model.taskIds, model.listId, vkUserId);
   }
 
   @Delete('/tasks')
@@ -87,7 +92,7 @@ export class ListController {
     if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
-    await this.taskService.unfinishTasks(model.taskIds, model.listId);
+    await this.taskService.unfinishTasks(model.taskIds, model.listId, vkUserId);
   }
 
   @Post('/task')
@@ -129,11 +134,8 @@ export class ListController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
     )
     vkUserId: number,
-    @Query(
-      'taskId',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
-    )
-    taskId: number,
+    @Query('taskId')
+    taskId: string,
     @Query(
       'listId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
@@ -144,7 +146,36 @@ export class ListController {
       throw new BadRequestException();
     }
 
-    await this.taskService.deleteTask(taskId, listId);
+    await this.taskService.deleteTask(taskId, listId, vkUserId);
+  }
+
+  @Put('/task/notification')
+  async putTaskNotification(
+    @Query(
+      'vk_user_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    vkUserId: number,
+    @Query('taskId')
+    taskId: string,
+    @Query(
+      'listId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    listId: number,
+    @Body()
+    model: UpdateTaskNotification,
+  ) {
+    if (!(await this.listService.hasListMembership([listId], vkUserId))) {
+      throw new BadRequestException();
+    }
+
+    await this.taskService.updateNotificationTask(
+      taskId,
+      vkUserId,
+      model,
+      listId,
+    );
   }
 
   @Delete('/membership')
@@ -194,10 +225,14 @@ export class ListController {
     @Body()
     model: CreateMembershipModel,
   ) {
-    if (await this.listService.hasListMembershipBeforeJoin(model.listId, vkUserId)) {
+    if (
+      await this.listService.hasListMembershipBeforeJoin(model.listId, vkUserId)
+    ) {
       throw new BadRequestException();
     }
-    if (!await this.restrictionService.canUserJoinList(vkUserId, model.listId)) {
+    if (
+      !(await this.restrictionService.canUserJoinList(vkUserId, model.listId))
+    ) {
       throw new PaymentRequiredException();
     }
     return this.listService.createMembership(model, vkUserId);
@@ -213,7 +248,12 @@ export class ListController {
     @Query()
     model: PreviewMembershipModel,
   ) {
-    if (await this.listService.hasListMembershipBeforeJoinGUID(model.guid, vkUserId)) {
+    if (
+      await this.listService.hasListMembershipBeforeJoinGUID(
+        model.guid,
+        vkUserId,
+      )
+    ) {
       throw new BadRequestException();
     }
     return this.listService.previewMembershipByGUID(model.guid);

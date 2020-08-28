@@ -33,6 +33,7 @@ export class NotificationsService {
         from task t 
         inner join list l on l.id = t.list_id and l.deleted is null
         inner join list_membership lm on lm.list_id = l.id and lm.left_date is null
+        inner join notification n on n.user_id = lm.joined_id and n.tasks @> array[t.id]::int8[]
         where t.deleted is null and t.due_date is not null and date_trunc('day', now() + INTERVAL '1 day') = date_trunc('day', t.due_date)
     `);
 

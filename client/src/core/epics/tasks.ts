@@ -9,6 +9,7 @@ import {
   EditTaskModel,
   UNFINISH_TASK_TIMER_VALUE,
   TaskInfo,
+  FetchUpdateAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap, auditTime, exhaustMap, debounceTime } from 'rxjs/operators';
@@ -19,11 +20,12 @@ import {
   captureFetchErrorUserErr,
   captureFetchError,
   captureFetchErrorMoreActions,
+  captureFetchErrorWithTaptic,
 } from './errors';
 import { safeCombineEpics } from './combine';
 import * as ops from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
-import { getSelectedTaskId } from 'core/selectors/task';
+import { getSelectedTaskId, getSelectedTaskNotification } from 'core/selectors/task';
 import { getSelectedListId } from 'core/selectors/boardLists';
 import { goBack } from 'connected-react-router';
 
@@ -40,7 +42,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
           ...formValues,
           description: formValues.description || null,
           dueDate: formValues.dueDate || null,
-          listId: getSelectedListId(state),
+          listId: getSelectedListId(state)
         } as NewTaskModel,
       };
     }),
@@ -213,6 +215,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
           description: formValues.description || null,
           listId: getSelectedListId(state),
           id: getSelectedTaskId(state),
+          notification: getSelectedTaskNotification(state)
         } as EditTaskModel,
       };
     }),
@@ -227,6 +230,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
                   description: dataModel.description,
                   dueDate: dataModel.dueDate,
                   name: dataModel.name,
+                  notification: dataModel.notification,
                 };
 
                 return concat(
@@ -290,11 +294,52 @@ const unfinishTasksEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const changeTaskNotificationEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    ofType('SET_UPDATING_DATA'),
+    filter<FetchUpdateAction>(({ payload }) => payload === FetchingStateName.NotificationTask),
+    map(({ params }) => {
+      const state = state$.value;
+      const { selectedTask } = getBoardUiState(state);
+
+      return {
+        q: getQToQuery(state),
+        selectedTaskId: selectedTask.id,
+        listId: getSelectedListId(state),
+        notification: params?.notification ?? false,
+      };
+    }),
+    switchMap(({ q, selectedTaskId, listId, notification }) =>
+      ops.putTaskNotification(notification, selectedTaskId, listId, q).pipe(
+        switchMap((response) => {
+          if (response.ok) {
+            return concat(
+              of({
+                type: 'SET_READY_DATA',
+                payload: {
+                  name: FetchingStateName.NotificationTask,
+                  data: true,
+                },
+              } as AppDispatch)
+            );
+          } else {
+            throw new Error(`Http ${response.status} on ${response.url}`);
+          }
+        }),
+        captureFetchErrorWithTaptic(
+          FetchingStateName.NotificationTask,
+          'Не удалось изменить уведомления для данного задания'
+        )
+      )
+    )
+  );
+
 export const taskEpics = safeCombineEpics(
   postNewTaskEpic,
   fetchTasksEpic,
   finishTasksEpic,
   deleteTaskEpic,
   putEditTaskEpic,
-  unfinishTasksEpic
+  unfinishTasksEpic,
+  changeTaskNotificationEpic
 );

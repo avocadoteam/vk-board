@@ -7,6 +7,7 @@ import {
   UpdateTaskModel,
   BoardTaskItem,
   TaskInfo,
+  UpdateTaskNotification,
 } from 'src/contracts/task';
 import { List } from 'src/db/tables/list';
 import { TaskMembership } from 'src/db/tables/taskMembership';
@@ -15,6 +16,7 @@ import { cacheKey } from 'src/contracts/cache';
 import { errMap } from 'src/utils/errors';
 import { EventBus } from 'src/events/events.bus';
 import { BusEvents } from 'src/contracts/enum';
+import { Notification } from 'src/db/tables/notification';
 
 @Injectable()
 export class TasksService {
@@ -24,6 +26,8 @@ export class TasksService {
     private tableTask: Repository<Task>,
     @InjectRepository(List)
     private tableList: Repository<List>,
+    @InjectRepository(Notification)
+    private tableNotification: Repository<Notification>,
     private connection: Connection,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
   ) {}
@@ -50,6 +54,10 @@ export class TasksService {
         model.dueDate,
       );
       await queryRunner.manager.save(newTask);
+
+      if (model.notification) {
+        await this.insertUserNotificationTasks([newTask.id], vkUserId);
+      }
 
       const taskMembership = new TaskMembership(vkUserId, newTask);
       await queryRunner.manager.save(taskMembership);
@@ -123,6 +131,12 @@ export class TasksService {
   }
 
   async getTasks(listId: number, vkUserId: number) {
+    const notificationTasks = (await this.tableNotification.findOne(
+      {
+        userId: vkUserId,
+      },
+      { select: ['tasks'] },
+    )) ?? { tasks: [] as string[] };
     let list = await this.tableList
       .createQueryBuilder('list')
       .innerJoinAndSelect(
@@ -146,14 +160,19 @@ export class TasksService {
       })
       .getOne();
 
-    return list?.tasks ?? [];
+    return (
+      list?.tasks.map((t) => ({
+        ...t,
+        notification: notificationTasks.tasks?.includes(t.id),
+      })) ?? []
+    );
   }
 
-  async finishTasks(taskIds: string[], listId: number) {
+  async finishTasks(taskIds: string[], listId: number, vkUserId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskIds, { finished: now });
-
+    await this.removeUserNotificationTasks(taskIds, vkUserId);
     await this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
@@ -164,9 +183,9 @@ export class TasksService {
       });
     }
   }
-  async unfinishTasks(taskIds: string[], listId: number) {
+  async unfinishTasks(taskIds: string[], listId: number, vkUserId: number) {
     await this.tableTask.update(taskIds, { finished: null });
-
+    await this.insertUserNotificationTasks(taskIds, vkUserId);
     await this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
@@ -177,10 +196,11 @@ export class TasksService {
       });
     }
   }
-  async deleteTask(taskId: number, listId: number) {
+  async deleteTask(taskId: string, listId: number, vkUserId: number) {
     const now = new Date();
 
     await this.tableTask.update(taskId, { deleted: now });
+    this.removeUserNotificationTasks([taskId], vkUserId);
 
     await this.cache.del(cacheKey.tasks(String(listId)));
 
@@ -189,18 +209,45 @@ export class TasksService {
       EventBus.emit(BusEvents.DELETE_TASK, taskId, list.listguid);
     }
   }
+  async updateNotificationTask(
+    taskId: string,
+    vkUserId: number,
+    model: UpdateTaskNotification,
+    listId: number,
+  ) {
+    if (model.notification) {
+      await this.insertUserNotificationTasks([taskId], vkUserId);
+    } else {
+      await this.removeUserNotificationTasks([taskId], vkUserId);
+    }
+    await this.cache.del(cacheKey.tasks(String(listId)));
+  }
 
-  async hasTasksMembership(taskIds: number[], vkUserId: number) {
-    return (
-      (await this.tableTask
-        .createQueryBuilder('task')
-        .innerJoin(
-          'task.memberships',
-          'membership',
-          `membership.joined_id = ${vkUserId}`,
-        )
-        .whereInIds(taskIds)
-        .getCount()) > 0
+  async insertUserNotificationTasks(taskIds: string[], vkUserId: number) {
+    const exists =
+      (await this.tableNotification.count({ userId: vkUserId })) > 0;
+    if (exists) {
+      await this.connection.query(
+        `update notification set tasks = array_cat(array_diff(tasks, array[${taskIds.join(
+          ',',
+        )}]::int8[]), array[${taskIds.join(
+          ',',
+        )}]::int8[]) where user_id = ${vkUserId}`,
+      );
+    } else {
+      await this.connection.query(
+        `insert into notification (user_id, vk_notification, tasks) values (${vkUserId}, true, array[${taskIds.join(
+          ',',
+        )}]::int8[])`,
+      );
+    }
+  }
+
+  async removeUserNotificationTasks(taskIds: string[], vkUserId: number) {
+    await this.connection.query(
+      `update notification set tasks = array_diff(tasks, array[${taskIds.join(
+        ',',
+      )}]::int8[]) where user_id = ${vkUserId}`,
     );
   }
 }
