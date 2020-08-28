@@ -222,6 +222,7 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
           data: newBoardLists,
         },
       });
+      break;
     }
 
     default:

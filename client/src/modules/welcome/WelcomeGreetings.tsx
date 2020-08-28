@@ -20,7 +20,7 @@ export const WelcomeGreetings = React.memo<{ goForward: (v: WelcomeView) => void
     const nextView = React.useCallback(() => {
       goForward(WelcomeView.TaskCreation);
       dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
-    }, [dispatch, search, goForward]);
+    }, [dispatch, search, goForward, mainView]);
 
     return (
       <>
