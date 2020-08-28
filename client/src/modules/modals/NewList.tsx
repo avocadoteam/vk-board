@@ -15,6 +15,7 @@ import { tapticSelected } from 'core/vk-bridge/taptic';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
 import { isPlatformIOS } from 'core/selectors/settings';
+import { safeTrim } from 'core/utils';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
@@ -28,7 +29,7 @@ export const NewList = React.memo(() => {
   const dark = useSelector(isThemeDrak);
 
   React.useEffect(() => {
-    if (name && highlight) {
+    if (safeTrim(name) && highlight) {
       setHighlight(false);
     }
   }, [name, highlight]);
@@ -41,7 +42,12 @@ export const NewList = React.memo(() => {
   };
 
   const createList = React.useCallback(() => {
-    if (!name) {
+    const trimName = safeTrim(name);
+    dispatch({
+      type: 'SET_BOARD_LIST_NAME',
+      payload: trimName,
+    });
+    if (!trimName) {
       setHighlight(true);
     } else {
       dispatch({

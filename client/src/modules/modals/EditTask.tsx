@@ -18,6 +18,7 @@ import { Button } from 'atoms/Button';
 import { isThemeDrak } from 'core/selectors/common';
 import { format, isBefore, addDays } from 'date-fns';
 import { getEditTaskInfo } from 'core/selectors/task';
+import { safeTrim } from 'core/utils';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -25,16 +26,17 @@ type Props = {
   updateModalHeight?: () => void;
   editable: boolean;
   stopEdit: () => void;
+  setHighlight: (p: boolean) => void;
 };
 
-const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit }) => {
+const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, setHighlight }) => {
   const { css } = useFela();
   const [wrongDate, setWrongDate] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
   const { error, hasError, updating, notSameData } = useSelector(getEditTaskInfo);
-  const disabledSubmit = !formValues.name || updating || !notSameData;
+  const disabledSubmit = updating || !notSameData;
   const errorVisible = hasError || wrongDate;
   const errorName = hasError ? error : 'Вы установили неверную дату, исправьте пожалуйста.';
 
@@ -66,11 +68,23 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
     dispatch({ type: 'EDIT_TASK', payload: { name, value } });
   };
 
-  const submitForm = React.useCallback(() => {
-    if (!wrongDate) {
+  const submitForm = () => {
+    const trimName = safeTrim(formValues.name);
+    dispatch({
+      type: 'EDIT_TASK',
+      payload: { name: 'name', value: trimName },
+    });
+    if (!trimName) {
+      setHighlight(true);
+    } else if (!wrongDate) {
+      dispatch({
+        type: 'EDIT_TASK',
+        payload: { name: 'description', value: safeTrim(formValues.description ?? '') },
+      });
+
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
     }
-  }, [dispatch, wrongDate]);
+  };
 
   const showError = errorVisible && <FormStatus header={errorName} mode="error" />;
 

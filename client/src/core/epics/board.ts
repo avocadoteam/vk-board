@@ -4,11 +4,11 @@ import {
   AppDispatch,
   FetchResponse,
   BoardListItem,
-  EditBoardNamePayload,
   FetchReadyAction,
   Skeys,
   AppUser,
   MainView,
+  EditBoardListNameAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { deletBoardList } from 'core/operations/boardList';
 import { getSelectedListId } from 'core/selectors/boardLists';
 import { useTapticEpic, setStorageValueEpic } from './addons';
 import { replace } from 'connected-react-router';
+import { safeTrim } from 'core/utils';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -191,23 +192,26 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
 const editBoardListNameEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('EDIT_BOARD_LIST_NAME'),
-    filter(({ payload }) => !!(payload as EditBoardNamePayload).id),
+    filter<EditBoardListNameAction>(({ payload }) => !!payload.id),
     debounceTime(1500),
     map((p) => ({
       q: getQToQuery(state$.value),
       listName: state$.value.ui.board.editBoardListName,
-      listId: (p.payload as EditBoardNamePayload).id!,
+      listId: p.payload.id!,
     })),
     switchMap(({ q, listName, listId }) =>
       iif(
-        () => !listName.length,
-        of({
-          type: 'SET_READY_DATA',
-          payload: {
-            name: FetchingStateName.EditBoardList,
-            data: false,
-          },
-        } as AppDispatch),
+        () => !safeTrim(listName).length,
+        concat(
+          of({
+            type: 'SET_ERROR_DATA',
+            payload: {
+              name: FetchingStateName.EditBoardList,
+              error: 'Вы ввели пустое название. Исправьте!',
+            },
+          } as AppDispatch),
+          useTapticEpic('error')
+        ),
         editBoardList(listName, listId, q).pipe(
           switchMap((response) => {
             if (response.ok) {

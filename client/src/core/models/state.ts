@@ -65,7 +65,7 @@ export type AppDispatch =
   | { type: 'SET_FINISH_TASK_TIMER'; payload: number }
   | { type: 'DROP_MEMBER_SHIP_ID'; payload: number }
   | { type: 'SET_DELETE_BOARD_LIST_ID'; payload: number }
-  | { type: 'EDIT_BOARD_LIST_NAME'; payload: EditBoardNamePayload }
+  | EditBoardListNameAction
   | { type: 'SET_ADS'; payload: boolean }
   | { type: 'SET_FIRST_BOARD_LIST_NAME'; payload: string }
   | { type: 'SET_GOOGLE_SYNC'; payload: boolean }
@@ -83,6 +83,10 @@ export type SelectBoardListAction = {
 export type SetHashAction = { type: 'SET_HASH'; payload: string | null };
 export type ErrorEnqueue = { type: 'ENQUEUE_ERROR'; payload: string };
 export type ErrorDequeue = { type: 'DEQUEUE_ERROR'; payload: string };
+export type EditBoardListNameAction = {
+  type: 'EDIT_BOARD_LIST_NAME';
+  payload: EditBoardNamePayload;
+};
 
 export enum FetchingStateName {
   User = 'user',
@@ -105,7 +109,7 @@ export enum FetchingStateName {
   PaymentInfo = 'payment_info',
   LastGoogleSync = 'last_google_sync',
   AddToHomeInfo = 'add_to_home_info',
-  AddToHome = 'add_to_home'
+  AddToHome = 'add_to_home',
 }
 
 export enum FetchingStatus {

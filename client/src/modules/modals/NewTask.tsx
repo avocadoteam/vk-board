@@ -18,6 +18,7 @@ import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { format, isBefore, addDays } from 'date-fns';
 import { isThemeDrak } from 'core/selectors/common';
+import { safeTrim } from 'core/utils';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -59,9 +60,19 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   };
 
   const submitForm = () => {
-    if (!formValues.name) {
+    const trimName = safeTrim(formValues.name);
+    dispatch({
+      type: 'UPDATE_NEW_TASK',
+      payload: { name: 'name', value: trimName },
+    });
+    if (!trimName) {
       setHighlight(true);
     } else if (!wrongDate) {
+      dispatch({
+        type: 'UPDATE_NEW_TASK',
+        payload: { name: 'description', value: safeTrim(formValues.description ?? '') },
+      });
+
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.NewTask });
     }
   };

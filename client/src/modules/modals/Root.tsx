@@ -72,7 +72,14 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
         <ModalPage
           id={ActiveModal.SelectedTask}
           onClose={closeModal}
-          header={<SelectedTaskHeader editable={editable} deletedPreview={deletedPreview} />}
+          header={
+            <SelectedTaskHeader
+              editable={editable}
+              deletedPreview={deletedPreview}
+              setHighlight={setHighlight}
+              highlight={highlight}
+            />
+          }
           dynamicContentHeight
         >
           <SelectedTask
@@ -81,7 +88,11 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
             showDelete={() => setDelete(true)}
           />
           <DeletePreview deletedPreview={deletedPreview} cancelDelete={() => setDelete(false)} />
-          <EditTask editable={editable} stopEdit={() => setEditable(false)} />
+          <EditTask
+            editable={editable}
+            stopEdit={() => setEditable(false)}
+            setHighlight={setHighlight}
+          />
         </ModalPage>
 
         <DropMember id={ActiveModal.DropMembership} />

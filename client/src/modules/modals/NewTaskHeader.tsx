@@ -6,6 +6,7 @@ import { FormLayout, Input } from '@vkontakte/vkui';
 import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
+import { safeTrim } from 'core/utils';
 
 type Props = { setHighlight: (p: boolean) => void; highlight: boolean };
 
@@ -17,7 +18,7 @@ export const NewTaskHeader = React.memo<Props>(({ setHighlight, highlight }) => 
   const { updating } = useSelector(getNewTaskInfo);
 
   React.useEffect(() => {
-    if (formValues.name && highlight) {
+    if (safeTrim(formValues.name) && highlight) {
       setHighlight(false);
     }
   }, [formValues.name, highlight]);
