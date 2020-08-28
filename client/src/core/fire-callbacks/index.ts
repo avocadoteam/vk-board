@@ -105,16 +105,18 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
         break;
       }
 
-      store.dispatch({
-        type: 'SELECT_BOARD_LIST',
-        payload: {
-          id: info.id,
-          data: {
-            ...info,
-            name,
+      if (info.listguid === listGUID) {
+        store.dispatch({
+          type: 'SELECT_BOARD_LIST',
+          payload: {
+            id: info.id,
+            data: {
+              ...info,
+              name,
+            },
           },
-        },
-      });
+        });
+      }
 
       const newBoardLists = boardLists.reduce((acc, list) => {
         if (list.listguid === listGUID) {
