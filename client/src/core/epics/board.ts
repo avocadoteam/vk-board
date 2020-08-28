@@ -196,12 +196,12 @@ const editBoardListNameEpic: AppEpic = (action$, state$) =>
     debounceTime(1500),
     map((p) => ({
       q: getQToQuery(state$.value),
-      listName: state$.value.ui.board.editBoardListName,
+      listName: safeTrim(state$.value.ui.board.editBoardListName),
       listId: p.payload.id!,
     })),
     switchMap(({ q, listName, listId }) =>
       iif(
-        () => !safeTrim(listName).length,
+        () => !listName.length,
         concat(
           of({
             type: 'SET_ERROR_DATA',
