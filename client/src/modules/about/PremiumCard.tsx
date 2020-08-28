@@ -15,7 +15,7 @@ import {
   getLastGoogleSyncHrs,
 } from 'core/selectors/payment';
 import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
-import { getUserId } from 'core/selectors/user';
+import { getQToQuery } from 'core/selectors/user';
 import { ruSyntaxHelper } from 'core/helpers';
 
 const itemsToAppear = [
@@ -52,6 +52,7 @@ const itemsToAppear = [
 
 export const PremiumCard = React.memo(() => {
   const dark = useSelector(isThemeDrak);
+  const q = useSelector(getQToQuery);
   const updating = useSelector(isPaymentUpdating);
   const hasPremium = useSelector(hasUserPremium);
   const gUpdating = useSelector(isLastGoogleSyncUpdating);
@@ -59,7 +60,6 @@ export const PremiumCard = React.memo(() => {
   const { css } = useFela({ dark });
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
-  const userId = useSelector(getUserId);
   const computedTime = Math.trunc(24 - gHrs);
   const humanTime = computedTime > 1 ? computedTime : 1;
 
@@ -100,7 +100,7 @@ export const PremiumCard = React.memo(() => {
       onClick={startSync}
     >
       <a
-        href={gUpdating || gHrs < 24 ? undefined : `/google/auth?userId=${userId}`}
+        href={gUpdating || gHrs < 24 ? undefined : `/google/auth?${q}&dark=${dark ? 1 : 0}`}
         target="_blank"
         className={css({ textDecoration: 'none', color: 'inherit' })}
         rel="noopener noreferrer"

@@ -38,7 +38,7 @@ export class GoogleTasksService {
       : `https://${hostName}`;
   }
 
-  googleAuthFirstStep(hostName: string, userId: number) {
+  googleAuthFirstStep(hostName: string, userId: number, dark: 1 | 0) {
     const host = this.getHost(hostName);
     const url = `https://accounts.google.com/o/oauth2/v2/auth${buildQueryString(
       [
@@ -47,7 +47,7 @@ export class GoogleTasksService {
         { response_type: 'code' },
         { scope: scopes.join('+') },
         { prompt: 'select_account' },
-        { state: `${userId}` },
+        { state: `${userId},${dark}` },
       ],
     )}`;
     return url;
@@ -58,12 +58,12 @@ export class GoogleTasksService {
 
     const accessToken = await this.getAccessToken(code, host);
     if (!accessToken) {
-      return `<h1>Что-то пошло не так у пользователя ${userId}. Сделайте скрин и напишите нам в поддержку.</h1>`;
+      return `Что-то пошло не так у пользователя ${userId}. Сделайте скрин и напишите нам в поддержку.`;
     }
 
     this.getGoogleTaskLists(accessToken, Number(userId));
 
-    return '<h1>Google аккаунт успешно авторизован. Вы можете закрыть это окно.</h1><h2>Синхронизация займет какое-то время.</h2>';
+    return 'Google аккаунт успешно авторизован. Вы можете закрыть это окно. Синхронизация может занять некоторое время.';
   }
 
   async getAccessToken(code: string, host: string) {
