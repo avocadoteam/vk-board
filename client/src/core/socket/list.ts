@@ -3,6 +3,7 @@ import { initCallbacks } from './callbacks';
 import { store } from 'core/store';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getUserId } from 'core/selectors/user';
+import { FetchingStateName } from 'core/models';
 
 const listNs = '/selectedList';
 
@@ -24,6 +25,8 @@ export const connectListSocket = (query: string) => {
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
     joinRoom(userId, listguid);
+    store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
+
   });
   socket.on('disconnect', () => {
     console.debug('list ws disconnected');
