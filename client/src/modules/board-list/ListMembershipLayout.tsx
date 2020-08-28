@@ -79,6 +79,7 @@ export const ListMembershipLayout = React.memo(() => {
             target="_blank"
             after={<DropMembershipItem updating={updating} userId={m.userId} />}
             disabled={updating}
+            rel="noopener noreferrer"
           >
             {m.name}
           </SimpleCell>

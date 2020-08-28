@@ -100,7 +100,7 @@ export const PremiumCard = React.memo(() => {
       onClick={startSync}
     >
       <a
-        href={gUpdating || gHrs < 24 ? undefined : `/google/auth?${q}&dark=${dark ? 1 : 0}`}
+        href={gUpdating || gHrs < 24 ? undefined : `/google/auth${q}&dark=${dark ? 1 : 0}`}
         target="_blank"
         className={css({ textDecoration: 'none', color: 'inherit' })}
         rel="noopener noreferrer"
