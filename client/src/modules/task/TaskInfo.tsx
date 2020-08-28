@@ -8,13 +8,14 @@ import { useSelector } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { ru } from 'date-fns/locale';
 import { format } from 'date-fns';
+import Icon28Notifications from '@vkontakte/icons/dist/28/notifications';
 
 type Props = {
   task: BoardTaskItem;
 };
 
 export const TaskInfo = React.memo<Props>(
-  ({ task: { dueDate, memberships = [], description } }) => {
+  ({ task: { dueDate, memberships = [], description, notification } }) => {
     const dark = useSelector(isThemeDrak);
     const { css } = useFela();
     return (
@@ -26,6 +27,7 @@ export const TaskInfo = React.memo<Props>(
         })}
       >
         {description && <Icon20ArticleOutline className={css(iconStyle)} />}
+        {notification && dueDate && <Icon28Notifications className={css(iconStyle)} />}
         <TimeInfo dueDate={dueDate} />
         {memberships?.length > 1 ? (
           <UsersStack
