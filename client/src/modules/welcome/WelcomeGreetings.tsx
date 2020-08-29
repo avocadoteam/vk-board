@@ -18,8 +18,6 @@ export const WelcomeGreetings = React.memo<{ goForward: (v: WelcomeView) => void
     const search = useSelector(getSearch);
 
     const nextView = React.useCallback(() => {
-      console.log('CLIECKED', mainView);
-
       goForward(WelcomeView.TaskCreation);
       dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
     }, [dispatch, search, goForward, mainView]);

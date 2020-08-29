@@ -36,9 +36,6 @@ export const Main = React.memo(() => {
         onSwipeBack={handleBack}
         history={history}
       >
-        <Panel id={MainView.Welcome}>
-          <Welcome />
-        </Panel>
         <Panel
           id={MainView.Board}
           className={css({
@@ -90,6 +87,9 @@ export const Main = React.memo(() => {
             </Text>
           </PanelHeader>
           <About />
+        </Panel>
+        <Panel id={MainView.Welcome}>
+          <Welcome />
         </Panel>
         <Panel id={MainView.ListSharePreview}>
           <PanelHeader separator={false} />
