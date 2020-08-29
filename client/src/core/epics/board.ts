@@ -289,6 +289,10 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
                       data: true,
                     },
                   } as AppDispatch),
+                  of({
+                    type: 'SET_APP_USER',
+                    payload: true,
+                  } as AppDispatch),
                   useTapticEpic('success'),
                   of(replace(`/${MainView.Board}${q}`) as any),
                   setStorageValueEpic(Skeys.appUser, AppUser.Yes)
