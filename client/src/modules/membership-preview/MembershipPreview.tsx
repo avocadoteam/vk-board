@@ -6,11 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import {
-  isSaveMembershipUpdating,
-  getPreviewMembershipData,
-  isSaveMembershipReady,
-} from 'core/selectors/membership';
+import { isSaveMembershipUpdating, getPreviewMembershipData } from 'core/selectors/membership';
 
 type Props = {
   handleBack: () => void;
@@ -20,15 +16,8 @@ export const MembershipPreview = React.memo<Props>(({ handleBack }) => {
   const { css } = useFela();
   const dark = useSelector(isThemeDrak);
   const updating = useSelector(isSaveMembershipUpdating);
-  const ready = useSelector(isSaveMembershipReady);
   const { name } = useSelector(getPreviewMembershipData);
   const dispatch = useDispatch<AppDispatchActions>();
-
-  React.useEffect(() => {
-    if (ready) {
-      handleBack()
-    }
-  }, [ready])
 
   const accept = React.useCallback(() => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.SaveMembership });

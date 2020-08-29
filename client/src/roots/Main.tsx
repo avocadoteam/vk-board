@@ -23,10 +23,10 @@ export const Main = React.memo(() => {
   const { css } = useFela();
   const { goForward, goBack: swipeBack, history } = useViewChange(MainView, 'Board', true);
 
-  const handleBack = () => {
+  const handleBack = React.useCallback(() => {
     swipeBack();
     dispatch(goBack() as any);
-  };
+  }, [swipeBack, dispatch]);
 
   return (
     <>
