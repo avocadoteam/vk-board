@@ -153,6 +153,7 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
             data: firstAvailList,
           },
         });
+        store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
       }
 
       const newBoardLists = boardLists.reduce((acc, list) => {
