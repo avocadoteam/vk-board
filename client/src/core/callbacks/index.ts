@@ -3,6 +3,7 @@ import { BoardTaskItem, TaskInfo, ListUpdatedParams } from 'core/models';
 
 export const client = clientPerformCallback((m) => ({
   new_task: m<(task: BoardTaskItem & { notificationUserId: number }) => void>(),
+  task_notification: m<(task: { notification: boolean; taskId: string }) => void>(),
   stop_g_sync: m<() => void>(),
   payment_complete: m<() => void>(),
   finish_tasks: m<({ taskIds }: { taskIds: string[] }) => void>(),

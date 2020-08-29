@@ -20,6 +20,23 @@ client.new_task = (task) => {
   });
 };
 
+client.task_notification = ({ taskId, notification }) => {
+  const state = store.getState();
+  const { tasks } = getSelectedList(state);
+
+  const updatedTasks = tasks.reduce((acc, task) => {
+    if (task.id === taskId) {
+      return acc.concat({ ...task, notification });
+    }
+    return acc.concat(task);
+  }, [] as BoardTaskItem[]);
+
+  store.dispatch({
+    type: 'SET_BOARD_TASKS',
+    payload: updatedTasks,
+  });
+};
+
 client.finish_tasks = ({ taskIds }) => {
   const now = new Date().toString();
   const { tasks } = getSelectedList(store.getState());

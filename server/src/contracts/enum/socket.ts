@@ -13,6 +13,7 @@ export enum SocketEvents {
   update_task = 'update_task',
   delete_task = 'delete_task',
   list_updated = 'list_updated',
+  task_notification = 'task_notification',
 }
 
 export enum BusEvents {
@@ -24,6 +25,7 @@ export enum BusEvents {
   STOP_G_SYNC = 'stop_g_sync',
   PAYMENT_COMPLETE = 'payment_complete',
   LIST_UPDATED = 'list_updated',
+  TASK_NOTIFICATION = 'task_notification',
 }
 
 export type NewTaskParams = {
@@ -60,4 +62,10 @@ export type MembershipItem = {
   firstName: string;
   lastName: string;
   name: string;
+};
+
+export type TaskNotificationParams = {
+  taskId: string;
+  notification: boolean;
+  userId: number;
 };

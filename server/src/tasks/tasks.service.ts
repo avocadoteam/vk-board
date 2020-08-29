@@ -15,7 +15,7 @@ import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey } from 'src/contracts/cache';
 import { errMap } from 'src/utils/errors';
 import { EventBus } from 'src/events/events.bus';
-import { BusEvents } from 'src/contracts/enum';
+import { BusEvents, TaskNotificationParams } from 'src/contracts/enum';
 import { Notification } from 'src/db/tables/notification';
 
 @Injectable()
@@ -220,6 +220,11 @@ export class TasksService {
       await this.removeUserNotificationTasks([taskId], vkUserId);
     }
     this.cache.del(cacheKey.tasks(String(listId)));
+    EventBus.emit(BusEvents.TASK_NOTIFICATION, {
+      notification,
+      taskId,
+      userId: vkUserId,
+    } as TaskNotificationParams);
   }
 
   async insertUserNotificationTasks(taskIds: string[], vkUserId: number) {

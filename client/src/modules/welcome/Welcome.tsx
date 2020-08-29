@@ -2,16 +2,18 @@ import { Panel, View } from '@vkontakte/vkui';
 import { goBack } from 'connected-react-router';
 import { useViewChange } from 'core/hooks';
 import { AppDispatchActions, WelcomeView } from 'core/models';
-import { getWelcomeView } from 'core/selectors/router';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { FirstList } from './FirstList';
 import { WelcomeGreetings } from './WelcomeGreetings';
 
 export const Welcome = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
-  const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings', true);
-  const activeView = useSelector(getWelcomeView);
+  const { goForward, goBack: swipeBack, history, activeView } = useViewChange(
+    WelcomeView,
+    'Greetings',
+    true
+  );
 
   const back = React.useCallback(() => {
     swipeBack();
