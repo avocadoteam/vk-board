@@ -35,10 +35,9 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
-  const { error, hasError, updating, notSameData } = useSelector(getEditTaskInfo);
+  const { updating, notSameData } = useSelector(getEditTaskInfo);
   const disabledSubmit = updating || !notSameData;
-  const errorVisible = hasError || wrongDate;
-  const errorName = hasError ? error : 'Вы установили неверную дату, исправьте пожалуйста.';
+  const errorName = 'Вы установили неверную дату, исправьте пожалуйста.';
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
@@ -46,7 +45,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [editable, errorVisible, updateModalHeight]);
+  }, [editable, wrongDate, updateModalHeight]);
 
   React.useEffect(() => {
     return () => {
@@ -86,7 +85,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
     }
   };
 
-  const showError = errorVisible && <FormStatus header={errorName} mode="error" />;
+  const showError = wrongDate && <FormStatus header={errorName} mode="error" />;
 
   if (!editable) {
     return null;

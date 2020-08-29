@@ -42,7 +42,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
           ...formValues,
           description: formValues.description || null,
           dueDate: formValues.dueDate || null,
-          listId: getSelectedListId(state)
+          listId: getSelectedListId(state),
         } as NewTaskModel,
       };
     }),
@@ -195,7 +195,7 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchError(FetchingStateName.DeleteTask)
+        captureFetchErrorUserErr(FetchingStateName.DeleteTask, 'Не получилось удалить задачу')
       )
     )
   );
@@ -215,7 +215,7 @@ const putEditTaskEpic: AppEpic = (action$, state$) =>
           description: formValues.description || null,
           listId: getSelectedListId(state),
           id: getSelectedTaskId(state),
-          notification: getSelectedTaskNotification(state)
+          notification: getSelectedTaskNotification(state),
         } as EditTaskModel,
       };
     }),

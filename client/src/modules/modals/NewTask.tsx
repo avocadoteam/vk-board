@@ -34,9 +34,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
-  const { updating, hasError, error } = useSelector(getNewTaskInfo);
-  const errorVisible = hasError || wrongDate;
-  const errorName = hasError ? error : 'Вы установили неверную дату, исправьте пожалуйста.';
+  const { updating } = useSelector(getNewTaskInfo);
+  const errorName = 'Вы установили неверную дату, исправьте пожалуйста.';
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
@@ -44,7 +43,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [errorVisible, updateModalHeight]);
+  }, [wrongDate, updateModalHeight]);
 
   React.useEffect(() => {
     if (before && !wrongDate) {
@@ -78,7 +77,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
     }
   };
 
-  const showError = errorVisible && <FormStatus header={errorName} mode="error" />;
+  const showError = wrongDate && <FormStatus header={errorName} mode="error" />;
 
   return (
     <>

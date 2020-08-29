@@ -269,22 +269,31 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
       newBoardList(listName, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return concat(
-              useTapticEpic('success'),
-              of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
-              of({ type: 'SET_APP_USER', payload: true } as AppDispatch),
-              of({
-                type: 'SET_READY_DATA',
-                payload: {
-                  name: FetchingStateName.FirstBoardList,
-                  data: true,
-                },
-              } as AppDispatch),
-              of(replace(`/${MainView.Board}${q}`) as any),
-              setStorageValueEpic(Skeys.appUser, AppUser.Yes)
+            return from(response.json() as Promise<FetchResponse<number>>).pipe(
+              switchMap((response) => {
+                return concat(
+                  of({
+                    type: 'SELECT_BOARD_LIST',
+                    payload: {
+                      id: response.data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_UPDATING_DATA',
+                    payload: FetchingStateName.Board,
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.FirstBoardList,
+                      data: true,
+                    },
+                  } as AppDispatch),
+                  useTapticEpic('success'),
+                  of(replace(`/${MainView.Board}${q}`) as any),
+                  setStorageValueEpic(Skeys.appUser, AppUser.Yes)
+                );
+              })
             );
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
