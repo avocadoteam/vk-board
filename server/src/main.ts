@@ -10,6 +10,7 @@ import * as logger from 'morgan';
 import { RedisIoAdapter } from './adapters/redis-io.adapter';
 import * as sentry from '@sentry/node';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
+import * as moment from 'moment';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -45,6 +46,7 @@ async function bootstrap() {
 
   const port = configService.get<number>('core.port', 3000);
   await app.listen(port, () => {
+    console.log(moment().format('DD MM YYYY hh:mm:ss'));
     console.log('Server listen on port', port);
   });
 }
