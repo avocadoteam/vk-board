@@ -44,9 +44,9 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
     return MainView.Offline;
   }
 
-  // if (!ui.isAppUser) {
-  //   return MainView.Welcome;
-  // }
+  if (!ui.isAppUser) {
+    return MainView.Welcome;
+  }
 
   if (mainPath === null) {
     return MainView.Board;

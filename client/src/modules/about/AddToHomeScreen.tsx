@@ -6,6 +6,7 @@ import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { addToHomeInfo } from 'core/selectors/settings';
 import { isThemeDrak } from 'core/selectors/common';
 import { useFela } from 'react-fela';
+import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 
 export const AddToHomeScreen = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
@@ -13,14 +14,14 @@ export const AddToHomeScreen = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const { available, canAdd, updating } = useSelector(addToHomeInfo);
 
-  const addToHome = React.useCallback(
-    () =>
+  const addToHome = React.useCallback(() => {
+    if (canAdd) {
       dispatch({
         type: 'SET_UPDATING_DATA',
         payload: FetchingStateName.AddToHome,
-      }),
-    [dispatch]
-  );
+      });
+    }
+  }, [dispatch, canAdd]);
 
   if (!available) {
     return null;
@@ -40,8 +41,10 @@ export const AddToHomeScreen = React.memo(() => {
               padding: '10px 2px 10px 10px',
             } as any)}
           />
-        ) : (
+        ) : canAdd ? (
           <Icon16Add />
+        ) : (
+          <Icon24DoneOutline width={16} height={16} />
         )
       }
       onClick={addToHome}
