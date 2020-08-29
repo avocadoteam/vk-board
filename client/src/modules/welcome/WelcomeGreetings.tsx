@@ -17,10 +17,10 @@ export const WelcomeGreetings = React.memo<{ goForward: (v: WelcomeView) => void
     const mainView = useSelector(getLocationMainPath) || MainView.Board;
     const search = useSelector(getSearch);
 
-    const nextView = React.useCallback(() => {
+    const nextView = () => {
       goForward(WelcomeView.TaskCreation);
       dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
-    }, [dispatch, search, goForward, mainView]);
+    };
 
     return (
       <>

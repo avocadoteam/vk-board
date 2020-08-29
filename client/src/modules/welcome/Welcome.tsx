@@ -15,6 +15,8 @@ export const Welcome = React.memo(() => {
     true
   );
 
+  console.log('AAAAA', activeView, history);
+
   const back = React.useCallback(() => {
     swipeBack();
     dispatch(goBack() as any);
