@@ -15,8 +15,9 @@ export class NotificationsService {
     private vkApiService: VkApiService,
   ) {}
 
-  @Cron('0 30 11 * * *')
   // @Cron('55 * * * * *')
+  // @Cron('0 30 11 * * *')
+  @Cron('* 40 * * * *')
   async handleCron() {
     this.logger.debug('Called cron job for notifications');
     const userIds = await this.fetchUserIdsFromTasksDayBeforeTheEnd();
