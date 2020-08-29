@@ -22,6 +22,7 @@ import { getSelectedListId } from 'core/selectors/boardLists';
 import { useTapticEpic, setStorageValueEpic } from './addons';
 import { replace } from 'connected-react-router';
 import { safeTrim } from 'core/utils';
+import { getLocationMainPath } from 'core/selectors/router';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -263,9 +264,10 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
       return {
         q: getQToQuery(state),
         listName: state.ui.board.firstBoardListName,
+        mainView: getLocationMainPath(state),
       };
     }),
-    switchMap(({ q, listName }) =>
+    switchMap(({ q, listName, mainView }) =>
       newBoardList(listName, q).pipe(
         switchMap((response) => {
           if (response.ok) {
@@ -294,7 +296,7 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
                     payload: true,
                   } as AppDispatch),
                   useTapticEpic('success'),
-                  of(replace(`/${MainView.Board}${q}`) as any),
+                  of(replace(`/${mainView}${q}`) as any),
                   setStorageValueEpic(Skeys.appUser, AppUser.Yes)
                 );
               })

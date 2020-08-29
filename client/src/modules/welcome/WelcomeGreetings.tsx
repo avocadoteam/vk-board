@@ -2,9 +2,9 @@ import { Div, Group, PanelHeader, Text } from '@vkontakte/vkui';
 import { KanbanBoard } from 'assets/svg/KanbanBoard';
 import { Button } from 'atoms/Button';
 import { getSearch, push } from 'connected-react-router';
-import { AppDispatchActions, WelcomeView } from 'core/models';
+import { AppDispatchActions, WelcomeView, MainView } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
-import { getActiveMainView } from 'core/selectors/router';
+import { getLocationMainPath } from 'core/selectors/router';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +14,7 @@ export const WelcomeGreetings = React.memo<{ goForward: (v: WelcomeView) => void
     const { css } = useFela();
     const dark = useSelector(isThemeDrak);
     const dispatch = useDispatch<AppDispatchActions>();
-    const mainView = useSelector(getActiveMainView);
+    const mainView = useSelector(getLocationMainPath) || MainView.Board;
     const search = useSelector(getSearch);
 
     const nextView = React.useCallback(() => {

@@ -158,6 +158,21 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
           },
         });
         store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
+      } else if (info.listguid === listGUID) {
+        store.dispatch({
+          type: 'SELECT_BOARD_LIST',
+          payload: {
+            id: 0,
+            data: {
+              created: '',
+              createdBy: 0,
+              id: 0,
+              listguid: '',
+              memberships: [],
+              name: '',
+            },
+          },
+        });
       }
 
       const newBoardLists = boardLists.reduce((acc, list) => {

@@ -6,6 +6,7 @@ import {
   FetchResponse,
   FetchUpdateAction,
   MembershipListPreview,
+  MainView,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -19,9 +20,10 @@ import {
 import { concat, of, from } from 'rxjs';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { safeCombineEpics } from './combine';
-import { getSearch } from 'connected-react-router';
+import { getSearch, push, replace } from 'connected-react-router';
 import { getBoardListData } from 'core/selectors/board';
 import { getPreviewMembershipData } from 'core/selectors/membership';
+import { useTapticEpic } from './addons';
 
 const dropMembershipEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -101,7 +103,8 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.ListMembershipPreview,
                       data: r?.data,
                     },
-                  } as AppDispatch)
+                  } as AppDispatch),
+                  of(push(`/${MainView.ListSharePreview}${q}`) as any)
                 );
               })
             );
@@ -148,7 +151,9 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.SaveMembership,
                       data: true,
                     },
-                  } as AppDispatch)
+                  } as AppDispatch),
+                  of(replace(`/${q}`) as any),
+                  useTapticEpic('success')
                 );
               })
             );
