@@ -64,7 +64,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      await this.cache.del(cacheKey.tasks(String(model.listId)));
+      this.cache.del(cacheKey.tasks(String(model.listId)));
 
       EventBus.emit(BusEvents.NEW_TASK, {
         task: {
@@ -111,7 +111,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      await this.cache.del(cacheKey.tasks(String(model.listId)));
+      this.cache.del(cacheKey.tasks(String(model.listId)));
 
       EventBus.emit(BusEvents.UPDATE_TASK, {
         task: {
@@ -174,7 +174,7 @@ export class TasksService {
 
     await this.tableTask.update(taskIds, { finished: now });
     await this.removeUserNotificationTasks(taskIds, vkUserId);
-    await this.cache.del(cacheKey.tasks(String(listId)));
+    this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -187,7 +187,7 @@ export class TasksService {
   async unfinishTasks(taskIds: string[], listId: number, vkUserId: number) {
     await this.tableTask.update(taskIds, { finished: null });
     await this.insertUserNotificationTasks(taskIds, vkUserId);
-    await this.cache.del(cacheKey.tasks(String(listId)));
+    this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -203,7 +203,7 @@ export class TasksService {
     await this.tableTask.update(taskId, { deleted: now });
     this.removeUserNotificationTasks([taskId], vkUserId);
 
-    await this.cache.del(cacheKey.tasks(String(listId)));
+    this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -219,7 +219,7 @@ export class TasksService {
     } else {
       await this.removeUserNotificationTasks([taskId], vkUserId);
     }
-    await this.cache.del(cacheKey.tasks(String(listId)));
+    this.cache.del(cacheKey.tasks(String(listId)));
   }
 
   async insertUserNotificationTasks(taskIds: string[], vkUserId: number) {

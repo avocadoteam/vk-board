@@ -73,7 +73,7 @@ export class PaymentService {
 
       this.logger.log(`User ${vkUserId} made a premium for ${amountToNormal}`);
 
-      await this.cache.del(cacheKey.hasPremium(vkUserId));
+      this.cache.del(cacheKey.hasPremium(vkUserId));
 
       EventBus.emit(BusEvents.PAYMENT_COMPLETE, vkUserId);
 
@@ -92,8 +92,8 @@ export class PaymentService {
     this.logger.log(`Final step for g sync for user ${user_id}`);
     await this.tablePayment.update({ user_id }, { last_g_sync: now });
 
-    await this.cache.del(cacheKey.googleSync(user_id));
-    await this.cache.del(cacheKey.boardList(String(user_id)));
+    this.cache.del(cacheKey.googleSync(user_id));
+    this.cache.del(cacheKey.boardList(String(user_id)));
 
     EventBus.emit(BusEvents.STOP_G_SYNC, user_id);
   }
