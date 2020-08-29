@@ -16,7 +16,7 @@ export class NotificationsService {
   ) {}
 
   // @Cron('55 * * * * *')
-  @Cron('0 30 11 * * *')
+  @Cron('0 30 7 * * *')
   async handleCron() {
     this.logger.debug('Called cron job for notifications');
     const userIds = await this.fetchUserIdsFromTasksDayBeforeTheEnd();
