@@ -90,7 +90,7 @@ export const Main = React.memo(() => {
         </Panel>
         <Panel id={MainView.ListSharePreview}>
           <PanelHeader separator={false} />
-          <MembershipPreview handleBack={handleBack} />
+          <MembershipPreview />
         </Panel>
         <Panel id={MainView.Welcome}>
           <Welcome />
