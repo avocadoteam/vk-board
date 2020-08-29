@@ -17,6 +17,7 @@ export const Welcome = React.memo(() => {
     swipeBack();
     dispatch(goBack() as any);
   }, [dispatch]);
+  console.log('AAAAA', activeView, history);
 
   return (
     <View activePanel={activeView} onSwipeBack={back} history={history}>
