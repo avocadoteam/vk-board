@@ -11,6 +11,9 @@ client.new_task = (task) => {
   const { tasks } = getSelectedList(state);
   const userId = getUserId(state);
 
+  if (tasks.find((t) => String(t.id) === String(task.id))) {
+    return;
+  }
   store.dispatch({
     type: 'SET_BOARD_TASKS',
     payload: [{ ...task, notification: task.notificationUserId === userId }, ...tasks],
@@ -82,8 +85,9 @@ client.delete_task = (taskId) => {
 client.stop_g_sync = () => {
   console.warn('stop_g_sync');
   store.dispatch({ type: 'SET_GOOGLE_SYNC', payload: false });
-  store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.LastGoogleSync });
+  store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
 };
+
 client.payment_complete = () => {
   console.warn('payment_complete');
   store.dispatch({
