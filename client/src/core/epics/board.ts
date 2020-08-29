@@ -1,28 +1,27 @@
+import { replace } from 'connected-react-router';
 import {
-  AppEpic,
-  FetchingStateName,
   AppDispatch,
-  FetchResponse,
-  BoardListItem,
-  FetchReadyAction,
-  Skeys,
+  AppEpic,
   AppUser,
-  MainView,
+  BoardListItem,
   EditBoardListNameAction,
+  FetchingStateName,
+  FetchReadyAction,
+  FetchResponse,
+  Skeys,
 } from 'core/models';
-import { ofType } from 'redux-observable';
-import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
-import { from, of, concat, iif } from 'rxjs';
-import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
-import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
-import { safeCombineEpics } from './combine';
-import { getQToQuery } from 'core/selectors/user';
+import { editBoardList, getBoard, newBoardList } from 'core/operations/board';
 import { deletBoardList } from 'core/operations/boardList';
 import { getSelectedListId } from 'core/selectors/boardLists';
-import { useTapticEpic, setStorageValueEpic } from './addons';
-import { replace } from 'connected-react-router';
-import { safeTrim } from 'core/utils';
 import { getLocationMainPath } from 'core/selectors/router';
+import { getQToQuery } from 'core/selectors/user';
+import { safeTrim } from 'core/utils';
+import { ofType } from 'redux-observable';
+import { concat, from, iif, of } from 'rxjs';
+import { auditTime, debounceTime, delay, exhaustMap, filter, map, switchMap } from 'rxjs/operators';
+import { setStorageValueEpic, useTapticEpic } from './addons';
+import { safeCombineEpics } from './combine';
+import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
