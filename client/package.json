@@ -27,8 +27,8 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@sentry/browser": "^5.20.1",
-    "@vkontakte/icons": "^1.35.0-rc3",
+    "@sentry/browser": "^5.22.3",
+    "@vkontakte/icons": "^1.37.0",
     "@vkontakte/vk-bridge": "^2.2.8",
     "@vkontakte/vk-miniapps-deploy": "^0.0.19",
     "@vkontakte/vkui": "^3.12.0",
