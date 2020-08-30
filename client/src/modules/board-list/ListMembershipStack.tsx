@@ -10,7 +10,7 @@ export const ListMembershipStack = React.memo(() => {
 
   return memberships?.length > 1 ? (
     <UsersStack
-      photos={memberships.map((m) => m.avatar)}
+      photos={memberships.map((m) => m?.avatar ?? '')}
       visibleCount={3}
       size="m"
       className={css({ paddingTop: '12px', paddingRight: 0 })}

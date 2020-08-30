@@ -14,34 +14,23 @@ type Props = {
   task: BoardTaskItem;
 };
 
-export const TaskInfo = React.memo<Props>(
-  ({ task: { dueDate, memberships = [], description, notification } }) => {
-    const dark = useSelector(isThemeDrak);
-    const { css } = useFela();
-    return (
-      <span
-        className={css({
-          display: 'flex',
-          marginTop: '18px',
-          color: dark ? '#AEAEAE' : '#6A6A6A',
-        })}
-      >
-        {description && <Icon20ArticleOutline className={css(iconStyle)} />}
-        {notification && dueDate && <Icon28Notifications className={css(iconStyle)} />}
-        <TimeInfo dueDate={dueDate} />
-        {memberships?.length > 1 ? (
-          <UsersStack
-            photos={memberships.map((m) => m.avatar)}
-            visibleCount={4}
-            size="m"
-            className={css({ padding: 0 })}
-            layout="vertical"
-          />
-        ) : null}
-      </span>
-    );
-  }
-);
+export const TaskInfo = React.memo<Props>(({ task: { dueDate, description, notification } }) => {
+  const dark = useSelector(isThemeDrak);
+  const { css } = useFela();
+  return (
+    <span
+      className={css({
+        display: 'flex',
+        marginTop: '18px',
+        color: dark ? '#AEAEAE' : '#6A6A6A',
+      })}
+    >
+      {description && <Icon20ArticleOutline className={css(iconStyle)} />}
+      {notification && dueDate && <Icon28Notifications className={css(iconStyle)} />}
+      <TimeInfo dueDate={dueDate} />
+    </span>
+  );
+});
 
 const iconStyle = () => ({
   marginBottom: '18px',
