@@ -71,7 +71,6 @@ export const PremiumCard = React.memo(() => {
           type: 'SET_UPDATING_DATA',
           payload: FetchingStateName.LastGoogleSync,
         });
-        dispatch({ type: 'SET_GOOGLE_SYNC', payload: false });
       }, 2500);
     }
 

@@ -5,7 +5,11 @@ import { filter, switchMap, map } from 'rxjs/operators';
 import { from, of, concat, empty } from 'rxjs';
 import { buyPremium } from 'core/vk-bridge/user';
 import { devTimeout } from './addons';
-import { captureFetchErrorWithTaptic, captureFetchError } from './errors';
+import {
+  captureFetchErrorWithTaptic,
+  captureFetchError,
+  captureFetchErrorMoreActions,
+} from './errors';
 import { paymentInfo, lastGoogleSyncInfo } from 'core/operations/payment';
 import { getSearch } from 'connected-react-router';
 
@@ -96,20 +100,29 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
               switchMap((r) => {
-                return of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.LastGoogleSync,
-                    data: r?.data ?? 24,
-                  },
-                } as AppDispatch);
+                return concat(
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.LastGoogleSync,
+                      data: r?.data ?? 24,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_GOOGLE_SYNC',
+                    payload: false,
+                  } as AppDispatch)
+                );
               })
             );
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchError(FetchingStateName.LastGoogleSync)
+        captureFetchErrorMoreActions(FetchingStateName.LastGoogleSync, {
+          type: 'SET_GOOGLE_SYNC',
+          payload: false,
+        })
       )
     )
   );
