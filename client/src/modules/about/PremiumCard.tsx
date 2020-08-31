@@ -57,6 +57,8 @@ export const PremiumCard = React.memo(() => {
   const hasPremium = useSelector(hasUserPremium);
   const gUpdating = useSelector(isLastGoogleSyncUpdating);
   const gHrs = useSelector(getLastGoogleSyncHrs);
+  const gSyncDisabled =
+    useSelector((state) => state.ui.googleSyncClicked) || gUpdating || gHrs < 24;
   const { css } = useFela({ dark });
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
@@ -112,11 +114,11 @@ export const PremiumCard = React.memo(() => {
         )
       }
       square
-      disabled={gUpdating || gHrs < 24}
+      disabled={gSyncDisabled}
       onClick={startSync}
     >
       <a
-        href={gUpdating || gHrs < 24 ? undefined : `/gt/auth${q}&dark=${dark ? 1 : 0}`}
+        href={gSyncDisabled ? undefined : `/gt/auth${q}&dark=${dark ? 1 : 0}`}
         target="_blank"
         className={css({ textDecoration: 'none', color: 'inherit' })}
         rel="noopener noreferrer"

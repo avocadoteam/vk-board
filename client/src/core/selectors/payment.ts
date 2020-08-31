@@ -35,6 +35,5 @@ export const getLastGoogleSyncHrs = createSelector(
 
 export const isLastGoogleSyncUpdating = createSelector(
   getLastGoogleSyncProccessDataState,
-  getStateUi,
-  (info, ui) => info.status === FetchingStatus.Updating || ui.googleSyncProccess
+  (info) => info.status === FetchingStatus.Updating
 );

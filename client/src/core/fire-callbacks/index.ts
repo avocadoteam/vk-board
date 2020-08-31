@@ -101,7 +101,6 @@ client.delete_task = (taskId) => {
 
 client.stop_g_sync = () => {
   console.warn('stop_g_sync');
-  store.dispatch({ type: 'SET_GOOGLE_SYNC', payload: false });
   store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
 };
 

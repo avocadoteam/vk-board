@@ -1,17 +1,13 @@
-import { safeCombineEpics } from './combine';
-import { AppEpic, FetchingStateName, AppDispatch, FetchResponse } from 'core/models';
-import { ofType } from 'redux-observable';
-import { filter, switchMap, map } from 'rxjs/operators';
-import { from, of, concat, empty } from 'rxjs';
-import { buyPremium } from 'core/vk-bridge/user';
-import { devTimeout } from './addons';
-import {
-  captureFetchErrorWithTaptic,
-  captureFetchError,
-  captureFetchErrorMoreActions,
-} from './errors';
-import { paymentInfo, lastGoogleSyncInfo } from 'core/operations/payment';
 import { getSearch } from 'connected-react-router';
+import { AppDispatch, AppEpic, FetchingStateName, FetchResponse } from 'core/models';
+import { lastGoogleSyncInfo, paymentInfo } from 'core/operations/payment';
+import { buyPremium } from 'core/vk-bridge/user';
+import { ofType } from 'redux-observable';
+import { concat, empty, from, of } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { devTimeout } from './addons';
+import { safeCombineEpics } from './combine';
+import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 
 const userMakePaymentEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -107,10 +103,6 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.LastGoogleSync,
                       data: r?.data ?? 24,
                     },
-                  } as AppDispatch),
-                  of({
-                    type: 'SET_GOOGLE_SYNC',
-                    payload: false,
                   } as AppDispatch)
                 );
               })
@@ -119,10 +111,7 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
         }),
-        captureFetchErrorMoreActions(FetchingStateName.LastGoogleSync, {
-          type: 'SET_GOOGLE_SYNC',
-          payload: false,
-        })
+        captureFetchError(FetchingStateName.LastGoogleSync)
       )
     )
   );

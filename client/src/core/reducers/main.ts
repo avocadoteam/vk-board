@@ -61,7 +61,7 @@ export const initialState: models.AppState['ui'] = {
     dropUserId: 0,
   },
   showAds: true,
-  googleSyncProccess: false,
+  googleSyncClicked: false,
 };
 
 export const reducer = (
@@ -389,7 +389,7 @@ export const reducer = (
     case 'SET_GOOGLE_SYNC': {
       return {
         ...state,
-        googleSyncProccess: dispatch.payload,
+        googleSyncClicked: dispatch.payload,
       };
     }
 

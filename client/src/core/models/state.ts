@@ -30,7 +30,7 @@ export type AppState = {
     membership: MembershipState;
     showAds: boolean;
     errorsQueue: string[];
-    googleSyncProccess: boolean;
+    googleSyncClicked: boolean;
   };
   router: RouterState;
 };
