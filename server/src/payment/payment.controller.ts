@@ -15,7 +15,7 @@ import {
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { PaymentService } from './payment.service';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 import { Response } from 'express';
 import integrationConfig from 'src/config/integration.config';
 import { ConfigType } from '@nestjs/config';

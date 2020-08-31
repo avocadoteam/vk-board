@@ -31,7 +31,7 @@ import {
   PreviewMembershipModel,
 } from 'src/contracts/list';
 import { RestricitionsService } from 'src/restricitions/restricitions.service';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 
 @Controller('api/list')
 @UseGuards(SignGuard)

@@ -15,7 +15,7 @@ import { Response, Request } from 'express';
 import { PaymentService } from 'src/payment/payment.service';
 import { syncRestrictionHours } from 'src/constants/premium';
 import { ruSyntaxHelper } from 'src/utils/lang';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 import { SignGuard } from 'src/guards/sign.guard';
 
 @Controller('google')
