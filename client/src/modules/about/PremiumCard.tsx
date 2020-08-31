@@ -63,6 +63,22 @@ export const PremiumCard = React.memo(() => {
   const computedTime = Math.trunc(24 - gHrs);
   const humanTime = computedTime > 1 ? computedTime : 1;
 
+  React.useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (gUpdating) {
+      timeout = setTimeout(() => {
+        dispatch({
+          type: 'SET_UPDATING_DATA',
+          payload: FetchingStateName.LastGoogleSync,
+        });
+      }, 2500);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [gUpdating]);
+
   const handleBuy = React.useCallback(() => {
     dispatch({
       type: 'SET_UPDATING_DATA',
