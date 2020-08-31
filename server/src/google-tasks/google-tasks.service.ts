@@ -43,7 +43,7 @@ export class GoogleTasksService {
     const url = `https://accounts.google.com/o/oauth2/v2/auth${buildQueryString(
       [
         { client_id: this.config.get<string>('integration.gClient', '') },
-        { redirect_uri: `${host}/google/complete` },
+        { redirect_uri: `${host}/gt/complete` },
         { response_type: 'code' },
         { scope: scopes.join('+') },
         { prompt: 'select_account' },
@@ -78,7 +78,7 @@ export class GoogleTasksService {
               '',
             ),
           },
-          { redirect_uri: `${host}/google/complete` },
+          { redirect_uri: `${host}/gt/complete` },
           { grant_type: 'authorization_code' },
         ])}`,
       )

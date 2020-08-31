@@ -18,7 +18,7 @@ import { ruSyntaxHelper } from 'src/utils/lang';
 import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 import { SignGuard } from 'src/guards/sign.guard';
 
-@Controller('google')
+@Controller('gt')
 export class GoogleTasksController {
   constructor(
     private readonly googleService: GoogleTasksService,
