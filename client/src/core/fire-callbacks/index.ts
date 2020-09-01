@@ -189,6 +189,10 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
             },
           },
         });
+        store.dispatch({
+          type: 'SET_BOARD_TASKS',
+          payload: [],
+        });
       }
 
       const newBoardLists = boardLists.reduce((acc, list) => {
