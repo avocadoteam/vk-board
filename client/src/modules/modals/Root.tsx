@@ -6,7 +6,7 @@ import { useFela } from 'react-fela';
 import { NewList } from './NewList';
 import { Lists } from './Lists';
 import { CellButton } from 'atoms/CellButton';
-import Icon16InfoOutline from '@vkontakte/icons/dist/16/info_outline';
+import Icon28SettingsOutline from '@vkontakte/icons/dist/28/settings_outline';
 import { SelectedTaskHeader } from './SelectedTaskHeader';
 import { SelectedTask } from './SelectedTask';
 import { DeletePreview } from './DeletePreview';
@@ -54,7 +54,12 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           <Separator wide />
           <List>
             <CellButton onClick={goToAbout}>
-              <Icon16InfoOutline className={css({ marginRight: '1rem' })} /> Настройки
+              <Icon28SettingsOutline
+                width={20}
+                height={20}
+                className={css({ marginRight: '1rem' })}
+              />
+              Настройки
             </CellButton>
           </List>
           <div className={css({ height: '10px' })} />
