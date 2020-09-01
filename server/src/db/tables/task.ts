@@ -8,7 +8,6 @@ import {
   Index,
 } from 'typeorm';
 import { List } from './list';
-import { TaskMembership } from './taskMembership';
 import { v4 } from 'uuid';
 import { ColumnNumericTransformer } from '../transform/int8';
 import { GList } from './gList';
@@ -73,9 +72,6 @@ export class Task {
     nullable: true,
   })
   g_task_id: string | null;
-
-  @OneToMany((type) => TaskMembership, (tm) => tm.task)
-  memberships!: TaskMembership[];
 
   @ManyToOne((type) => List, (list) => list.tasks)
   @JoinColumn({
