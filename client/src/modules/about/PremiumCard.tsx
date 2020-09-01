@@ -57,8 +57,8 @@ export const PremiumCard = React.memo(() => {
   const hasPremium = useSelector(hasUserPremium);
   const gUpdating = useSelector(isLastGoogleSyncUpdating);
   const gHrs = useSelector(getLastGoogleSyncHrs);
-  const gSyncDisabled =
-    useSelector((state) => state.ui.googleSyncClicked) || gUpdating || gHrs < 24;
+  const gClicked = useSelector((state) => state.ui.googleSyncClicked);
+  const gSyncDisabled = gClicked || gUpdating || gHrs < 24;
   const { css } = useFela({ dark });
   const transRef = React.useRef<any>();
   const dispatch = useDispatch<AppDispatchActions>();
@@ -67,7 +67,7 @@ export const PremiumCard = React.memo(() => {
 
   React.useEffect(() => {
     let timeout: NodeJS.Timeout;
-    if (gUpdating) {
+    if (gClicked) {
       timeout = setTimeout(() => {
         dispatch({
           type: 'SET_UPDATING_DATA',
@@ -79,7 +79,7 @@ export const PremiumCard = React.memo(() => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [gUpdating]);
+  }, [gClicked]);
 
   const handleBuy = React.useCallback(() => {
     dispatch({
@@ -89,10 +89,12 @@ export const PremiumCard = React.memo(() => {
   }, [dispatch]);
 
   const startSync = React.useCallback(() => {
-    dispatch({
-      type: 'SET_GOOGLE_SYNC',
-      payload: true,
-    });
+    setTimeout(() => {
+      dispatch({
+        type: 'SET_GOOGLE_SYNC',
+        payload: true,
+      });
+    }, 200);
   }, [dispatch]);
 
   const cellInfoCss = css(infoStyle, textStyle);
@@ -102,30 +104,36 @@ export const PremiumCard = React.memo(() => {
   });
 
   const buyButton = hasPremium ? (
-    <Button
-      mode="primary"
-      stretched
-      className={btnCss}
-      before={
-        gUpdating ? (
-          <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
-        ) : (
-          <Icon24LogoGoogle />
-        )
-      }
-      square
-      disabled={gSyncDisabled}
+    <a
+      href={gSyncDisabled ? undefined : `/gt/auth${q}&dark=${dark ? 1 : 0}`}
+      target="_blank"
+      className={css({
+        textDecoration: 'none',
+        color: 'inherit',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        marginTop: '31px',
+      })}
+      rel="noopener noreferrer"
       onClick={startSync}
     >
-      <a
-        href={gSyncDisabled ? undefined : `/gt/auth${q}&dark=${dark ? 1 : 0}`}
-        target="_blank"
-        className={css({ textDecoration: 'none', color: 'inherit' })}
-        rel="noopener noreferrer"
+      <Button
+        mode="primary"
+        stretched
+        before={
+          gUpdating ? (
+            <Spinner className={css({ color: dark ? '#222327' : '#fff' })} />
+          ) : (
+            <Icon24LogoGoogle />
+          )
+        }
+        square
+        disabled={gSyncDisabled}
       >
         Синхронизировать с Google Tasks
-      </a>
-    </Button>
+      </Button>
+    </a>
   ) : (
     <Button
       mode="primary"

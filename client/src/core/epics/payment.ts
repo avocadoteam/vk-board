@@ -96,6 +96,17 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
           if (response.ok) {
             return from(response.json() as Promise<FetchResponse<number>>).pipe(
               switchMap((r) => {
+                const time = r?.data ?? 24;
+
+                if (time < 24) {
+                  return of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.LastGoogleSync,
+                      data: r?.data ?? 24,
+                    },
+                  } as AppDispatch);
+                }
                 return concat(
                   of({
                     type: 'SET_READY_DATA',
@@ -103,6 +114,10 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.LastGoogleSync,
                       data: r?.data ?? 24,
                     },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_GOOGLE_SYNC',
+                    payload: false,
                   } as AppDispatch)
                 );
               })

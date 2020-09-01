@@ -1,6 +1,6 @@
 import { vkBridge } from './instance';
 import { store } from 'core/store';
-import { ClientTheme } from 'core/models';
+import { ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { joinRoom, leaveRoom } from 'core/socket/list';
 import { getUserId } from 'core/selectors/user';
@@ -30,6 +30,11 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
     store.dispatch({
       type: 'SET_HASH',
       payload: hashListGUID ?? null,
+    });
+
+    store.dispatch({
+      type: 'SET_UPDATING_DATA',
+      payload: FetchingStateName.PaymentInfo,
     });
 
     const state = store.getState();
