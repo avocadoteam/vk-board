@@ -83,7 +83,7 @@ export class ListController {
       model.taskIds,
       vkUserId,
     );
-    if (!taskIdsToUpdate.length) {
+    if (!taskIdsToUpdate.length || taskIdsToUpdate.length !== model.taskIds.length) {
       throw new BadRequestException();
     }
     await this.taskService.finishTasks(taskIdsToUpdate, model.listId, vkUserId);
@@ -108,7 +108,7 @@ export class ListController {
       model.taskIds,
       vkUserId,
     );
-    if (!taskIdsToUpdate.length) {
+    if (!taskIdsToUpdate.length || taskIdsToUpdate.length !== model.taskIds.length) {
       throw new BadRequestException();
     }
     await this.taskService.unfinishTasks(
