@@ -7,17 +7,22 @@ import {
   IsArray,
   ArrayMinSize,
   IsBoolean,
+  Min,
+  Max,
 } from 'class-validator';
+import { int4 } from 'src/constants';
 
 export class UpdateTaskNotification {
   @IsBoolean()
   notification!: boolean;
-  
+
   @IsString()
   @IsNotEmpty()
   taskId!: string;
 
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 }
 export class GeneralTaskModel {
@@ -33,6 +38,8 @@ export class GeneralTaskModel {
   description!: string | null;
 
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 
   @ValidateIf((o) => o.dueDate !== null)
@@ -51,9 +58,12 @@ export class FinishTasksModel {
   @IsArray()
   @ArrayMinSize(1)
   @IsString({ each: true })
+  @IsNotEmpty({ each: true })
   taskIds!: string[];
 
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 }
 
@@ -69,6 +79,8 @@ export class DeleteTaskModel {
   taskId!: string;
 
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 }
 

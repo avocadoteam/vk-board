@@ -1,4 +1,5 @@
-import { IsString, Length, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import { IsString, Length, IsNotEmpty, IsNumber, IsUUID, Min, Max } from 'class-validator';
+import { int4 } from 'src/constants';
 
 export class NewListModel {
   @IsString()
@@ -9,6 +10,8 @@ export class NewListModel {
 
 export class DropMembershipModel {
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 
   @IsNumber()
@@ -17,11 +20,15 @@ export class DropMembershipModel {
 
 export class EditListModel extends NewListModel {
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 }
 
 export class CreateMembershipModel {
   @IsNumber()
+  @Min(1)
+  @Max(int4)
   listId!: number;
 }
 

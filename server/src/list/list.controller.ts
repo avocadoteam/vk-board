@@ -74,10 +74,19 @@ export class ListController {
     @Body()
     model: FinishTasksModel,
   ) {
-    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+    if (!this.taskService.tryToValiadateBigInt(model.taskIds)) {
       throw new BadRequestException();
     }
-    await this.taskService.finishTasks(model.taskIds, model.listId, vkUserId);
+
+    const taskIdsToUpdate = await this.listService.hasListMembershipWithTasks(
+      [model.listId],
+      model.taskIds,
+      vkUserId,
+    );
+    if (!taskIdsToUpdate.length) {
+      throw new BadRequestException();
+    }
+    await this.taskService.finishTasks(taskIdsToUpdate, model.listId, vkUserId);
   }
 
   @Delete('/tasks')
@@ -90,10 +99,23 @@ export class ListController {
     @Body()
     model: FinishTasksModel,
   ) {
-    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+    if (!this.taskService.tryToValiadateBigInt(model.taskIds)) {
       throw new BadRequestException();
     }
-    await this.taskService.unfinishTasks(model.taskIds, model.listId, vkUserId);
+
+    const taskIdsToUpdate = await this.listService.hasListMembershipWithTasks(
+      [model.listId],
+      model.taskIds,
+      vkUserId,
+    );
+    if (!taskIdsToUpdate.length) {
+      throw new BadRequestException();
+    }
+    await this.taskService.unfinishTasks(
+      taskIdsToUpdate,
+      model.listId,
+      vkUserId,
+    );
   }
 
   @Post('/task')
@@ -122,7 +144,16 @@ export class ListController {
     @Body()
     model: UpdateTaskModel,
   ) {
-    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+    if (!this.taskService.tryToValiadateBigInt([model.id])) {
+      throw new BadRequestException();
+    }
+
+    const taskIdsToUpdate = await this.listService.hasListMembershipWithTasks(
+      [model.listId],
+      [model.id],
+      vkUserId,
+    );
+    if (!taskIdsToUpdate.length) {
       throw new BadRequestException();
     }
     await this.taskService.updateTask(model, vkUserId);
@@ -138,7 +169,16 @@ export class ListController {
     @Body()
     { listId, taskId }: DeleteTaskModel,
   ) {
-    if (!(await this.listService.hasListMembership([listId], vkUserId))) {
+    if (!this.taskService.tryToValiadateBigInt([taskId])) {
+      throw new BadRequestException();
+    }
+
+    const taskIdsToUpdate = await this.listService.hasListMembershipWithTasks(
+      [listId],
+      [taskId],
+      vkUserId,
+    );
+    if (!taskIdsToUpdate.length) {
       throw new BadRequestException();
     }
 
@@ -155,7 +195,16 @@ export class ListController {
     @Body()
     model: UpdateTaskNotification,
   ) {
-    if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
+    if (!this.taskService.tryToValiadateBigInt([model.taskId])) {
+      throw new BadRequestException();
+    }
+
+    const taskIdsToUpdate = await this.listService.hasListMembershipWithTasks(
+      [model.listId],
+      [model.taskId],
+      vkUserId,
+    );
+    if (!taskIdsToUpdate.length) {
       throw new BadRequestException();
     }
 

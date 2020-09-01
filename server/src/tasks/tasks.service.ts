@@ -196,7 +196,10 @@ export class TasksService {
   async deleteTask(taskId: string, listId: number, vkUserId: number) {
     const now = new Date();
 
-    await this.tableTask.update(taskId, { deleted: now });
+    await this.tableTask.update(
+      { id: taskId, list: { id: listId } },
+      { deleted: now },
+    );
     this.removeUserNotificationTasks([taskId], vkUserId);
 
     this.cache.del(cacheKey.tasks(String(listId)));
@@ -249,5 +252,15 @@ export class TasksService {
         ',',
       )}]::int8[]) where user_id = ${vkUserId}`,
     );
+  }
+
+  tryToValiadateBigInt(ids: string[]) {
+    try {
+      ids.map(BigInt);
+      return true;
+    } catch (error) {
+      this.logger.error(errMap(error));
+      return false;
+    }
   }
 }

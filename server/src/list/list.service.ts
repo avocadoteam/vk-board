@@ -160,6 +160,22 @@ export class ListService {
         .getCount()) > 0
     );
   }
+  async hasListMembershipWithTasks(
+    listIds: number[],
+    taskIds: string[],
+    vkUserId: number,
+  ) {
+    const tms: { id: string }[] = await this.tableList.query(`
+      select t.id from task t
+        inner join list l on l.id = t.list_id and l.deleted is null and l.id IN (${listIds.join(
+          ',',
+        )})
+        inner join list_membership lm on lm.list_id = l.id and lm.joined_id = ${vkUserId} and lm.left_date is null
+      where t.deleted is null and t.id IN (${taskIds.join(',')})
+    `);
+
+    return tms.map((t) => t.id);
+  }
 
   async hasListMembershipBeforeJoin(listId: number, vkUserId: number) {
     return (
@@ -246,7 +262,7 @@ export class ListService {
         listGUID: list.listguid,
         updatedType: ListUpdatedType.DropMember,
         member: avatars[0],
-        userId: vkUserId
+        userId: vkUserId,
       } as ListUpdatedParams);
     }
   }
@@ -264,7 +280,7 @@ export class ListService {
       EventBus.emit(BusEvents.LIST_UPDATED, {
         listGUID: list.listguid,
         updatedType: ListUpdatedType.Deleted,
-        userId: vkUserId
+        userId: vkUserId,
       } as ListUpdatedParams);
     }
   }
@@ -282,7 +298,7 @@ export class ListService {
         listGUID: list.listguid,
         updatedType: ListUpdatedType.Name,
         name: model.name,
-        userId: vkUserId
+        userId: vkUserId,
       } as ListUpdatedParams);
     }
   }
@@ -315,7 +331,7 @@ export class ListService {
         listGUID: list.listguid,
         updatedType: ListUpdatedType.DropMember,
         member: avatars[0],
-        userId: vkUserId
+        userId: vkUserId,
       } as ListUpdatedParams);
 
       return list.id;
