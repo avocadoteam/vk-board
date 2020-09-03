@@ -18,8 +18,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { FetchLimiter } from './interceptors/rate-limiter';
 import { ListController } from './list/list.controller';
 import { BoardController } from './board/board.controller';
-import { GoogleTasksController } from './google-tasks/google-tasks.controller';
-import { PaymentController } from './payment/payment.controller';
 
 @Module({
   imports: [
@@ -62,13 +60,6 @@ import { PaymentController } from './payment/payment.controller';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(FetchLimiter)
-      .forRoutes(
-        ListController,
-        BoardController,
-        GoogleTasksController,
-        PaymentController,
-      );
+    consumer.apply(FetchLimiter).forRoutes(ListController, BoardController);
   }
 }
