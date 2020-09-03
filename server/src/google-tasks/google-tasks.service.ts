@@ -114,6 +114,7 @@ export class GoogleTasksService {
 
     while (taskLists.length === 100) {
       taskLists = await this.fetchGoogleLists(access_token);
+      this.logger.log(`User ${userId} fetched list ${taskLists}`);
       if (taskLists.length) {
         await this.createLists(taskLists, userId);
       }
@@ -175,6 +176,7 @@ export class GoogleTasksService {
 
       while (tasksList.length === 100) {
         tasksList = await this.fetchGoogleTasks(access_token, listId);
+        this.logger.log(`User ${userId} fetched tasks ${tasksList} for list id ${listId}`);
         if (tasksList.length) {
           await this.createTasks(tasksList, userId, listId);
         }
