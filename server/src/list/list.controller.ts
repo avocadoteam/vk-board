@@ -128,6 +128,9 @@ export class ListController {
     @Body()
     model: NewTaskModel,
   ) {
+    if (!this.taskService.validateDueDate(model.dueDate)) {
+      throw new BadRequestException();
+    }
     if (!(await this.listService.hasListMembership([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
@@ -145,6 +148,9 @@ export class ListController {
     model: UpdateTaskModel,
   ) {
     if (!this.taskService.tryToValiadateBigInt([model.id])) {
+      throw new BadRequestException();
+    }
+    if (!this.taskService.validateDueDate(model.dueDate)) {
       throw new BadRequestException();
     }
 

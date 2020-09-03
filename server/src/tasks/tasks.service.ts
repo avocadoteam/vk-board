@@ -16,6 +16,7 @@ import { errMap } from 'src/utils/errors';
 import { EventBus } from 'src/events/events.bus';
 import { BusEvents, TaskNotificationParams } from 'src/contracts/enum';
 import { Notification } from 'src/db/tables/notification';
+import * as moment from 'moment';
 
 @Injectable()
 export class TasksService {
@@ -261,5 +262,19 @@ export class TasksService {
       this.logger.error(errMap(error));
       return false;
     }
+  }
+
+  validateDueDate(dueDate: string | null) {
+    if (dueDate === null) {
+      return true;
+    }
+
+    if (moment(dueDate).isValid()) {
+      const tomorrow = moment().add(1, 'day');
+      const isBefore = moment(dueDate).isBefore(tomorrow, 'day');
+      return !isBefore;
+    }
+
+    return false;
   }
 }
