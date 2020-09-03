@@ -89,6 +89,7 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
               weight="medium"
               className={`useMonrope ${css({
                 color: dark ? '#fff' : '#000',
+                overflowWrap: 'anywhere',
               })}`}
             >
               {info.description}
