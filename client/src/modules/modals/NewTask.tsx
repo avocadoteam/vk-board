@@ -35,7 +35,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
   const { updating } = useSelector(getNewTaskInfo);
-  const errorName = 'Вы установили неверную дату, исправьте пожалуйста.';
+  const errorName = 'Вы установили неверную дату, исправьте, пожалуйста.';
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 

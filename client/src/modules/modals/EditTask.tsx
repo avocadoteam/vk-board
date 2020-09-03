@@ -37,7 +37,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
   const formValues = useSelector(getEditTaskValues);
   const { updating, notSameData } = useSelector(getEditTaskInfo);
   const disabledSubmit = updating || !notSameData;
-  const errorName = 'Вы установили неверную дату, исправьте пожалуйста.';
+  const errorName = 'Вы установили неверную дату, исправьте, пожалуйста.';
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
