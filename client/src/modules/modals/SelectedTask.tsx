@@ -56,9 +56,9 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
         dispatch({
           type: 'SET_UPDATING_DATA',
           payload: FetchingStateName.NotificationTask,
-          params: { notification: !notif },
+          params: { notification: notifyEnabled },
         });
-        setNotif(!notif);
+        setNotif(notifyEnabled);
       });
     } else {
       dispatch({

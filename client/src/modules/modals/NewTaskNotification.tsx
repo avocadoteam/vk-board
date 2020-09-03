@@ -47,7 +47,7 @@ export const NewTaskNotification = React.memo<Props>(({ updateModalHeight }) => 
       changeNotificationsPermission().then(() =>
         dispatch({
           type: 'UPDATE_NEW_TASK',
-          payload: { name: 'notification', value: !formValues.notification },
+          payload: { name: 'notification', value: notifyEnabled },
         })
       );
     } else {
