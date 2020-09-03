@@ -61,6 +61,7 @@ export class GoogleTasksService {
       return `Что-то пошло не так у пользователя ${userId}. Сделайте скрин и напишите нам в поддержку.`;
     }
 
+    this.logger.log(`Start google sync for user ${userId}`);
     this.getGoogleTaskLists(accessToken, Number(userId));
 
     return 'Google аккаунт успешно авторизован. Вы можете закрыть это окно. Синхронизация может занять некоторое время.';
@@ -92,39 +93,63 @@ export class GoogleTasksService {
     return result.data.access_token ?? '';
   }
 
-  async fetchGoogleLists(access_token: string) {
+  async fetchGoogleLists(access_token: string, nextPageToken?: string) {
     const response = await tasks.tasklists.list({
       access_token,
       maxResults: 100,
+      pageToken: nextPageToken,
     });
-    return response.data.items ?? [];
+    return {
+      list: response.data.items ?? [],
+      pageToken: response.data.nextPageToken,
+    };
   }
 
-  async fetchGoogleTasks(access_token: string, listId: string) {
+  async fetchGoogleTasks(
+    access_token: string,
+    listId: string,
+    nextPageToken?: string,
+  ) {
     const response = await tasks.tasks.list({
       tasklist: listId,
       access_token,
       maxResults: 100,
+      pageToken: nextPageToken,
     });
-    return response.data.items ?? [];
+    return {
+      list: response.data.items ?? [],
+      pageToken: response.data.nextPageToken,
+    };
   }
 
   async getGoogleTaskLists(access_token: string, userId: number) {
-    let taskLists: tasks_v1.Schema$TaskList[] = [];
+    let nextPageToken: string | undefined;
+    let firstCall = true;
 
-    while (taskLists.length === 100) {
-      taskLists = await this.fetchGoogleLists(access_token);
-      this.logger.log(`User ${userId} fetched list ${taskLists}`);
-      if (taskLists.length) {
-        await this.createLists(taskLists, userId);
+    while ((firstCall && !nextPageToken) || !!nextPageToken) {
+      const { list, pageToken } = await this.fetchGoogleLists(
+        access_token,
+        nextPageToken,
+      );
+      this.logger.log(`User ${userId} fetched list ${list.length}`);
+      if (list.length) {
+        await this.createLists(list, userId);
       }
-    }
 
-    await this.getGoogleTasks(
-      access_token,
-      userId,
-      taskLists.map((t) => t.id ?? ''),
-    );
+      await this.getGoogleTasks(
+        access_token,
+        userId,
+        list.map((t) => t.id ?? ''),
+      );
+
+      if (pageToken) {
+        nextPageToken = pageToken;
+      } else {
+        nextPageToken = undefined;
+      }
+
+      firstCall = false;
+    }
 
     await this.paymentService.updatePremiumGoogleSync(userId);
   }
@@ -172,14 +197,29 @@ export class GoogleTasksService {
     listIds: string[],
   ) {
     for (const listId of listIds) {
-      let tasksList: tasks_v1.Schema$Task[] = [];
+      let nextPageToken: string | undefined;
+      let firstCall = true;
 
-      while (tasksList.length === 100) {
-        tasksList = await this.fetchGoogleTasks(access_token, listId);
-        this.logger.log(`User ${userId} fetched tasks ${tasksList} for list id ${listId}`);
-        if (tasksList.length) {
-          await this.createTasks(tasksList, userId, listId);
+      while ((firstCall && !nextPageToken) || !!nextPageToken) {
+        const { list, pageToken } = await this.fetchGoogleTasks(
+          access_token,
+          listId,
+          nextPageToken,
+        );
+        this.logger.log(
+          `User ${userId} fetched tasks ${list.length} for list id ${listId}`,
+        );
+        if (list.length) {
+          await this.createTasks(list, userId, listId);
         }
+
+        if (pageToken) {
+          nextPageToken = pageToken;
+        } else {
+          nextPageToken = undefined;
+        }
+
+        firstCall = false;
       }
     }
   }
