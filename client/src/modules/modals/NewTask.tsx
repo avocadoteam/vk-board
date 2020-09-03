@@ -57,6 +57,9 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
+    if (name === 'description' && value.length > 1024) {
+      return;
+    }
     dispatch({ type: 'UPDATE_NEW_TASK', payload: { name, value } });
   };
 

@@ -65,6 +65,9 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
+    if (name === 'description' && value.length > 1024) {
+      return;
+    }
     dispatch({ type: 'EDIT_TASK', payload: { name, value } });
   };
 
