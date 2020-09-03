@@ -31,6 +31,7 @@ type Props = {
 const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const { css } = useFela();
   const [wrongDate, setWrongDate] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
@@ -127,7 +128,9 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             })}
           />
           <Input
-            type="date"
+            type={focused ? 'date' : 'text'}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             placeholder="Выберите срок"
             className={css({
               marginLeft: '0 !important',
