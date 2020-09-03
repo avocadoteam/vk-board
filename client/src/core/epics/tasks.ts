@@ -116,6 +116,26 @@ const fetchTasksEpic: AppEpic = (action$, state$) =>
     )
   );
 
+const finishTasksResetEpic: AppEpic = (action$, state$) =>
+  action$.pipe(
+    filter((a) => a.type === 'FINISH_TASK' || a.type === 'REMOVE_FINISH_TASK'),
+    map(() => {
+      const state = state$.value;
+      const { tasksToBeFinished } = getBoardUiState(state);
+      return tasksToBeFinished.length;
+    }),
+    switchMap((finishedLength) =>
+      iif(
+        () => !!finishedLength,
+        empty(),
+        of({
+          type: 'SET_FINISH_TASK_TIMER',
+          payload: FINISH_TASK_TIMER_VALUE,
+        } as AppDispatch)
+      )
+    )
+  );
+
 const finishTasksEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('FINISH_TASK'),
@@ -133,10 +153,7 @@ const finishTasksEpic: AppEpic = (action$, state$) =>
     exhaustMap(({ q, taskIds, listId }) =>
       iif(
         () => !taskIds.length,
-        of({
-          type: 'SET_FINISH_TASK_TIMER',
-          payload: FINISH_TASK_TIMER_VALUE,
-        } as AppDispatch),
+        empty(),
         ops.finishTasks(taskIds, listId, q).pipe(
           switchMap((response) => {
             if (response.ok) {
@@ -341,5 +358,6 @@ export const taskEpics = safeCombineEpics(
   deleteTaskEpic,
   putEditTaskEpic,
   unfinishTasksEpic,
-  changeTaskNotificationEpic
+  changeTaskNotificationEpic,
+  finishTasksResetEpic
 );
