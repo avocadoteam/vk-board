@@ -72,7 +72,7 @@ export class TasksService {
           dueDate: newTask.dueDate,
           finished: null,
           name: newTask.name,
-          notificationUserId: vkUserId,
+          notificationUserId: model.notification ? vkUserId : null,
         } as BoardTaskItem,
         listGUID: list.listguid,
       });
