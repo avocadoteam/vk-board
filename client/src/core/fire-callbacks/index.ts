@@ -215,6 +215,22 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
       if (!member) {
         break;
       }
+
+      const info = selectedBoardListInfo(state);
+
+      if (info.listguid === listGUID) {
+        store.dispatch({
+          type: 'SELECT_BOARD_LIST',
+          payload: {
+            id: info.id,
+            data: {
+              ...info,
+              memberships: info.memberships.concat(member),
+            },
+          },
+        });
+      }
+
       const boardLists = getBoardListData(state);
 
       const newBoardLists = boardLists.reduce((acc, list) => {
@@ -242,6 +258,19 @@ client.list_updated = ({ updatedType, listGUID, name, member }) => {
     case ListUpdatedType.DropMember: {
       if (!member) {
         break;
+      }
+      const info = selectedBoardListInfo(state);
+      if (info.listguid === listGUID) {
+        store.dispatch({
+          type: 'SELECT_BOARD_LIST',
+          payload: {
+            id: info.id,
+            data: {
+              ...info,
+              memberships: info.memberships.filter((m) => m.userId !== member.userId),
+            },
+          },
+        });
       }
       const boardLists = getBoardListData(state);
       const newBoardLists = boardLists.reduce((acc, list) => {
