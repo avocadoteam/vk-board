@@ -13,6 +13,7 @@ import { isDeleteListUpdating } from 'core/selectors/boardLists';
 import { vkBridge } from 'core/vk-bridge/instance';
 import { getAppId } from 'core/selectors/settings';
 import { ListItemName } from './ListItemName';
+import { hasUserPremium } from 'core/selectors/payment';
 
 type Props = {
   goForward: (activePanel: MainView) => void;
@@ -23,6 +24,7 @@ type Props = {
 
 export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   const deletting = useSelector(isDeleteListUpdating);
+  const hasPremium = useSelector(hasUserPremium);
   const search = useSelector(getSearch);
   const appId = useSelector(getAppId);
   const { boardListOpenId } = useSelector(getBoardUiState);
@@ -83,8 +85,8 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
               padding: '0 1rem',
             })}`}
           >
-            Список станет доступен другим пользователям с ссылкой (до 3-x человек в бесплатной
-            версии)
+            Список станет доступен другим пользователям с ссылкой{' '}
+            {hasPremium ? '' : '(до 3-x человек в бесплатной версии)'}
           </Text>
           {listItem.isOwner && (
             <CellButton
