@@ -110,8 +110,8 @@ export class ListService {
 
       await queryRunner.commitTransaction();
 
-      this.cache.del(cacheKey.boardList(String(vkUserId)));
-      this.cache.del(cacheKey.canCreateList(vkUserId));
+      await this.cache.del(cacheKey.boardList(String(vkUserId)));
+      await this.cache.del(cacheKey.canCreateList(vkUserId));
 
       return newList.id;
     } catch (err) {
@@ -250,8 +250,8 @@ export class ListService {
       { left_date: now, left_by: vkUserId },
     );
 
-    this.cache.del(cacheKey.boardList(String(vkUserId)));
-    this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
+    await this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
 
     const list = await this.tableList.findOne(model.listId, {
       select: ['listguid'],
@@ -272,8 +272,8 @@ export class ListService {
 
     await this.tableList.update(listId, { deleted: now });
 
-    this.cache.del(cacheKey.boardList(String(vkUserId)));
-    this.cache.del(cacheKey.canCreateList(vkUserId));
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
+    await this.cache.del(cacheKey.canCreateList(vkUserId));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -288,7 +288,7 @@ export class ListService {
   async editListName(model: EditListModel, vkUserId: number) {
     await this.tableList.update(model.listId, { name: model.name });
 
-    this.cache.del(cacheKey.boardList(String(vkUserId)));
+    await this.cache.del(cacheKey.boardList(String(vkUserId)));
 
     const list = await this.tableList.findOne(model.listId, {
       select: ['listguid'],
@@ -322,8 +322,8 @@ export class ListService {
 
       await queryRunner.commitTransaction();
 
-      this.cache.del(cacheKey.boardList(String(vkUserId)));
-      this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
+      await this.cache.del(cacheKey.boardList(String(vkUserId)));
+      await this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
 
       const avatars = await this.vkApiService.updateWithAvatars([vkUserId]);
 

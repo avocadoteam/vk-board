@@ -60,7 +60,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      this.cache.del(cacheKey.tasks(String(model.listId)));
+      await this.cache.del(cacheKey.tasks(String(model.listId)));
 
       EventBus.emit(BusEvents.NEW_TASK, {
         task: {
@@ -107,7 +107,7 @@ export class TasksService {
 
       await queryRunner.commitTransaction();
 
-      this.cache.del(cacheKey.tasks(String(model.listId)));
+      await this.cache.del(cacheKey.tasks(String(model.listId)));
 
       EventBus.emit(BusEvents.UPDATE_TASK, {
         task: {
@@ -169,8 +169,7 @@ export class TasksService {
     const now = new Date();
 
     await this.tableTask.update(taskIds, { finished: now });
-    await this.removeUserNotificationTasks(taskIds, vkUserId);
-    this.cache.del(cacheKey.tasks(String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -183,7 +182,7 @@ export class TasksService {
   async unfinishTasks(taskIds: string[], listId: number, vkUserId: number) {
     await this.tableTask.update(taskIds, { finished: null });
     await this.insertUserNotificationTasks(taskIds, vkUserId);
-    this.cache.del(cacheKey.tasks(String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -202,7 +201,7 @@ export class TasksService {
     );
     this.removeUserNotificationTasks([taskId], vkUserId);
 
-    this.cache.del(cacheKey.tasks(String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -218,7 +217,7 @@ export class TasksService {
     } else {
       await this.removeUserNotificationTasks([taskId], vkUserId);
     }
-    this.cache.del(cacheKey.tasks(String(listId)));
+    await this.cache.del(cacheKey.tasks(String(listId)));
     EventBus.emit(BusEvents.TASK_NOTIFICATION, {
       notification,
       taskId,
