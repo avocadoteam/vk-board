@@ -54,7 +54,7 @@ export class RestricitionsService {
         'membership',
         `membership.left_date is null`,
       )
-      .where(`list.id = ${listId} and created_by != ${vkUserId}`)
+      .where(`list.id = ${listId} and created_by != ${vkUserId} and list.deleted is null`)
       .select(['list.createdBy', 'membership'])
       .getOne();
 

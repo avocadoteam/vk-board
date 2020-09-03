@@ -191,21 +191,19 @@ export class ListService {
     );
   }
   async hasListMembershipBeforeJoinGUID(guid: string, vkUserId: number) {
-    return (
-      (await this.tableList
-        .createQueryBuilder('list')
-        .innerJoin(
-          'list.memberships',
-          'membership',
-          `membership.joined_id = ${vkUserId}`,
-        )
-        .where([
-          {
-            listguid: guid,
-          },
-        ])
-        .getCount()) > 0
-    );
+    return this.tableList
+      .createQueryBuilder('list')
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId}`,
+      )
+      .where([
+        {
+          listguid: guid,
+        },
+      ])
+      .getManyAndCount();
   }
   async previewMembershipByGUID(listguid: string) {
     const listPreview = await this.tableList

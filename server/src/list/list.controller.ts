@@ -83,7 +83,10 @@ export class ListController {
       model.taskIds,
       vkUserId,
     );
-    if (!taskIdsToUpdate.length || taskIdsToUpdate.length !== model.taskIds.length) {
+    if (
+      !taskIdsToUpdate.length ||
+      taskIdsToUpdate.length !== model.taskIds.length
+    ) {
       throw new BadRequestException();
     }
     await this.taskService.finishTasks(taskIdsToUpdate, model.listId, vkUserId);
@@ -108,7 +111,10 @@ export class ListController {
       model.taskIds,
       vkUserId,
     );
-    if (!taskIdsToUpdate.length || taskIdsToUpdate.length !== model.taskIds.length) {
+    if (
+      !taskIdsToUpdate.length ||
+      taskIdsToUpdate.length !== model.taskIds.length
+    ) {
       throw new BadRequestException();
     }
     await this.taskService.unfinishTasks(
@@ -287,14 +293,32 @@ export class ListController {
     @Query()
     model: PreviewMembershipModel,
   ) {
-    if (
-      await this.listService.hasListMembershipBeforeJoinGUID(
-        model.guid,
-        vkUserId,
-      )
-    ) {
+    const [
+      list,
+      count,
+    ] = await this.listService.hasListMembershipBeforeJoinGUID(
+      model.guid,
+      vkUserId,
+    );
+
+    if (list[0].createdBy === vkUserId) {
+      return 'Yourself';
+    }
+
+    if (count > 0) {
       throw new BadRequestException();
     }
-    return this.listService.previewMembershipByGUID(model.guid);
+
+    const listPreview = await this.listService.previewMembershipByGUID(
+      model.guid,
+    );
+
+    if (
+      !(await this.restrictionService.canUserJoinList(vkUserId, listPreview.id))
+    ) {
+      throw new PaymentRequiredException();
+    }
+
+    return listPreview;
   }
 }

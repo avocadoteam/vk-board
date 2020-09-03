@@ -94,8 +94,22 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
       listMembershipPreview(guid, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return from(response.json() as Promise<FetchResponse<MembershipListPreview>>).pipe(
+            return from(
+              response.json() as Promise<FetchResponse<MembershipListPreview | 'Yourself'>>
+            ).pipe(
               switchMap((r) => {
+                if (r?.data === 'Yourself') {
+                  return concat(
+                    of({
+                      type: 'SET_ERROR_DATA',
+                      payload: {
+                        name: FetchingStateName.ListMembershipPreview,
+                        error: 'Это Ваша ссылка',
+                      },
+                    } as AppDispatch),
+                    useTapticEpic('error')
+                  );
+                }
                 return concat(
                   of({
                     type: 'SET_READY_DATA',
@@ -114,7 +128,7 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
         }),
         captureFetchErrorWithTaptic(
           FetchingStateName.ListMembershipPreview,
-          'Ссылка недействительна'
+          'Ссылка недействительна или Вы уже в списке'
         )
       )
     )
