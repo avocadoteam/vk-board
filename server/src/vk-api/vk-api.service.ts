@@ -29,6 +29,7 @@ export class VkApiService {
               ),
             },
             { v: vkApiV },
+            { lang: 'ru' },
           ])}`,
         )
         .toPromise();
