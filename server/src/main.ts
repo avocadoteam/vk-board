@@ -11,6 +11,7 @@ import { RedisIoAdapter } from './adapters/redis-io.adapter';
 import * as sentry from '@sentry/node';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
 import * as moment from 'moment';
+import { appV } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -22,6 +23,7 @@ async function bootstrap() {
   sentry.init({
     dsn: configService.get<string>('integration.sentryDNS', ''),
     enabled: !configService.get<boolean>('core.devMode', true),
+    release: appV,
   });
 
   app.use(
