@@ -32,7 +32,6 @@ type Props = {
 const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, setHighlight }) => {
   const { css } = useFela();
   const [wrongDate, setWrongDate] = React.useState(false);
-  const [focused, setFocused] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
@@ -143,9 +142,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
             })}
           />
           <Input
-            type={focused ? 'date' : 'text'}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            type="date"
             placeholder="Выберите срок"
             className={css({
               marginLeft: '0 !important',
