@@ -153,22 +153,24 @@ export const FirstList = React.memo(() => {
             value={firstBoardListName}
           />
         </FormLayout>
-        <span className={css({ display: 'flex', alignItems: 'center' })}>
-          <Text
-            weight="medium"
-            className={`useMonrope ${css({
-              fontSize: '13px',
-              lineHeight: '22px',
-              color: dark ? '#858585' : '#AEAEAE',
-              paddingLeft: '25px',
-            })}`}
-          >
-            Подсказки:
-          </Text>
-          <HorizontalScroll className={css({ paddingLeft: '9px' })}>
-            <div style={{ display: 'flex' }}>{suggestionRender}</div>
-          </HorizontalScroll>
-        </span>
+      </Div>
+      <span className={css({ display: 'flex', alignItems: 'center' })}>
+        <Text
+          weight="medium"
+          className={`useMonrope ${css({
+            fontSize: '13px',
+            lineHeight: '22px',
+            color: dark ? '#858585' : '#AEAEAE',
+            paddingLeft: '25px',
+          })}`}
+        >
+          Подсказки:
+        </Text>
+        <HorizontalScroll className={css({ paddingLeft: '9px' })}>
+          <div style={{ display: 'flex' }}>{suggestionRender}</div>
+        </HorizontalScroll>
+      </span>
+      <Div>
         <span
           className={css({
             padding: '0 25px',
