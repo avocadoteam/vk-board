@@ -131,7 +131,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
           />
           <Input
             type="date"
-            placeholder="Выберите срок"
+            placeholder={!formValues.dueDate ? 'Выберите срок' : undefined}
             className={css({
               marginLeft: '0 !important',
               width: '100%',

@@ -143,7 +143,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
           />
           <Input
             type="date"
-            placeholder="Выберите срок"
+            placeholder={!formValues.dueDate ? 'Выберите срок' : undefined}
             className={css({
               marginLeft: '0 !important',
               width: '100%',
