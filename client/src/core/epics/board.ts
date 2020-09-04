@@ -12,7 +12,7 @@ import {
 } from 'core/models';
 import { editBoardList, getBoard, newBoardList } from 'core/operations/board';
 import { deletBoardList } from 'core/operations/boardList';
-import { getSelectedListId } from 'core/selectors/boardLists';
+import { getSelectedListId, selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getLocationMainPath } from 'core/selectors/router';
 import { getQToQuery } from 'core/selectors/user';
 import { safeTrim } from 'core/utils';
@@ -22,6 +22,7 @@ import { auditTime, debounceTime, delay, exhaustMap, filter, map, switchMap } fr
 import { setStorageValueEpic, useTapticEpic } from './addons';
 import { safeCombineEpics } from './combine';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
+import { getBoardListData } from 'core/selectors/board';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -171,15 +172,65 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
       deletBoardList(listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return concat(
-              of({
-                type: 'SET_READY_DATA',
+            const state = state$.value;
+            const boardLists = getBoardListData(state);
+            const firstAvailList = boardLists.filter((l) => l.id !== listId)[0];
+            const info = selectedBoardListInfo(state);
+            const actions: AppDispatch[] = [];
+
+            if (firstAvailList && info.id === listId) {
+              actions.push({
+                type: 'SELECT_BOARD_LIST',
                 payload: {
-                  name: FetchingStateName.DeleteBoardList,
-                  data: true,
+                  id: firstAvailList.id,
+                  data: firstAvailList,
                 },
-              } as AppDispatch)
-            );
+              });
+              actions.push({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
+            } else if (info.id === listId) {
+              actions.push({
+                type: 'SELECT_BOARD_LIST',
+                payload: {
+                  id: 0,
+                  data: {
+                    created: '',
+                    createdBy: 0,
+                    id: 0,
+                    listguid: '',
+                    memberships: [],
+                    name: '',
+                  },
+                },
+              });
+              actions.push({
+                type: 'SET_BOARD_TASKS',
+                payload: [],
+              });
+            }
+
+            const newBoardLists = boardLists.reduce((acc, list) => {
+              if (list.id === listId) {
+                return acc;
+              }
+
+              return acc.concat(list);
+            }, [] as BoardListItem[]);
+
+            actions.push({
+              type: 'SET_READY_DATA',
+              payload: {
+                name: FetchingStateName.Board,
+                data: newBoardLists,
+              },
+            });
+            actions.push({
+              type: 'SET_READY_DATA',
+              payload: {
+                name: FetchingStateName.DeleteBoardList,
+                data: true,
+              },
+            });
+            return concat(...actions.map((a) => of(a)));
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
