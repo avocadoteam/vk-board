@@ -16,7 +16,7 @@ import { NewTask } from './NewTask';
 import { push, getSearch, goBack } from 'connected-react-router';
 import { DropMember } from './DropMember';
 import { DeleteList } from './DeleteList';
-import { getActiveModalRoute, getActiveMainView } from 'core/selectors/router';
+import { getActiveModalRoute, getActiveMainView } from 'core/selectors/views';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {

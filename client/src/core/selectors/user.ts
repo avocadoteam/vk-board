@@ -18,11 +18,14 @@ export const getUserSKeysDataStatus = createSelector(
   getUserSKeysDataState,
   (userData) => userData.status
 );
+export const isUserSKeysUpdating = createSelector(
+  getUserSKeysDataState,
+  (userData) => userData.status === FetchingStatus.Updating
+);
 export const isUserDataUpdating = createSelector(
   getUserDataStatus,
-  getUserSKeysDataStatus,
-  (status, keysStatus) =>
-    status === FetchingStatus.Updating || keysStatus === FetchingStatus.Updating
+  isUserSKeysUpdating,
+  (status, keysStatusUpdating) => status === FetchingStatus.Updating || keysStatusUpdating
 );
 export const getUserInfo = createSelector(getUserDataState, (userData) => userData.data);
 

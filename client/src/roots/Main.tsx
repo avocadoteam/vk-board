@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Panel, PanelHeader, PanelHeaderBack, Text } from '@vkontakte/vkui';
+import { View, Panel, PanelHeader, PanelHeaderBack, Text, ScreenSpinner } from '@vkontakte/vkui';
 import { Offline } from './Offline';
 import { useSelector, useDispatch } from 'react-redux';
-import { getActiveMainView } from 'core/selectors/router';
 import { MainView, AppDispatchActions } from 'core/models';
 import { BoardLayout } from 'modules/board';
 import { RootModals } from 'modules/modals/Root';
@@ -15,6 +14,7 @@ import { About } from 'modules/about';
 import { MembershipPreview } from 'modules/membership-preview';
 import { Welcome } from 'modules/welcome';
 import { SnakbarsErr } from 'modules/snaks';
+import { getActiveMainView } from 'core/selectors/views';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
@@ -35,6 +35,7 @@ export const Main = React.memo(() => {
         modal={<RootModals goForward={goForward} />}
         onSwipeBack={handleBack}
         history={history}
+        popout={activeView === MainView.LoadingGeneralInfo ? <ScreenSpinner /> : null}
       >
         <Panel
           id={MainView.Board}
@@ -53,6 +54,9 @@ export const Main = React.memo(() => {
         </Panel>
         <Panel id={MainView.Offline}>
           <Offline />
+        </Panel>
+        <Panel id={MainView.LoadingGeneralInfo}>
+          <PanelHeader separator={false} />
         </Panel>
         <Panel id={MainView.ListMembership}>
           <PanelHeader separator={false} left={<PanelHeaderBack onClick={handleBack} />}>

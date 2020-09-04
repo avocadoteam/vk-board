@@ -4,7 +4,8 @@ export enum MainView {
   Offline = 'offline',
   ListMembership = 'listMembership',
   About = 'about',
-  ListSharePreview = 'listSharePreview'
+  ListSharePreview = 'listSharePreview',
+  LoadingGeneralInfo = 'loading'
 }
 export enum WelcomeView {
   Greetings = 'greetings',

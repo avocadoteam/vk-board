@@ -2,7 +2,7 @@ import { Panel, View } from '@vkontakte/vkui';
 import { goBack } from 'connected-react-router';
 import { useViewChange } from 'core/hooks';
 import { AppDispatchActions, WelcomeView } from 'core/models';
-import { getWelcomeView } from 'core/selectors/router';
+import { getWelcomeView } from 'core/selectors/views';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FirstList } from './FirstList';
