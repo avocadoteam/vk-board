@@ -146,6 +146,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
               },
             } as any)}
             name="dueDate"
+            data-placeholder="Выберите срок"
             onChange={onChange}
             disabled={updating}
             min={nextDay}
