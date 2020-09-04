@@ -3,35 +3,31 @@ import { getStateUi } from './common';
 import { getLocationMainPath, getLocationSubPath } from './router';
 import { MainView, ActiveModal, WelcomeView } from 'core/models';
 
-export const getActiveMainView = createSelector(
-  getStateUi,
-  getLocationMainPath,
-  (ui, mainPath) => {
-    if (!ui.online) {
-      return MainView.Offline;
-    }
-
-    if (!ui.isAppUser) {
-      return MainView.Welcome;
-    }
-
-    if (mainPath === null) {
-      return MainView.Board;
-    }
-
-    switch (mainPath) {
-      case MainView.ListMembership:
-        return MainView.ListMembership;
-      case MainView.ListSharePreview:
-        return MainView.ListSharePreview;
-      case MainView.About:
-        return MainView.About;
-
-      default:
-        return MainView.Board;
-    }
+export const getActiveMainView = createSelector(getStateUi, getLocationMainPath, (ui, mainPath) => {
+  if (!ui.online) {
+    return MainView.Offline;
   }
-);
+
+  if (!ui.isAppUser) {
+    return MainView.Welcome;
+  }
+
+  if (mainPath === null) {
+    return MainView.Board;
+  }
+
+  switch (mainPath) {
+    case MainView.ListMembership:
+      return MainView.ListMembership;
+    case MainView.ListSharePreview:
+      return MainView.ListSharePreview;
+    case MainView.About:
+      return MainView.About;
+
+    default:
+      return MainView.Board;
+  }
+});
 
 export const getActiveModalRoute = createSelector(
   getActiveMainView,
