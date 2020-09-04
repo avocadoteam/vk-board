@@ -15,10 +15,23 @@ import { push, getSearch } from 'connected-react-router';
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
   const { tasksToBeFinished } = useSelector(getBoardUiState);
+  const [scrolling, setScrolling] = React.useState(false);
   const selectedBoardListId = useSelector(getSelectedListId);
   const boardUpadting = useSelector(isBoardUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
   const search = useSelector(getSearch);
+
+  const detectScroll = React.useCallback(() => {
+    const lastScrollTime = new Date().getTime();
+    setScrolling(new Date().getTime() < lastScrollTime + 500);
+    setTimeout(() => setScrolling(new Date().getTime() < lastScrollTime), 500);
+  }, []);
+
+  React.useEffect(() => {
+    window.addEventListener('scroll', detectScroll);
+
+    return () => window.removeEventListener('scroll', detectScroll);
+  }, []);
 
   const openListsModal = React.useCallback(() => {
     dispatch(push(`/${MainView.Board}/${ActiveModal.Lists}${search}`) as any);
@@ -41,11 +54,11 @@ export const BoardActions = React.memo(() => {
               stretched
               before={<Icon24Add />}
               onClick={openNewTaskModal}
-              disabled={boardUpadting || !selectedBoardListId}
+              disabled={boardUpadting || !selectedBoardListId || scrolling}
             >
               Новая задача
             </Button>
-            <Button mode="tertiary" onClick={openListsModal} disabled={boardUpadting}>
+            <Button mode="tertiary" onClick={openListsModal} disabled={boardUpadting || scrolling}>
               <Icon24List />
             </Button>
           </span>
