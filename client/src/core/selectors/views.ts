@@ -2,19 +2,13 @@ import { createSelector } from 'reselect';
 import { getStateUi } from './common';
 import { getLocationMainPath, getLocationSubPath } from './router';
 import { MainView, ActiveModal, WelcomeView } from 'core/models';
-import { isUserSKeysUpdating } from './user';
 
 export const getActiveMainView = createSelector(
   getStateUi,
   getLocationMainPath,
-  isUserSKeysUpdating,
-  (ui, mainPath, userKeysUpdating) => {
+  (ui, mainPath) => {
     if (!ui.online) {
       return MainView.Offline;
-    }
-
-    if (userKeysUpdating) {
-      return MainView.LoadingGeneralInfo;
     }
 
     if (!ui.isAppUser) {
