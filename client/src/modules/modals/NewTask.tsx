@@ -7,7 +7,7 @@ import {
   Input,
   Spinner,
   Textarea,
-  withModalRootContext,
+  withModalRootContext
 } from '@vkontakte/vkui';
 import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
@@ -109,7 +109,6 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
-                minHeight: '52px !important',
                 maxHeight: 'unset !important',
               },
             } as any)}
@@ -165,8 +164,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
         >
           Создать задачу
         </Button>
+        <div className={css({ height: '10px' })} />
       </FormLayout>
-      <div className={css({ height: '10px' })} />
     </>
   );
 });

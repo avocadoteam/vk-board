@@ -121,7 +121,6 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
-                minHeight: '52px !important',
                 maxHeight: 'unset !important',
               },
             } as any)}
