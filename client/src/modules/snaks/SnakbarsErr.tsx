@@ -16,16 +16,16 @@ export const SnakbarsErr = React.memo(() => {
   const { css } = useFela();
 
   React.useEffect(() => {
-    if (errorsQueue.length > 0 && visible) {
-      const t = setTimeout(() => {
-        if (visible) {
-          setVisible(false);
-        }
-      }, showDuration + 2);
-
-      return () => clearTimeout(t);
-    }
-  }, [errorsQueue, visible]);
+    return () => {
+      if (errorsQueue.length > 0 && visible) {
+        setVisible(false);
+        dispatch({
+          type: 'SET_QUEUE_ERROR',
+          payload: [],
+        });
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (errorsQueue.length > 0 && !visible) {

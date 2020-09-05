@@ -71,11 +71,16 @@ export type AppDispatch =
   | { type: 'SET_GOOGLE_SYNC'; payload: boolean }
   | ErrorEnqueue
   | ErrorDequeue
+  | ErrorQueue
   | LocationChangeAction;
 
 export type AppDispatchActions = Dispatch<AppDispatch>;
 export type FetchReadyAction = { type: 'SET_READY_DATA'; payload: FetchigReadyPayload };
-export type FetchUpdateAction = { type: 'SET_UPDATING_DATA'; payload: FetchingStateName, params?: any };
+export type FetchUpdateAction = {
+  type: 'SET_UPDATING_DATA';
+  payload: FetchingStateName;
+  params?: any;
+};
 export type SelectBoardListAction = {
   type: 'SELECT_BOARD_LIST';
   payload: { id: number; data?: BoardListItem };
@@ -83,6 +88,7 @@ export type SelectBoardListAction = {
 export type SetHashAction = { type: 'SET_HASH'; payload: string | null };
 export type ErrorEnqueue = { type: 'ENQUEUE_ERROR'; payload: string };
 export type ErrorDequeue = { type: 'DEQUEUE_ERROR'; payload: string };
+export type ErrorQueue = { type: 'SET_QUEUE_ERROR'; payload: string[] };
 export type EditBoardListNameAction = {
   type: 'EDIT_BOARD_LIST_NAME';
   payload: EditBoardNamePayload;

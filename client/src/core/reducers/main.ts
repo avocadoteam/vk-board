@@ -225,7 +225,7 @@ export const reducer = (
             description: null,
             dueDate: null,
             name: '',
-            notification: state.notifications
+            notification: state.notifications,
           },
         },
       };
@@ -384,6 +384,13 @@ export const reducer = (
       return {
         ...state,
         errorsQueue: state.errorsQueue.filter((e) => e !== dispatch.payload),
+      };
+    }
+
+    case 'SET_QUEUE_ERROR': {
+      return {
+        ...state,
+        errorsQueue: dispatch.payload,
       };
     }
     case 'SET_GOOGLE_SYNC': {
