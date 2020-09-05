@@ -26,8 +26,9 @@ import { safeCombineEpics } from './combine';
 import * as ops from 'core/operations/task';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedTaskId, getSelectedTaskNotification } from 'core/selectors/task';
-import { getSelectedListId } from 'core/selectors/boardLists';
+import { getSelectedListId, getSelectedList } from 'core/selectors/boardLists';
 import { goBack } from 'connected-react-router';
+import { format } from 'date-fns';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -50,9 +51,32 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
       ops.postNewTask(data, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return from(response.json() as Promise<FetchResponse<number>>).pipe(
-              switchMap((data) => {
+            return from(response.json() as Promise<FetchResponse<string>>).pipe(
+              switchMap((r) => {
+                const actions: AppDispatch[] = [];
+                const { tasks } = getSelectedList(state$.value);
+
+                if (!tasks.find((t) => String(t.id) === String(r?.data))) {
+                  actions.push({
+                    type: 'SET_BOARD_TASKS',
+                    payload: [
+                      {
+                        id: r.data,
+                        created: format(new Date(), 'yyyy-MM-dd'),
+                        deleted: null,
+                        description: data.description,
+                        dueDate: data.dueDate,
+                        finished: null,
+                        memberships: [],
+                        name: data.name,
+                        notification: data.notification,
+                      },
+                      ...tasks,
+                    ],
+                  });
+                }
                 return concat(
+                  ...actions.map((a) => of(a)),
                   of(goBack() as any),
                   of({
                     type: 'RESET_NEW_TASK',
@@ -62,7 +86,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                     type: 'SET_READY_DATA',
                     payload: {
                       name: FetchingStateName.NewTask,
-                      data,
+                      data: r?.data,
                     },
                   } as AppDispatch)
                 );
