@@ -43,7 +43,7 @@ export const Notifications = React.memo(() => {
       <Div>
         <Subhead weight="regular" className={css({ color: '#818C99', margin: 0 })}>
           Мы будем присылать уведомление за день до срока выполнения задачи. Учитываются задачи, на
-          которые вы подписались.
+          которые Вы подписались.
         </Subhead>
       </Div>
     </>
