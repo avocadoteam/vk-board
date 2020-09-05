@@ -39,6 +39,10 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
 
     const state = store.getState();
 
+    if (window.navigator.onLine) {
+      store.dispatch({ type: 'SET_APP_CONNECT', payload: true });
+    }
+
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
     joinRoom(userId, listguid);
