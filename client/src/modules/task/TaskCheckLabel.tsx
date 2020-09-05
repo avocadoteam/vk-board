@@ -55,7 +55,7 @@ export const TaskCheckLabel = React.memo<Props>(({ task }) => {
         </span>
         <div
           onClick={selectTask}
-          className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500 })}`}
+          className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500, overflow: 'hidden' })}`}
         >
           {task.name}
         </div>
