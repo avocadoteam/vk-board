@@ -1,5 +1,5 @@
-import { replace } from 'connected-react-router';
-import { ActiveModal, activeModals, ClientTheme, FetchingStateName, MainView } from 'core/models';
+import { goBack } from 'connected-react-router';
+import { ActiveModal, activeModals, ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getLocationSubPath } from 'core/selectors/router';
 import { getUserId } from 'core/selectors/user';
@@ -57,9 +57,14 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
       type: 'SET_QUEUE_ERROR',
       payload: [],
     });
+    store.dispatch({
+      type: 'SET_SNACK',
+      payload: false,
+    });
+
     const sub = getLocationSubPath(state);
     if (sub !== null && activeModals.includes(sub as ActiveModal)) {
-      store.dispatch(replace(`/${MainView.Board}`) as any);
+      store.dispatch(goBack() as any);
     }
   }
 });

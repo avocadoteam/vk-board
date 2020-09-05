@@ -9,22 +9,23 @@ import { useFela } from 'react-fela';
 const showDuration = 3500;
 
 export const SnakbarsErr = React.memo(() => {
-  const [visible, setVisible] = React.useState(false);
   const [humanError, setError] = React.useState('');
   const dispatch = useDispatch<AppDispatchActions>();
   const errorsQueue = useSelector(getStateUi).errorsQueue;
+  const visible = useSelector(getStateUi).snackVisible;
   const { css } = useFela();
 
   React.useEffect(() => {
     if (errorsQueue.length > 0 && !visible) {
       setError(errorsQueue[0] ?? '');
-      setVisible(true);
+      dispatch({
+        type: 'SET_SNACK',
+        payload: true,
+      });
       dispatch({
         type: 'DEQUEUE_ERROR',
         payload: errorsQueue[0],
       });
-    } else if (!errorsQueue.length && visible) {
-      setVisible(true);
     }
   }, [errorsQueue, visible]);
 
@@ -36,7 +37,12 @@ export const SnakbarsErr = React.memo(() => {
     <>
       <Snackbar
         layout="vertical"
-        onClose={() => setVisible(false)}
+        onClose={() =>
+          dispatch({
+            type: 'SET_SNACK',
+            payload: false,
+          })
+        }
         before={
           <Avatar size={24}>
             <Icon24ErrorCircle fill="#FF4848" width={24} height={24} />

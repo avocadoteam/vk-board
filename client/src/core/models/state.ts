@@ -30,6 +30,7 @@ export type AppState = {
     membership: MembershipState;
     showAds: boolean;
     errorsQueue: string[];
+    snackVisible: boolean;
     googleSyncClicked: boolean;
     tasksToBeFinishedTimer: number,
   };
@@ -70,6 +71,7 @@ export type AppDispatch =
   | { type: 'SET_ADS'; payload: boolean }
   | { type: 'SET_FIRST_BOARD_LIST_NAME'; payload: string }
   | { type: 'SET_GOOGLE_SYNC'; payload: boolean }
+  | { type: 'SET_SNACK'; payload: boolean }
   | ErrorEnqueue
   | ErrorDequeue
   | ErrorQueue

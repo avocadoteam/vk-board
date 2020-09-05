@@ -62,6 +62,7 @@ export const initialState: models.AppState['ui'] = {
   showAds: true,
   googleSyncClicked: false,
   tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
+  snackVisible: false,
 };
 
 export const reducer = (
@@ -381,6 +382,12 @@ export const reducer = (
       return {
         ...state,
         errorsQueue: state.errorsQueue.filter((e) => e !== dispatch.payload),
+      };
+    }
+    case 'SET_SNACK': {
+      return {
+        ...state,
+        snackVisible: dispatch.payload,
       };
     }
 
