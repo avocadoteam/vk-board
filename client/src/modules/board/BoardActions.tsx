@@ -1,37 +1,48 @@
-import React from 'react';
-import { Div, Group, Separator, FixedLayout } from '@vkontakte/vkui';
-import Icon24List from '@vkontakte/icons/dist/24/list';
 import Icon24Add from '@vkontakte/icons/dist/24/add';
-import { useFela } from 'react-fela';
+import Icon24List from '@vkontakte/icons/dist/24/list';
+import { Div, FixedLayout, Group, Separator } from '@vkontakte/vkui';
 import { Button } from 'atoms/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
+import { getSearch, push } from 'connected-react-router';
+import { ActiveModal, AppDispatchActions, MainView } from 'core/models';
 import { isBoardUpdating } from 'core/selectors/board';
-import { ListProgress } from 'modules/board-list';
-import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedListId } from 'core/selectors/boardLists';
-import { push, getSearch } from 'connected-react-router';
+import { getBoardUiState } from 'core/selectors/common';
+import { getActiveMainView } from 'core/selectors/views';
+import { ListProgress } from 'modules/board-list';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useDispatch, useSelector } from 'react-redux';
+import { fromEvent } from 'rxjs';
+import { debounceTime, tap } from 'rxjs/operators';
 
 export const BoardActions = React.memo(() => {
   const { css } = useFela();
   const { tasksToBeFinished } = useSelector(getBoardUiState);
   const [scrolling, setScrolling] = React.useState(false);
+  const mainView = useSelector(getActiveMainView);
   const selectedBoardListId = useSelector(getSelectedListId);
   const boardUpadting = useSelector(isBoardUpdating);
   const dispatch = useDispatch<AppDispatchActions>();
   const search = useSelector(getSearch);
 
-  const detectScroll = React.useCallback(() => {
-    const lastScrollTime = new Date().getTime();
-    setScrolling(new Date().getTime() < lastScrollTime + 500);
-    setTimeout(() => setScrolling(new Date().getTime() < lastScrollTime), 500);
-  }, []);
-
   React.useEffect(() => {
-    window.addEventListener('scroll', detectScroll);
+    const sub = fromEvent(document, 'scroll')
+      .pipe(
+        tap(() => {
+          if (mainView !== MainView.Board) {
+            return;
+          }
+          setScrolling(true);
+        })
+      )
+      .pipe(
+        debounceTime(200),
+        tap(() => setScrolling(false))
+      )
+      .subscribe();
 
-    return () => window.removeEventListener('scroll', detectScroll);
-  }, []);
+    return () => sub.unsubscribe();
+  }, [mainView]);
 
   const openListsModal = React.useCallback(() => {
     dispatch(push(`/${MainView.Board}/${ActiveModal.Lists}${search}`) as any);
