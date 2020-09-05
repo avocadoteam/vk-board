@@ -12,7 +12,7 @@ import {
   FetchUpdateAction,
 } from 'core/models';
 import { ofType } from 'redux-observable';
-import { filter, map, switchMap, auditTime, exhaustMap, debounceTime } from 'rxjs/operators';
+import { filter, map, switchMap, exhaustMap, debounceTime } from 'rxjs/operators';
 import { getNewTaskValues, getEditTaskValues } from 'core/selectors/board';
 import { getQToQuery } from 'core/selectors/user';
 import { from, concat, of, iif, empty } from 'rxjs';
@@ -162,8 +162,8 @@ const finishTasksResetEpic: AppEpic = (action$, state$) =>
 
 const finishTasksEpic: AppEpic = (action$, state$) =>
   action$.pipe(
-    ofType('FINISH_TASK'),
-    auditTime(FINISH_TASK_TIMER_VALUE),
+    ofType('SET_FINISH_TASK_TIMER'),
+    filter((a) => a.payload === 0),
     map(() => {
       const state = state$.value;
       const { tasksToBeFinished } = getBoardUiState(state);

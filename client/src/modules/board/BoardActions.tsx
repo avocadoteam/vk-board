@@ -36,7 +36,7 @@ export const BoardActions = React.memo(() => {
         })
       )
       .pipe(
-        debounceTime(200),
+        debounceTime(500),
         tap(() => setScrolling(false))
       )
       .subscribe();
