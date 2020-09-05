@@ -37,6 +37,7 @@ export const DeleteList = React.memo<{ id: string }>(({ id }) => {
               '>div': {
                 display: 'block',
               },
+              userSelect: 'none'
             } as any)}`}
           >
             {'Вы уверены?'}

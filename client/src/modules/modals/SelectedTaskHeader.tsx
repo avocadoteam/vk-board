@@ -45,6 +45,7 @@ export const SelectedTaskHeader = React.memo<Props>(
               '>div': {
                 display: deletedPreview ? 'block' : undefined,
               },
+              userSelect: 'none',
             } as any)}`}
           >
             {deletedPreview ? 'Вы уверены?' : info.name}
