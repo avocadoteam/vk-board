@@ -39,6 +39,7 @@ export const SnakbarsErr = React.memo(() => {
           </Avatar>
         }
         className={css({ zIndex: 105 })}
+        duration={3500}
       >
         {humanError}
       </Snackbar>
