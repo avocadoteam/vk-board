@@ -44,10 +44,6 @@ const itemsToAppear = [
     text: 'Никакой рекламы',
     type: 'info',
   },
-  {
-    id: 6,
-    type: 'btn',
-  },
 ];
 
 export const PremiumCard = React.memo(() => {
@@ -165,19 +161,15 @@ export const PremiumCard = React.memo(() => {
   const transitionFragments = transition((style, item) => {
     return (
       <animated.div style={style}>
-        {item.type === 'info' ? (
-          <MiniInfoCell
-            before={<Icon24DoneOutline className={textCss} />}
-            multiline
-            className={cellInfoCss}
-          >
-            <Text weight="medium" className={`useMonrope ${textCss}`}>
-              {item.text}
-            </Text>
-          </MiniInfoCell>
-        ) : (
-          buyButton
-        )}
+        <MiniInfoCell
+          before={<Icon24DoneOutline className={textCss} />}
+          multiline
+          className={cellInfoCss}
+        >
+          <Text weight="medium" className={`useMonrope ${textCss}`}>
+            {item.text}
+          </Text>
+        </MiniInfoCell>
       </animated.div>
     );
   });
@@ -220,6 +212,7 @@ export const PremiumCard = React.memo(() => {
             <span className={css({ color: '#42A4FF' })}>премиум</span>
           </Text>
           {transitionFragments}
+          {buyButton}
           {hasPremium && gHrs < 24 && (
             <Div>
               <Subhead
