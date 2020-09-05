@@ -2,7 +2,7 @@ import { vkBridge } from './instance';
 import { store } from 'core/store';
 import { ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { joinRoom, leaveRoom } from 'core/socket/list';
+import { joinRoom } from 'core/socket/list';
 import { getUserId } from 'core/selectors/user';
 
 // set client theme
@@ -46,14 +46,6 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
     joinRoom(userId, listguid);
-  }
-
-  if (type === 'VKWebAppViewHide') {
-    const state = store.getState();
-
-    const { listguid } = selectedBoardListInfo(state);
-    const userId = getUserId(state);
-    leaveRoom(userId, listguid);
   }
 });
 
