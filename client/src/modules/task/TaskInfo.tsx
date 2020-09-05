@@ -1,14 +1,14 @@
-import React from 'react';
-import { useFela } from 'react-fela';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
-import { BoardTaskItem } from 'core/models';
-import { UsersStack, Text } from '@vkontakte/vkui';
-import { useSelector } from 'react-redux';
-import { isThemeDrak } from 'core/selectors/common';
-import { ru } from 'date-fns/locale';
-import { format } from 'date-fns';
 import Icon28Notifications from '@vkontakte/icons/dist/28/notifications';
+import { Text } from '@vkontakte/vkui';
+import { BoardTaskItem } from 'core/models';
+import { isThemeDrak } from 'core/selectors/common';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useSelector } from 'react-redux';
 
 type Props = {
   task: BoardTaskItem;

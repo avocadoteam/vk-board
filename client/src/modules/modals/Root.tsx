@@ -1,22 +1,22 @@
-import React from 'react';
-import { ModalRoot, ModalPage, Separator, List } from '@vkontakte/vkui';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
-import { useFela } from 'react-fela';
-import { NewList } from './NewList';
-import { Lists } from './Lists';
-import { CellButton } from 'atoms/CellButton';
 import Icon28SettingsOutline from '@vkontakte/icons/dist/28/settings_outline';
-import { SelectedTaskHeader } from './SelectedTaskHeader';
-import { SelectedTask } from './SelectedTask';
-import { DeletePreview } from './DeletePreview';
-import { EditTask } from './EditTask';
-import { NewTaskHeader } from './NewTaskHeader';
-import { NewTask } from './NewTask';
-import { push, getSearch, goBack } from 'connected-react-router';
-import { DropMember } from './DropMember';
+import { List, ModalPage, ModalRoot, Separator } from '@vkontakte/vkui';
+import { CellButton } from 'atoms/CellButton';
+import { getSearch, goBack, push } from 'connected-react-router';
+import { ActiveModal, AppDispatchActions, MainView } from 'core/models';
+import { getActiveModalRoute } from 'core/selectors/views';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useDispatch, useSelector } from 'react-redux';
 import { DeleteList } from './DeleteList';
-import { getActiveModalRoute, getActiveMainView } from 'core/selectors/views';
+import { DeletePreview } from './DeletePreview';
+import { DropMember } from './DropMember';
+import { EditTask } from './EditTask';
+import { Lists } from './Lists';
+import { NewList } from './NewList';
+import { NewTask } from './NewTask';
+import { NewTaskHeader } from './NewTaskHeader';
+import { SelectedTask } from './SelectedTask';
+import { SelectedTaskHeader } from './SelectedTaskHeader';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
@@ -26,15 +26,12 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
 
     const search = useSelector(getSearch);
     const activeModal = useSelector(getActiveModalRoute);
-    const mainView = useSelector(getActiveMainView);
     const dispatch = useDispatch<AppDispatchActions>();
     const { css } = useFela();
 
     const closeModal = React.useCallback(() => {
-      if (mainView === MainView.Board || mainView === MainView.ListMembership) {
-        dispatch(goBack() as any);
-      }
-    }, [dispatch, mainView]);
+      dispatch(goBack() as any);
+    }, []);
 
     const goToAbout = React.useCallback(() => {
       goForward(MainView.About);
