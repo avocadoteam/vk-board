@@ -16,18 +16,6 @@ export const SnakbarsErr = React.memo(() => {
   const { css } = useFela();
 
   React.useEffect(() => {
-    return () => {
-      if (errorsQueue.length > 0 && visible) {
-        setVisible(false);
-        dispatch({
-          type: 'SET_QUEUE_ERROR',
-          payload: [],
-        });
-      }
-    };
-  }, []);
-
-  React.useEffect(() => {
     if (errorsQueue.length > 0 && !visible) {
       setError(errorsQueue[0] ?? '');
       setVisible(true);
@@ -35,6 +23,8 @@ export const SnakbarsErr = React.memo(() => {
         type: 'DEQUEUE_ERROR',
         payload: errorsQueue[0],
       });
+    } else if (!errorsQueue.length && visible) {
+      setVisible(true);
     }
   }, [errorsQueue, visible]);
 

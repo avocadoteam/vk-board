@@ -47,6 +47,13 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
     const userId = getUserId(state);
     joinRoom(userId, listguid);
   }
+
+  if (type === 'VKWebAppViewHide') {
+    store.dispatch({
+      type: 'SET_QUEUE_ERROR',
+      payload: [],
+    });
+  }
 });
 
 // Init VK  Mini App
