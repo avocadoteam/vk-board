@@ -210,28 +210,37 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
     filter(({ payload }) => payload === FetchingStateName.DeleteTask),
     map(() => {
       const state = state$.value;
-      const { selectedTask } = getBoardUiState(state);
+      const { selectedTask, tasksToBeFinished } = getBoardUiState(state);
 
       return {
         q: getQToQuery(state),
         selectedTaskId: selectedTask.id,
         listId: getSelectedListId(state),
+        tasksToBeFinished,
       };
     }),
-    switchMap(({ q, selectedTaskId, listId }) =>
+    switchMap(({ q, selectedTaskId, listId, tasksToBeFinished }) =>
       ops.deleteTask(selectedTaskId, listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return concat(
-              of({
+            const actions: AppDispatch[] = [
+              {
                 type: 'SET_READY_DATA',
                 payload: {
                   name: FetchingStateName.DeleteTask,
                   data: true,
                 },
-              } as AppDispatch),
-              of(goBack() as any)
-            );
+              },
+            ];
+
+            if (tasksToBeFinished.includes(selectedTaskId)) {
+              actions.push({
+                type: 'REMOVE_FINISH_TASK',
+                payload: selectedTaskId,
+              });
+            }
+
+            return concat(...actions.map((a) => of(a)), of(goBack() as any));
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
