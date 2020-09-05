@@ -45,7 +45,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [editable, wrongDate, updateModalHeight]);
+  }, [editable, wrongDate, updateModalHeight, formValues]);
 
   React.useEffect(() => {
     return () => {

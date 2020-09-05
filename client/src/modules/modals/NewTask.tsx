@@ -7,7 +7,7 @@ import {
   Input,
   Spinner,
   Textarea,
-  withModalRootContext
+  withModalRootContext,
 } from '@vkontakte/vkui';
 import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
@@ -43,7 +43,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [wrongDate, updateModalHeight]);
+  }, [wrongDate, updateModalHeight, formValues]);
 
   React.useEffect(() => {
     if (before && !wrongDate) {
