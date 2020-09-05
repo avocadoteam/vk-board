@@ -3,7 +3,7 @@ import { List, ModalPage, ModalRoot, Separator } from '@vkontakte/vkui';
 import { CellButton } from 'atoms/CellButton';
 import { getSearch, goBack, push } from 'connected-react-router';
 import { ActiveModal, AppDispatchActions, MainView } from 'core/models';
-import { getActiveModalRoute } from 'core/selectors/views';
+import { getActiveMainView, getActiveModalRoute } from 'core/selectors/views';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,19 +24,26 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
     const [editable, setEditable] = React.useState(false);
     const [highlight, setHighlight] = React.useState(false);
 
+    const mainView = useSelector(getActiveMainView);
     const search = useSelector(getSearch);
     const activeModal = useSelector(getActiveModalRoute);
     const dispatch = useDispatch<AppDispatchActions>();
     const { css } = useFela();
 
     const closeModal = React.useCallback(() => {
-      dispatch(goBack() as any);
-    }, []);
+      if (mainView === MainView.Board || mainView === MainView.ListMembership) {
+        dispatch(goBack() as any);
+      }
+    }, [dispatch, mainView]);
 
     const goToAbout = React.useCallback(() => {
       goForward(MainView.About);
       dispatch(push(`/${MainView.About}${search}`) as any);
     }, [dispatch, goForward, search]);
+
+    if (activeModal === null) {
+      return null;
+    }
 
     return (
       <ModalRoot activeModal={activeModal} onClose={closeModal}>
