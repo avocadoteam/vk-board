@@ -1,9 +1,11 @@
-import { vkBridge } from './instance';
-import { store } from 'core/store';
-import { ClientTheme, FetchingStateName } from 'core/models';
+import { replace } from 'connected-react-router';
+import { ActiveModal, activeModals, ClientTheme, FetchingStateName, MainView } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { joinRoom } from 'core/socket/list';
+import { getLocationSubPath } from 'core/selectors/router';
 import { getUserId } from 'core/selectors/user';
+import { joinRoom } from 'core/socket/list';
+import { store } from 'core/store';
+import { vkBridge } from './instance';
 
 // set client theme
 vkBridge.subscribe(({ detail: { type, data } }) => {
@@ -49,10 +51,16 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   }
 
   if (type === 'VKWebAppViewHide') {
+    const state = store.getState();
+
     store.dispatch({
       type: 'SET_QUEUE_ERROR',
       payload: [],
     });
+    const sub = getLocationSubPath(state);
+    if (sub !== null && activeModals.includes(sub as ActiveModal)) {
+      store.dispatch(replace(`/${MainView.Board}`) as any);
+    }
   }
 });
 

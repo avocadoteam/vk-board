@@ -5,16 +5,16 @@ export enum MainView {
   ListMembership = 'listMembership',
   About = 'about',
   ListSharePreview = 'listSharePreview',
-  LoadingGeneralInfo = 'loading'
+  LoadingGeneralInfo = 'loading',
 }
 export enum WelcomeView {
   Greetings = 'greetings',
-  TaskCreation = 'taskCreation'
+  TaskCreation = 'taskCreation',
 }
 
 export enum Skeys {
   appUser = 'appUser',
-  userSelectedListId = 'userSelectedListId'
+  userSelectedListId = 'userSelectedListId',
 }
 
 export enum AppUser {
@@ -27,5 +27,13 @@ export enum ActiveModal {
   Lists = 'lists',
   NewTask = 'newtask',
   DropMembership = 'dropmembership',
-  DeletList = 'deletelist'
+  DeletList = 'deletelist',
 }
+
+export const activeModals = [
+  ActiveModal.DeletList,
+  ActiveModal.DropMembership,
+  ActiveModal.Lists,
+  ActiveModal.NewTask,
+  ActiveModal.SelectedTask,
+];
