@@ -111,7 +111,6 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
-      await this.cache.del(cacheKey.canCreateList(vkUserId));
 
       return newList.id;
     } catch (err) {
@@ -249,7 +248,6 @@ export class ListService {
     );
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
-    await this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
 
     const list = await this.tableList.findOne(model.listId, {
       select: ['listguid'],
@@ -271,7 +269,6 @@ export class ListService {
     await this.tableList.update(listId, { deleted: now });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
-    await this.cache.del(cacheKey.canCreateList(vkUserId));
 
     const list = await this.tableList.findOne(listId, { select: ['listguid'] });
     if (list) {
@@ -321,7 +318,6 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
-      await this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
 
       const avatars = await this.vkApiService.updateWithAvatars([vkUserId]);
 
