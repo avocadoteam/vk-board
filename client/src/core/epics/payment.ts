@@ -8,7 +8,6 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { devTimeout } from './addons';
 import { safeCombineEpics } from './combine';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
-import { getUserId } from 'core/selectors/user';
 
 const userMakePaymentEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -41,9 +40,8 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
     filter(({ payload }) => payload === FetchingStateName.PaymentInfo),
     map(() => ({
       q: getSearch(state$.value),
-      userId: getUserId(state$.value),
     })),
-    switchMap(({ q, userId }) =>
+    switchMap(({ q }) =>
       paymentInfo(q).pipe(
         switchMap((response) => {
           if (response.ok) {
@@ -63,16 +61,6 @@ const ensurePaymentEpic: AppEpic = (action$, state$) =>
                       payload: FetchingStateName.LastGoogleSync,
                     } as AppDispatch)
                   );
-                }
-
-                if (userId === 153691368) {
-                  return of({
-                    type: 'SET_READY_DATA',
-                    payload: {
-                      name: FetchingStateName.PaymentInfo,
-                      data: r?.data,
-                    },
-                  } as AppDispatch);
                 }
 
                 return concat(
