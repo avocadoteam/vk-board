@@ -35,7 +35,7 @@ export const Notifications = React.memo(() => {
     <>
       <SimpleCell
         disabled
-        after={<Switch onChange={handleToggle} checked={notifyEnabled} />}
+        after={<Switch checked={notifyEnabled} readOnly />}
         onClick={handleToggle}
       >
         Уведомления
