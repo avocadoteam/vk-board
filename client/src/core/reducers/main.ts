@@ -41,7 +41,6 @@ export const initialState: models.AppState['ui'] = {
     },
     tasksToBeUnfinished: [],
     tasksToBeFinished: [],
-    tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
     selectedTask: {
       id: '',
       name: '',
@@ -62,6 +61,7 @@ export const initialState: models.AppState['ui'] = {
   },
   showAds: true,
   googleSyncClicked: false,
+  tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
 };
 
 export const reducer = (
@@ -323,10 +323,7 @@ export const reducer = (
     case 'SET_FINISH_TASK_TIMER': {
       return {
         ...state,
-        board: {
-          ...state.board,
-          tasksToBeFinishedTimer: dispatch.payload,
-        },
+        tasksToBeFinishedTimer: dispatch.payload,
       };
     }
     case 'DROP_MEMBER_SHIP_ID': {

@@ -7,7 +7,7 @@ export const payToGroupId = 197416979;
 // export const premiumPrice = 228;
 export const premiumPrice = 1;
 
-export const FINISH_TASK_TIMER_VALUE = 3500;
+export const FINISH_TASK_TIMER_VALUE = 1000;
 export const UNFINISH_TASK_TIMER_VALUE = 1500;
 
 export const isDev = process.env.NODE_ENV !== 'production';

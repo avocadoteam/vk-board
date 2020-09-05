@@ -44,7 +44,11 @@ export const TaskCheckedLabel = React.memo<Props>(({ id, name }) => {
             <polyline points="1 5 4 8 11 1" />
           </svg>
         </span>
-        <div className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500 })}`}>{name}</div>
+        <div
+          className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500, overflow: 'hidden' })}`}
+        >
+          {name}
+        </div>
       </label>
     </span>
   );

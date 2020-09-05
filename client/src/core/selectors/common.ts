@@ -14,6 +14,7 @@ export const isAppUser = createSelector(getStateUi, (ui) => ui.isAppUser);
 export const getActiveModal = createSelector(getStateUi, (ui) => ui.activeModal);
 
 export const getBoardUiState = createSelector(getStateUi, (ui) => ui.board);
+export const getBoardUiStateTimer = createSelector(getStateUi, (ui) => ui.tasksToBeFinishedTimer);
 export const getMembershipUiState = createSelector(getStateUi, (ui) => ui.membership);
 
 export const isAdsShown = createSelector(getStateUi, (ui) => ui.showAds);

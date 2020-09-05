@@ -45,7 +45,6 @@ export type BoardState = {
   };
   tasksToBeFinished: string[];
   tasksToBeUnfinished: string[];
-  tasksToBeFinishedTimer: number;
   selectedTask: TaskInfo;
   editedTask: TaskInfo;
 };

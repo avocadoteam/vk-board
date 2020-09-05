@@ -31,6 +31,7 @@ export type AppState = {
     showAds: boolean;
     errorsQueue: string[];
     googleSyncClicked: boolean;
+    tasksToBeFinishedTimer: number,
   };
   router: RouterState;
 };
