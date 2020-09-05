@@ -1,34 +1,26 @@
-import React from 'react';
-import { Div, CardGrid, Card, Text, Spinner, PanelHeader } from '@vkontakte/vkui';
-import { useSelector, useDispatch } from 'react-redux';
-import { isBoardUpdating } from 'core/selectors/board';
-import { useFela } from 'react-fela';
-import { TaskCheckLabel, TaskInfo } from 'modules/task';
-import { AppDispatchActions, BoardTaskItem, MainView, ActiveModal } from 'core/models';
-import { isTasksUpdating } from 'core/selectors/task';
-import { ListMembershipStack } from 'modules/board-list';
-import { isThemeDrak } from 'core/selectors/common';
-import { useTransition, animated, useChain } from 'react-spring';
+import { Div, PanelHeader, Spinner, Text } from '@vkontakte/vkui';
 import { LoadingCardChain } from 'atoms/LoadingCardsCahin';
-import { selectedBoardListInfo, getSelectedListTasks } from 'core/selectors/boardLists';
+import { isBoardUpdating } from 'core/selectors/board';
+import { getSelectedListTasks, selectedBoardListInfo } from 'core/selectors/boardLists';
+import { isTasksUpdating } from 'core/selectors/task';
 import { AdsBanner } from 'modules/ads';
+import { ListMembershipStack } from 'modules/board-list';
+import { TaskItem } from 'modules/task/TaskItem';
+import { TasksRefresher } from 'modules/task/TasksRefresher';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useSelector } from 'react-redux';
 import { BoardEmpty } from './BoardEmpty';
 import { BoardFinishedTasks } from './BoardFinishedTasks';
-import { TasksRefresher } from 'modules/task/TasksRefresher';
-import { getSearch, push } from 'connected-react-router';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
-  const dark = useSelector(isThemeDrak);
   const info = useSelector(selectedBoardListInfo);
   const tasks = useSelector(getSelectedListTasks);
   const updatingListOfTasks = useSelector(isTasksUpdating);
   const boardUpdating = useSelector(isBoardUpdating);
-  const search = useSelector(getSearch);
-  const transRef = React.useRef<any>();
 
   const { css } = useFela();
-  const dispatch = useDispatch<AppDispatchActions>();
 
   React.useEffect(() => {
     let timer: any = null;
@@ -42,67 +34,6 @@ export const BoardLists = React.memo(() => {
     }
     return () => clearTimeout(timer);
   }, [updatingListOfTasks]);
-
-  const selectTask = React.useCallback(
-    (task: BoardTaskItem) => {
-      dispatch({
-        type: 'SELECT_TASK',
-        payload: task,
-      });
-      dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
-    },
-    [dispatch, search]
-  );
-
-  const transition = useTransition(tasks, {
-    from: {
-      transform: 'scale(0)',
-    },
-    enter: {
-      transform: 'scale(1)',
-    },
-    leave: {
-      transform: 'scale(0)',
-      delay: 1,
-    },
-    ref: transRef,
-    unique: true,
-    trail: 150 / tasks.length,
-    key: (t) => t.id,
-  });
-
-  useChain([transRef], [0, 0.6]);
-
-  const taskRender = transition((style, t) => {
-    return (
-      <animated.div style={style}>
-        <CardGrid
-          className={css({
-            padding: 0,
-            marginBottom: '1rem',
-          })}
-          onClick={() => selectTask(t)}
-        >
-          <Card
-            size="l"
-            className={css({
-              borderRadius: '17px !important',
-              backgroundColor: dark ? '#222327' : '#FFF',
-              padding: '18px 18px 0',
-              width: 'calc(100% - 36px) !important',
-              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.02)',
-              border: `1px solid ${dark ? '#343434' : '#F7F7F7'}`,
-            })}
-          >
-            <div style={{ minHeight: 28 }}>
-              <TaskCheckLabel task={t} />
-              <TaskInfo task={t} />
-            </div>
-          </Card>
-        </CardGrid>
-      </animated.div>
-    );
-  });
 
   return (
     <>
@@ -129,7 +60,9 @@ export const BoardLists = React.memo(() => {
         >
           <AdsBanner />
           <BoardEmpty />
-          {updatingListOfTasks && showUpdating ? null : taskRender}
+          {updatingListOfTasks && showUpdating
+            ? null
+            : tasks.map((t) => <TaskItem task={t} key={t.id} />)}
           {updatingListOfTasks && showUpdating ? <LoadingCardChain cards={[60, 30, 60]} /> : null}
           <BoardFinishedTasks />
         </Div>
