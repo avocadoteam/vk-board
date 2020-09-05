@@ -14,6 +14,7 @@ import { vkBridge } from 'core/vk-bridge/instance';
 import { getAppId } from 'core/selectors/settings';
 import { ListItemName } from './ListItemName';
 import { hasUserPremium } from 'core/selectors/payment';
+import { isOnlyOneListLeft } from 'core/selectors/board';
 
 type Props = {
   goForward: (activePanel: MainView) => void;
@@ -24,6 +25,7 @@ type Props = {
 
 export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   const deletting = useSelector(isDeleteListUpdating);
+  const onlyOneLeft = useSelector(isOnlyOneListLeft);
   const hasPremium = useSelector(hasUserPremium);
   const search = useSelector(getSearch);
   const appId = useSelector(getAppId);
@@ -47,6 +49,29 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
     },
     [appId]
   );
+
+  const deleteBtn =
+    listItem.isOwner && !onlyOneLeft ? (
+      <CellButton
+        className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848 !important' })}
+        disabled={deletting}
+        onClick={deleteList}
+      >
+        {deletting ? (
+          <Spinner
+            size="regular"
+            className={css({
+              width: 'unset',
+              marginRight: '1rem',
+              color: '#FF4848 !important',
+            })}
+          />
+        ) : (
+          <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
+        )}
+        Удалить список
+      </CellButton>
+    ) : null;
 
   return (
     <span>
@@ -88,27 +113,7 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
             Список станет доступен другим пользователям с ссылкой{' '}
             {hasPremium ? '' : '(до 3-x человек в бесплатной версии)'}
           </Text>
-          {listItem.isOwner && (
-            <CellButton
-              className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848 !important' })}
-              disabled={deletting}
-              onClick={deleteList}
-            >
-              {deletting ? (
-                <Spinner
-                  size="regular"
-                  className={css({
-                    width: 'unset',
-                    marginRight: '1rem',
-                    color: '#FF4848 !important',
-                  })}
-                />
-              ) : (
-                <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
-              )}
-              Удалить список
-            </CellButton>
-          )}
+          {deleteBtn}
         </Div>
       )}
     </span>
