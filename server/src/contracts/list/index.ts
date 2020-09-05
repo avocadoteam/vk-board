@@ -1,10 +1,12 @@
 import { IsString, Length, IsNotEmpty, IsNumber, IsUUID, Min, Max } from 'class-validator';
 import { int4 } from 'src/constants';
+import { IsNotBlank } from 'src/interceptors/exts/isBlank';
 
 export class NewListModel {
   @IsString()
   @IsNotEmpty()
   @Length(1, 64)
+  @IsNotBlank()
   name!: string;
 }
 

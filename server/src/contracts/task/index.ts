@@ -11,6 +11,7 @@ import {
   Max,
 } from 'class-validator';
 import { int4 } from 'src/constants';
+import { IsNotBlank } from 'src/interceptors/exts/isBlank';
 
 export class UpdateTaskNotification {
   @IsBoolean()
@@ -29,12 +30,14 @@ export class GeneralTaskModel {
   @IsString()
   @IsNotEmpty()
   @Length(1, 256)
+  @IsNotBlank()
   name!: string;
 
   @ValidateIf((o) => o.description !== null)
   @IsString()
   @IsNotEmpty()
   @Length(1, 1024)
+  @IsNotBlank()
   description!: string | null;
 
   @IsNumber()
