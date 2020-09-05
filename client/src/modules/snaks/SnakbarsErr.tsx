@@ -6,12 +6,26 @@ import { getStateUi } from 'core/selectors/common';
 import { AppDispatchActions } from 'core/models';
 import { useFela } from 'react-fela';
 
+const showDuration = 3500;
+
 export const SnakbarsErr = React.memo(() => {
   const [visible, setVisible] = React.useState(false);
   const [humanError, setError] = React.useState('');
   const dispatch = useDispatch<AppDispatchActions>();
   const errorsQueue = useSelector(getStateUi).errorsQueue;
   const { css } = useFela();
+
+  React.useEffect(() => {
+    if (errorsQueue.length > 0 && visible) {
+      const t = setTimeout(() => {
+        if (visible) {
+          setVisible(false);
+        }
+      }, showDuration + 2);
+
+      return () => clearTimeout(t);
+    }
+  }, [errorsQueue, visible]);
 
   React.useEffect(() => {
     if (errorsQueue.length > 0 && !visible) {
@@ -39,7 +53,7 @@ export const SnakbarsErr = React.memo(() => {
           </Avatar>
         }
         className={css({ zIndex: 105 })}
-        duration={3500}
+        duration={showDuration}
       >
         {humanError}
       </Snackbar>
