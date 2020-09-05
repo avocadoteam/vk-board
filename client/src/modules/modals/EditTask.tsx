@@ -130,6 +130,8 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
             value={formValues.description ?? ''}
             grow
             onResize={updateModalHeight}
+            onFocus={updateModalHeight}
+            onBlur={updateModalHeight}
           />
         </span>
         <span className={css({ display: 'flex' })}>

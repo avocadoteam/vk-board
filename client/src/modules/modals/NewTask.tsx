@@ -118,6 +118,8 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             value={formValues.description ?? ''}
             grow
             onResize={updateModalHeight}
+            onFocus={updateModalHeight}
+            onBlur={updateModalHeight}
           />
         </span>
         <span className={css({ display: 'flex' })}>
