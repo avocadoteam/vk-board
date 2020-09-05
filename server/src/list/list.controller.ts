@@ -301,7 +301,7 @@ export class ListController {
       vkUserId,
     );
 
-    if (list[0].createdBy === vkUserId) {
+    if (list[0]?.createdBy === vkUserId) {
       return 'Yourself';
     }
 
