@@ -199,7 +199,7 @@ export const PremiumCard = React.memo(() => {
           borderRadius: '21px !important',
           backgroundColor: dark ? 'rgba(95, 95, 95, 0.03)' : 'rgba(66, 164, 255, 0.03)',
           padding: '24px 23px',
-          width: 'calc(100% - 36px) !important',
+          width: 'calc(100% - 48px) !important',
         })}
       >
         <div
