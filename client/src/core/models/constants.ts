@@ -1,11 +1,10 @@
-export const appV = '1.0.3';
+export const appV = '1.0.4';
 
 export const vkApiV = '5.122';
 
 export const appId = 7566928;
 export const payToGroupId = 197416979;
-// export const premiumPrice = 228;
-export const premiumPrice = 1;
+export const premiumPrice = 228;
 
 export const FINISH_TASK_TIMER_VALUE = 1000;
 export const UNFINISH_TASK_TIMER_VALUE = 1500;

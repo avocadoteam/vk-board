@@ -5,4 +5,4 @@ export const vkApiV = '5.122';
 export const notificationMessage = 'У Вас остался один день на выполнение задания. Поторопитесь! ⏰';
 export const avacadoGroupId = 197416979;
 export const int4 = 2147483647;
-export const appV = '1.0.3';
+export const appV = '1.0.4';

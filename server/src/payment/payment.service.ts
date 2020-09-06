@@ -2,11 +2,7 @@ import { Injectable, Inject, CACHE_MANAGER, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/db/tables/payment';
 import { Repository, Connection } from 'typeorm';
-import {
-  premiumPrice,
-  syncRestrictionHours,
-  premiumPriceF,
-} from 'src/constants/premium';
+import { premiumPrice, syncRestrictionHours } from 'src/constants/premium';
 import { CacheManager } from 'src/custom-types/cache';
 import { cacheKey, dayTTL } from 'src/contracts/cache';
 import * as moment from 'moment';
@@ -40,10 +36,6 @@ export class PaymentService {
           {
             user_id: vkUserId,
             amount: premiumPrice.toString(),
-          },
-          {
-            user_id: vkUserId,
-            amount: premiumPriceF.toString(),
           },
         ],
       })) > 0;
