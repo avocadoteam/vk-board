@@ -12,6 +12,7 @@ import {
   Delete,
   CacheTTL,
   Post,
+  ConflictException,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { ListService } from './list.service';
@@ -233,6 +234,10 @@ export class ListController {
     @Body()
     model: DropMembershipModel,
   ) {
+    if (vkUserId === model.userId) {
+      throw new ConflictException();
+    }
+
     if (!(await this.listService.isListOwner([model.listId], vkUserId))) {
       throw new BadRequestException();
     }
