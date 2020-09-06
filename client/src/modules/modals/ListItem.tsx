@@ -35,7 +35,7 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
 
   const deleteList = React.useCallback(() => {
     dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
-    dispatch(push(`/${MainView.Board}/${ActiveModal.DeletList}${search}`) as any);
+    dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteList}${search}`) as any);
   }, [dispatch, boardListOpenId, search]);
 
   const goToMembership = React.useCallback(() => {

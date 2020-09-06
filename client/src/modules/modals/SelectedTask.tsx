@@ -17,19 +17,15 @@ import {
 } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
 import { format } from 'date-fns';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { AppDispatchActions, FetchingStateName, MainView, ActiveModal } from 'core/models';
 import { getNotifications } from 'core/selectors/settings';
 import { vkBridge } from 'core/vk-bridge/instance';
+import { push, getSearch } from 'connected-react-router';
 
-type Props = {
-  showDelete: () => void;
-  startEdit: () => void;
-  showTask: boolean;
-};
-
-export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit }) => {
+export const SelectedTask = React.memo(() => {
   const { css } = useFela();
   const info = useSelector(getSelectedTaskInfo);
+  const search = useSelector(getSearch);
   const notifyEnabled = useSelector(getNotifications);
   const [notifyRequest, setRequest] = React.useState(false);
   const [notif, setNotif] = React.useState(info.notification);
@@ -50,6 +46,14 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
     setRequest(false);
   };
 
+  const deleteTask = React.useCallback(() => {
+    dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteTask}${search}`) as any);
+  }, [dispatch, search]);
+
+  const editTask = React.useCallback(() => {
+    dispatch(push(`/${MainView.Board}/${ActiveModal.EditTask}${search}`) as any);
+  }, [dispatch, search]);
+
   const handleChangeNotif = () => {
     if (!notifyEnabled && !notif) {
       changeNotificationsPermission().then(() => {
@@ -69,10 +73,6 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
       setNotif(!notif);
     }
   };
-
-  if (!showTask) {
-    return null;
-  }
 
   return (
     <>
@@ -116,7 +116,7 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
       )}
       <Div className={css({ padding: '12px 24px', display: 'flex' })}>
         <Button
-          onClick={showDelete}
+          onClick={deleteTask}
           disabled={deletting}
           before={deletting ? <Spinner size="regular" /> : <Icon28DeleteOutlineAndroid />}
           mode="destructive"
@@ -125,7 +125,7 @@ export const SelectedTask = React.memo<Props>(({ showTask, showDelete, startEdit
           Удалить
         </Button>
         <Button
-          onClick={startEdit}
+          onClick={editTask}
           mode="tertiary"
           disabled={deletting}
           className={css({ paddingRight: 0, color: dark ? '#959595' : '#AEAEAE' })}

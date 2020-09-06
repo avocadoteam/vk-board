@@ -1,7 +1,5 @@
-import { goBack } from 'connected-react-router';
-import { ActiveModal, activeModals, ClientTheme, FetchingStateName } from 'core/models';
+import { ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { getLocationSubPath } from 'core/selectors/router';
 import { getUserId } from 'core/selectors/user';
 import { joinRoom } from 'core/socket/list';
 import { store } from 'core/store';

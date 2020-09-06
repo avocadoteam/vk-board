@@ -27,13 +27,7 @@ export enum ActiveModal {
   Lists = 'lists',
   NewTask = 'newtask',
   DropMembership = 'dropmembership',
-  DeletList = 'deletelist',
+  DeleteList = 'deletelist',
+  DeleteTask = 'deletetask',
+  EditTask = 'edittask',
 }
-
-export const activeModals = [
-  ActiveModal.DeletList,
-  ActiveModal.DropMembership,
-  ActiveModal.Lists,
-  ActiveModal.NewTask,
-  ActiveModal.SelectedTask,
-];

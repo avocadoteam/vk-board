@@ -8,7 +8,6 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteList } from './DeleteList';
-import { DeletePreview } from './DeletePreview';
 import { DropMember } from './DropMember';
 import { EditTask } from './EditTask';
 import { Lists } from './Lists';
@@ -17,11 +16,11 @@ import { NewTask } from './NewTask';
 import { NewTaskHeader } from './NewTaskHeader';
 import { SelectedTask } from './SelectedTask';
 import { SelectedTaskHeader } from './SelectedTaskHeader';
+import { DeleteTask } from './DeleteTask';
+import { EditTaskHeader } from './EditTaskHeader';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
-    const [deletedPreview, setDelete] = React.useState(false);
-    const [editable, setEditable] = React.useState(false);
     const [highlight, setHighlight] = React.useState(false);
 
     const mainView = useSelector(getActiveMainView);
@@ -81,31 +80,23 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
         <ModalPage
           id={ActiveModal.SelectedTask}
           onClose={closeModal}
-          header={
-            <SelectedTaskHeader
-              editable={editable}
-              deletedPreview={deletedPreview}
-              setHighlight={setHighlight}
-              highlight={highlight}
-            />
-          }
+          header={<SelectedTaskHeader />}
           dynamicContentHeight
         >
-          <SelectedTask
-            showTask={!deletedPreview && !editable}
-            startEdit={() => setEditable(true)}
-            showDelete={() => setDelete(true)}
-          />
-          <DeletePreview deletedPreview={deletedPreview} cancelDelete={() => setDelete(false)} />
-          <EditTask
-            editable={editable}
-            stopEdit={() => setEditable(false)}
-            setHighlight={setHighlight}
-          />
+          <SelectedTask />
+        </ModalPage>
+        <ModalPage
+          id={ActiveModal.EditTask}
+          onClose={closeModal}
+          header={<EditTaskHeader setHighlight={setHighlight} highlight={highlight} />}
+          dynamicContentHeight
+        >
+          <EditTask setHighlight={setHighlight} />
         </ModalPage>
 
         <DropMember id={ActiveModal.DropMembership} />
-        <DeleteList id={ActiveModal.DeletList} />
+        <DeleteList id={ActiveModal.DeleteList} />
+        <DeleteTask id={ActiveModal.DeleteTask} />
       </ModalRoot>
     );
   }

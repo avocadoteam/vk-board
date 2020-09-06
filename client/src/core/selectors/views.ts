@@ -46,8 +46,12 @@ export const getActiveModalRoute = createSelector(
         return ActiveModal.Lists;
       case ActiveModal.DropMembership:
         return ActiveModal.DropMembership;
-      case ActiveModal.DeletList:
-        return ActiveModal.DeletList;
+      case ActiveModal.DeleteList:
+        return ActiveModal.DeleteList;
+      case ActiveModal.DeleteTask:
+        return ActiveModal.DeleteTask;
+      case ActiveModal.EditTask:
+        return ActiveModal.EditTask;
 
       default:
         return null;

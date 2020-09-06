@@ -19,17 +19,16 @@ import { isThemeDrak } from 'core/selectors/common';
 import { format, isBefore, addDays } from 'date-fns';
 import { getEditTaskInfo } from 'core/selectors/task';
 import { safeTrim } from 'core/utils';
+import { goBack } from 'connected-react-router';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
 type Props = {
   updateModalHeight?: () => void;
-  editable: boolean;
-  stopEdit: () => void;
   setHighlight: (p: boolean) => void;
 };
 
-const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, setHighlight }) => {
+const EditTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const { css } = useFela();
   const [wrongDate, setWrongDate] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
@@ -45,13 +44,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [editable, wrongDate, updateModalHeight, formValues]);
-
-  React.useEffect(() => {
-    return () => {
-      stopEdit();
-    };
-  }, []);
+  }, [wrongDate, updateModalHeight, formValues]);
 
   React.useEffect(() => {
     if (before && !wrongDate) {
@@ -88,11 +81,11 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
     }
   };
 
-  const showError = wrongDate && <FormStatus header={errorName} mode="error" />;
+  const back = React.useCallback(() => {
+    dispatch(goBack() as any);
+  }, [dispatch]);
 
-  if (!editable) {
-    return null;
-  }
+  const showError = wrongDate && <FormStatus header={errorName} mode="error" />;
 
   return (
     <>
@@ -172,7 +165,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit, s
           stretched
           size="xl"
           disabled={updating}
-          onClick={stopEdit}
+          onClick={back}
           className={css({ marginRight: '10px' })}
         >
           Отмена
