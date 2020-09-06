@@ -51,8 +51,6 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   }
 
   if (type === 'VKWebAppViewHide') {
-    const state = store.getState();
-
     store.dispatch({
       type: 'SET_QUEUE_ERROR',
       payload: [],
@@ -61,11 +59,6 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
       type: 'SET_SNACK',
       payload: false,
     });
-
-    const sub = getLocationSubPath(state);
-    if (sub !== null && activeModals.includes(sub as ActiveModal)) {
-      store.dispatch(goBack() as any);
-    }
   }
 });
 
