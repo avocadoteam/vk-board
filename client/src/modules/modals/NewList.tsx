@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import Icon16Add from '@vkontakte/icons/dist/16/add';
 import { CellButton } from 'atoms/CellButton';
-import { Input, Spinner, usePlatform, OS, Div, Text } from '@vkontakte/vkui';
+import { Input, Spinner, Div, Text } from '@vkontakte/vkui';
 import {
   isNewListUpdating,
   isNewListCreated,
@@ -14,31 +14,51 @@ import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import { tapticSelected } from 'core/vk-bridge/taptic';
 import { isThemeDrak } from 'core/selectors/common';
 import Icon16Lock from '@vkontakte/icons/dist/16/lock';
+import { isPlatformIOS } from 'core/selectors/settings';
+import { safeTrim } from 'core/utils';
 
 export const NewList = React.memo(() => {
   const [click, setClicked] = React.useState(false);
+  const [highlight, setHighlight] = React.useState(false);
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const updating = useSelector(isNewListUpdating);
+  const name = useSelector((state) => state.ui.board.boardListName);
   const created = useSelector(isNewListCreated) && !updating;
   const canCreateLists = useSelector(canUserContinueCreateLists);
   const dark = useSelector(isThemeDrak);
 
-  const platform = usePlatform();
+  React.useEffect(() => {
+    if (safeTrim(name) && highlight) {
+      setHighlight(false);
+    }
+  }, [name, highlight]);
 
   const handleClick = () => {
-    if (platform === OS.IOS) {
+    if (isPlatformIOS()) {
       tapticSelected();
     }
     setClicked(true);
   };
 
-  const handleChangeName = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const createList = React.useCallback(() => {
+    const trimName = safeTrim(name);
+    dispatch({
+      type: 'SET_BOARD_LIST_NAME',
+      payload: trimName,
+    });
+    if (!trimName) {
+      setHighlight(true);
+    } else {
       dispatch({
         type: 'SET_UPDATING_DATA',
         payload: FetchingStateName.NewBoardList,
       });
+    }
+  }, [dispatch, name]);
+
+  const handleChangeName = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({
         type: 'SET_BOARD_LIST_NAME',
         payload: e.target.value,
@@ -70,12 +90,19 @@ export const NewList = React.memo(() => {
 
   if (click) {
     return (
-      <span className={`useMonrope ${css({ display: 'flex' })}`}>
+      <span
+        className={`useMonrope ${css({
+          display: 'flex',
+          borderBottom: highlight ? '1px solid #FF4848 !important' : undefined,
+          boxSizing: 'border-box',
+          transition: '.2s ease',
+        })}`}
+      >
         <Input
           type="text"
           placeholder="Введите название"
           minLength={1}
-          maxLength={512}
+          maxLength={64}
           className={css({
             width: '100%',
             marginTop: '8px',
@@ -90,6 +117,7 @@ export const NewList = React.memo(() => {
           } as any)}
           autoFocus
           onChange={handleChangeName}
+          value={name}
         />
         {updating && (
           <Spinner
@@ -101,6 +129,21 @@ export const NewList = React.memo(() => {
           <Icon24DoneOutline
             className={css({ marginRight: '24px', marginTop: '16px', color: '#42A4FF' })}
           />
+        )}
+        {!updating && !created && (
+          <Text
+            weight="medium"
+            onClick={createList}
+            className={css({
+              color: '#42A4FF',
+              fontSize: '13px',
+              alignSelf: 'center',
+              marginTop: '8px',
+              marginRight: '16px',
+            })}
+          >
+            Создать
+          </Text>
         )}
       </span>
     );

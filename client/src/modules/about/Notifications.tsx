@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, SimpleCell, Switch, Div, Subhead } from '@vkontakte/vkui';
+import { SimpleCell, Switch, Div, Subhead } from '@vkontakte/vkui';
 import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { getNotifications } from 'core/selectors/settings';
@@ -32,19 +32,20 @@ export const Notifications = React.memo(() => {
     setRequest(false);
   };
   return (
-    <List>
+    <>
       <SimpleCell
         disabled
-        after={<Switch onChange={handleToggle} checked={notifyEnabled} />}
+        after={<Switch checked={notifyEnabled} readOnly />}
         onClick={handleToggle}
       >
         Уведомления
       </SimpleCell>
       <Div>
         <Subhead weight="regular" className={css({ color: '#818C99', margin: 0 })}>
-          Вам будут приходить уведомления о задачах с таймером
+          Мы будем присылать уведомление за день до срока выполнения задачи. Учитываются задачи, на
+          которые Вы подписались.
         </Subhead>
       </Div>
-    </List>
+    </>
   );
 });

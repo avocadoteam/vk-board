@@ -2,48 +2,31 @@ import React from 'react';
 import { View, Panel, PanelHeader, PanelHeaderBack, Text } from '@vkontakte/vkui';
 import { Offline } from './Offline';
 import { useSelector, useDispatch } from 'react-redux';
-import { getActiveMainView } from 'core/selectors/router';
-import { MainView, AppDispatchActions, ActiveModal } from 'core/models';
+import { MainView, AppDispatchActions } from 'core/models';
 import { BoardLayout } from 'modules/board';
 import { RootModals } from 'modules/modals/Root';
 import { ListMembershipLayout } from 'modules/board-list';
 import { useViewChange } from 'core/hooks';
-import { goBack, push, getSearch } from 'connected-react-router';
+import { goBack } from 'connected-react-router';
 import { useFela } from 'react-fela';
 import { isThemeDrak } from 'core/selectors/common';
-import { Premium } from 'modules/about';
+import { About } from 'modules/about';
 import { MembershipPreview } from 'modules/membership-preview';
-import { isPreviewMembershipReady } from 'core/selectors/membership';
 import { Welcome } from 'modules/welcome';
 import { SnakbarsErr } from 'modules/snaks';
+import { getActiveMainView } from 'core/selectors/views';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
-  const search = useSelector(getSearch);
-  const previewMembershipReady = useSelector(isPreviewMembershipReady);
   const { css } = useFela();
   const { goForward, goBack: swipeBack, history } = useViewChange(MainView, 'Board', true);
 
-  React.useEffect(() => {
-    if (previewMembershipReady) {
-      goToMembershipPreview();
-    }
-  }, [previewMembershipReady]);
-
-  const goToMembershipPreview = React.useCallback(() => {
-    goForward(MainView.ListSharePreview);
-    dispatch(push(`/${MainView.ListSharePreview}${search}`) as any);
-  }, [dispatch, goForward, search]);
-
-  const handleBack = () => {
-    if (activeView === MainView.ListMembership) {
-      dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
-    }
+  const handleBack = React.useCallback(() => {
     swipeBack();
     dispatch(goBack() as any);
-  };
+  }, [swipeBack, dispatch]);
 
   return (
     <>
@@ -100,17 +83,17 @@ export const Main = React.memo(() => {
                 lineHeight: '24px',
               })}`}
             >
-              О приложении
+              Настройки
             </Text>
           </PanelHeader>
-          <Premium />
-        </Panel>
-        <Panel id={MainView.ListSharePreview}>
-          <PanelHeader separator={false} />
-          <MembershipPreview handleBack={handleBack} />
+          <About />
         </Panel>
         <Panel id={MainView.Welcome}>
           <Welcome />
+        </Panel>
+        <Panel id={MainView.ListSharePreview}>
+          <PanelHeader separator={false} />
+          <MembershipPreview />
         </Panel>
       </View>
       <SnakbarsErr />

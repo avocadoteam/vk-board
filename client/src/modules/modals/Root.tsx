@@ -1,41 +1,48 @@
-import React from 'react';
-import { ModalRoot, ModalPage, Separator, List } from '@vkontakte/vkui';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatchActions, ActiveModal, MainView } from 'core/models';
-import { getActiveModal } from 'core/selectors/common';
-import { useFela } from 'react-fela';
-import { NewList } from './NewList';
-import { Lists } from './Lists';
+import Icon28SettingsOutline from '@vkontakte/icons/dist/28/settings_outline';
+import { List, ModalPage, ModalRoot, Separator } from '@vkontakte/vkui';
 import { CellButton } from 'atoms/CellButton';
-import Icon16InfoOutline from '@vkontakte/icons/dist/16/info_outline';
-import { SelectedTaskHeader } from './SelectedTaskHeader';
-import { SelectedTask } from './SelectedTask';
-import { DeletePreview } from './DeletePreview';
-import { EditTask } from './EditTask';
-import { NewTaskHeader } from './NewTaskHeader';
-import { NewTask } from './NewTask';
-import { push, getSearch } from 'connected-react-router';
-import { DropMember } from './DropMember';
+import { getSearch, goBack, push } from 'connected-react-router';
+import { ActiveModal, AppDispatchActions, MainView } from 'core/models';
+import { getActiveMainView, getActiveModalRoute } from 'core/selectors/views';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useDispatch, useSelector } from 'react-redux';
 import { DeleteList } from './DeleteList';
+import { DropMember } from './DropMember';
+import { EditTask } from './EditTask';
+import { Lists } from './Lists';
+import { NewList } from './NewList';
+import { NewTask } from './NewTask';
+import { NewTaskHeader } from './NewTaskHeader';
+import { SelectedTask } from './SelectedTask';
+import { SelectedTaskHeader } from './SelectedTaskHeader';
+import { DeleteTask } from './DeleteTask';
+import { EditTaskHeader } from './EditTaskHeader';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
-    const [deletedPreview, setDelete] = React.useState(false);
-    const [editable, setEditable] = React.useState(false);
+    const [highlight, setHighlight] = React.useState(false);
+
+    const mainView = useSelector(getActiveMainView);
     const search = useSelector(getSearch);
-    const activeModal = useSelector(getActiveModal);
+    const activeModal = useSelector(getActiveModalRoute);
     const dispatch = useDispatch<AppDispatchActions>();
     const { css } = useFela();
 
     const closeModal = React.useCallback(() => {
-      dispatch({ type: 'SET_MODAL', payload: null });
-    }, [dispatch]);
+      if (mainView === MainView.Board || mainView === MainView.ListMembership) {
+        dispatch(goBack() as any);
+      }
+    }, [dispatch, mainView]);
 
     const goToAbout = React.useCallback(() => {
-      closeModal();
       goForward(MainView.About);
       dispatch(push(`/${MainView.About}${search}`) as any);
-    }, [dispatch, goForward, closeModal, search]);
+    }, [dispatch, goForward, search]);
+
+    if (activeModal === null) {
+      return null;
+    }
 
     return (
       <ModalRoot activeModal={activeModal} onClose={closeModal}>
@@ -50,7 +57,12 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
           <Separator wide />
           <List>
             <CellButton onClick={goToAbout}>
-              <Icon16InfoOutline className={css({ marginRight: '1rem' })} /> Информация
+              <Icon28SettingsOutline
+                width={20}
+                height={20}
+                className={css({ marginRight: '1rem' })}
+              />
+              Настройки
             </CellButton>
           </List>
           <div className={css({ height: '10px' })} />
@@ -59,29 +71,32 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
         <ModalPage
           id={ActiveModal.NewTask}
           onClose={closeModal}
-          header={<NewTaskHeader />}
+          header={<NewTaskHeader highlight={highlight} setHighlight={setHighlight} />}
           dynamicContentHeight
         >
-          <NewTask />
+          <NewTask setHighlight={setHighlight} />
         </ModalPage>
 
         <ModalPage
           id={ActiveModal.SelectedTask}
           onClose={closeModal}
-          header={<SelectedTaskHeader editable={editable} deletedPreview={deletedPreview} />}
+          header={<SelectedTaskHeader />}
           dynamicContentHeight
         >
-          <SelectedTask
-            showTask={!deletedPreview && !editable}
-            startEdit={() => setEditable(true)}
-            showDelete={() => setDelete(true)}
-          />
-          <DeletePreview deletedPreview={deletedPreview} cancelDelete={() => setDelete(false)} />
-          <EditTask editable={editable} stopEdit={() => setEditable(false)} />
+          <SelectedTask />
+        </ModalPage>
+        <ModalPage
+          id={ActiveModal.EditTask}
+          onClose={closeModal}
+          header={<EditTaskHeader setHighlight={setHighlight} highlight={highlight} />}
+          dynamicContentHeight
+        >
+          <EditTask setHighlight={setHighlight} />
         </ModalPage>
 
         <DropMember id={ActiveModal.DropMembership} />
-        <DeleteList id={ActiveModal.DeletList} />
+        <DeleteList id={ActiveModal.DeleteList} />
+        <DeleteTask id={ActiveModal.DeleteTask} />
       </ModalRoot>
     );
   }

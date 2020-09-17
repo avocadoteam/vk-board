@@ -6,33 +6,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import {
-  isSaveMembershipUpdating,
-  getPreviewMembershipData,
-  isSaveMembershipReady,
-} from 'core/selectors/membership';
+import { isSaveMembershipUpdating, getPreviewMembershipData } from 'core/selectors/membership';
+import { replace, getSearch } from 'connected-react-router';
 
-type Props = {
-  handleBack: () => void;
-};
-
-export const MembershipPreview = React.memo<Props>(({ handleBack }) => {
+export const MembershipPreview = React.memo(() => {
   const { css } = useFela();
   const dark = useSelector(isThemeDrak);
   const updating = useSelector(isSaveMembershipUpdating);
-  const ready = useSelector(isSaveMembershipReady);
   const { name } = useSelector(getPreviewMembershipData);
   const dispatch = useDispatch<AppDispatchActions>();
-
-  React.useEffect(() => {
-    if (ready) {
-      handleBack()
-    }
-  }, [ready])
+  const search = useSelector(getSearch);
 
   const accept = React.useCallback(() => {
     dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.SaveMembership });
   }, [dispatch]);
+
+  const goToMain = React.useCallback(() => {
+    dispatch(replace(`/${search}`) as any);
+  }, [dispatch, search]);
 
   return (
     <>
@@ -98,7 +89,7 @@ export const MembershipPreview = React.memo<Props>(({ handleBack }) => {
             stretched
             square
             className={css({ color: dark ? '#858585 !important' : '#6A6A6A !important' })}
-            onClick={handleBack}
+            onClick={goToMain}
             disabled={updating}
           >
             Закрыть

@@ -24,30 +24,30 @@ export const ListShareRabbit = React.memo<Props>(({ className = '', style = {} }
           <path
             d="M79.1809 71.4925L80.8531 73.1647L79.1809 74.8368"
             stroke="#42A4FF"
-            stroke-width="0.836074"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="0.836074"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M73.3279 75.6729V74.8368C73.3279 74.3933 73.5041 73.968 73.8176 73.6544C74.1312 73.3408 74.5565 73.1646 75 73.1646H80.8525"
             stroke="#42A4FF"
-            stroke-width="0.836074"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="0.836074"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M75 80.6893L73.3279 79.0171L75 77.345"
             stroke="#42A4FF"
-            stroke-width="0.836074"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="0.836074"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M80.8525 76.5089V77.345C80.8525 77.7885 80.6764 78.2138 80.3628 78.5274C80.0492 78.841 79.6239 79.0172 79.1804 79.0172H73.3279"
             stroke="#42A4FF"
-            stroke-width="0.836074"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="0.836074"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <rect x="65.5" y="64.5" width="23.1818" height="23.1818" rx="11.5909" stroke="#F0F0F0" />

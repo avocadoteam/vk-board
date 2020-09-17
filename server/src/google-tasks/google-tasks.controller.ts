@@ -6,15 +6,19 @@ import {
   Req,
   ParseIntPipe,
   HttpStatus,
+  UseGuards,
+  Render,
+  BadRequestException,
 } from '@nestjs/common';
 import { GoogleTasksService } from './google-tasks.service';
 import { Response, Request } from 'express';
 import { PaymentService } from 'src/payment/payment.service';
 import { syncRestrictionHours } from 'src/constants/premium';
 import { ruSyntaxHelper } from 'src/utils/lang';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
+import { SignGuard } from 'src/guards/sign.guard';
 
-@Controller('google')
+@Controller('gt')
 export class GoogleTasksController {
   constructor(
     private readonly googleService: GoogleTasksService,
@@ -31,33 +35,42 @@ export class GoogleTasksController {
     res.redirect('https://vk.com/terms');
   }
 
+  @UseGuards(SignGuard)
   @Get('/auth')
   async goToGoogleAuth(
     @Res() res: Response,
     @Req() req: Request,
     @Query(
-      'userId',
+      'vk_user_id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
     )
     userId: number,
+    @Query(
+      'dark',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+    )
+    dark: 1 | 0,
   ) {
     if (!(await this.paymentService.hasUserPremium(userId))) {
       throw new PaymentRequiredException();
     }
 
-    res.redirect(this.googleService.googleAuthFirstStep(req.hostname, userId));
+    res.redirect(
+      this.googleService.googleAuthFirstStep(req.hostname, userId, dark),
+    );
   }
 
   @Get('/complete')
+  @Render('g')
   async completeGoogleAuth(
     @Query('code') code: string,
-    @Query('state') userId: string,
+    @Query('state') state: string,
     @Req() req: Request,
-    @Res() res: Response,
   ) {
+    const [userId, dark] = state.split(',');
     const intUserId = Number(userId);
-    if (typeof intUserId !== 'number' || isNaN(intUserId)) {
-      throw new Error(`Invalid user id parameter ${userId}`);
+    if (typeof intUserId !== 'number' || isNaN(intUserId) || !code) {
+      throw new BadRequestException();
     }
 
     if (!(await this.paymentService.hasUserPremium(intUserId))) {
@@ -74,19 +87,27 @@ export class GoogleTasksController {
         req.hostname,
         intUserId,
       );
-      res.send(respMessage);
+      return {
+        message: respMessage,
+        dark: Number(dark),
+        notAvailable: false,
+      };
     } else {
       const computedTime = Math.trunc(24 - time);
       const humanTime = computedTime > 1 ? computedTime : 1;
-      res.send(`
-      <h1>Вы сможете синхронизировать google tasks только через
+      return {
+        message: `
+      Вы сможете синхронизировать google tasks только через
               ${humanTime} ${
-        ruSyntaxHelper(humanTime) === 'single'
-          ? 'час'
-          : ruSyntaxHelper(humanTime) === 'singlePlural'
-          ? 'часа'
-          : 'часов'
-      }</h1>`);
+          ruSyntaxHelper(humanTime) === 'single'
+            ? 'час'
+            : ruSyntaxHelper(humanTime) === 'singlePlural'
+            ? 'часа'
+            : 'часов'
+        }`,
+        dark: Number(dark),
+        notAvailable: true,
+      };
     }
   }
 }

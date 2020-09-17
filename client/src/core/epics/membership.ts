@@ -6,6 +6,7 @@ import {
   FetchResponse,
   FetchUpdateAction,
   MembershipListPreview,
+  MainView,
 } from 'core/models';
 import { ofType } from 'redux-observable';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -19,9 +20,10 @@ import {
 import { concat, of, from } from 'rxjs';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { safeCombineEpics } from './combine';
-import { getSearch } from 'connected-react-router';
+import { getSearch, push, replace } from 'connected-react-router';
 import { getBoardListData } from 'core/selectors/board';
 import { getPreviewMembershipData } from 'core/selectors/membership';
+import { useTapticEpic } from './addons';
 
 const dropMembershipEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -43,10 +45,6 @@ const dropMembershipEpic: AppEpic = (action$, state$) =>
         switchMap((response) => {
           if (response.ok) {
             return concat(
-              of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
               of({
                 type: 'SET_READY_DATA',
                 payload: {
@@ -96,8 +94,22 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
       listMembershipPreview(guid, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return from(response.json() as Promise<FetchResponse<MembershipListPreview>>).pipe(
+            return from(
+              response.json() as Promise<FetchResponse<MembershipListPreview | 'Yourself'>>
+            ).pipe(
               switchMap((r) => {
+                if (r?.data === 'Yourself') {
+                  return concat(
+                    of({
+                      type: 'SET_ERROR_DATA',
+                      payload: {
+                        name: FetchingStateName.ListMembershipPreview,
+                        error: 'Это Ваша ссылка',
+                      },
+                    } as AppDispatch),
+                    useTapticEpic('error')
+                  );
+                }
                 return concat(
                   of({
                     type: 'SET_READY_DATA',
@@ -105,7 +117,8 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.ListMembershipPreview,
                       data: r?.data,
                     },
-                  } as AppDispatch)
+                  } as AppDispatch),
+                  of(push(`/${MainView.ListSharePreview}${q}`) as any)
                 );
               })
             );
@@ -115,7 +128,7 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
         }),
         captureFetchErrorWithTaptic(
           FetchingStateName.ListMembershipPreview,
-          'Ссылка недействительна'
+          'Ссылка недействительна или Вы уже в списке'
         )
       )
     )
@@ -152,7 +165,9 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
                       name: FetchingStateName.SaveMembership,
                       data: true,
                     },
-                  } as AppDispatch)
+                  } as AppDispatch),
+                  of(replace(`/${q}`) as any),
+                  useTapticEpic('success')
                 );
               })
             );

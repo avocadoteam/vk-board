@@ -6,13 +6,22 @@ import { FormLayout, Input } from '@vkontakte/vkui';
 import { getNewTaskValues } from 'core/selectors/board';
 import { getNewTaskInfo } from 'core/selectors/task';
 import { isThemeDrak } from 'core/selectors/common';
+import { safeTrim } from 'core/utils';
 
-export const NewTaskHeader = React.memo(() => {
+type Props = { setHighlight: (p: boolean) => void; highlight: boolean };
+
+export const NewTaskHeader = React.memo<Props>(({ setHighlight, highlight }) => {
   const { css } = useFela();
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
   const { updating } = useSelector(getNewTaskInfo);
+
+  React.useEffect(() => {
+    if (safeTrim(formValues.name) && highlight) {
+      setHighlight(false);
+    }
+  }, [formValues.name, highlight]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -20,13 +29,16 @@ export const NewTaskHeader = React.memo(() => {
   };
 
   return (
-    <FormLayout className={'useMonrope'}>
+    <FormLayout>
       <Input
         type="text"
         placeholder="Введите название"
         minLength={1}
-        maxLength={1024}
+        maxLength={256}
         className={`${css({
+          borderBottom: highlight ? '1px solid #FF4848 !important' : undefined,
+          boxSizing: 'border-box',
+          transition: '.2s ease',
           '>div': {
             border: 'none !important',
             background: 'transparent !important',

@@ -15,9 +15,6 @@
   display: inline-block;
   vertical-align: middle;
   transform: translate3d(0, 0, 0);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   width: calc(100% - 60px);
 }
 
@@ -27,7 +24,7 @@
   height: 24px;
   border-radius: 50%;
   transform: scale(1);
-  vertical-align: middle;
+  vertical-align: top;
   border: 1px solid #CFCFCF;
   transition: all 0.2s ease;
 }
@@ -100,6 +97,7 @@
 .inp-cbx:checked + .cbx div:last-child {
   color: #b9b8c3;
   transition: all 0.3s ease;
+  text-decoration: line-through;
 }
 
 .inp-cbx:checked + .cbx div:last-child:after {

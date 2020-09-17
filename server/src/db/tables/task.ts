@@ -8,7 +8,6 @@ import {
   Index,
 } from 'typeorm';
 import { List } from './list';
-import { TaskMembership } from './taskMembership';
 import { v4 } from 'uuid';
 import { ColumnNumericTransformer } from '../transform/int8';
 import { GList } from './gList';
@@ -16,7 +15,7 @@ import { GList } from './gList';
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn('increment', { type: 'int8' })
-  id!: number;
+  id!: string;
 
   @Column({
     type: 'uuid',
@@ -39,7 +38,7 @@ export class Task {
   @Column({
     type: 'timestamp',
   })
-  created: Date;
+  created: Date | string;
 
   @Column({
     type: 'int8',
@@ -70,12 +69,9 @@ export class Task {
   @Column({
     type: 'text',
     name: 'g_task_id',
-    nullable: true
+    nullable: true,
   })
   g_task_id: string | null;
-
-  @OneToMany((type) => TaskMembership, (tm) => tm.task)
-  memberships!: TaskMembership[];
 
   @ManyToOne((type) => List, (list) => list.tasks)
   @JoinColumn({

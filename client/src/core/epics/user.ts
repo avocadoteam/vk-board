@@ -39,7 +39,7 @@ const getUserInfo: AppEpic = (action$, state$) =>
             },
             {
               type: 'SET_UPDATING_DATA',
-              payload: FetchingStateName.UserSKeys,
+              payload: FetchingStateName.AddToHomeInfo,
             },
           ] as AppDispatch[];
         }),
@@ -47,11 +47,11 @@ const getUserInfo: AppEpic = (action$, state$) =>
           FetchingStateName.User,
           {
             type: 'SET_UPDATING_DATA',
-            payload: FetchingStateName.UserSKeys,
+            payload: FetchingStateName.PaymentInfo,
           },
           {
             type: 'SET_UPDATING_DATA',
-            payload: FetchingStateName.PaymentInfo,
+            payload: FetchingStateName.AddToHomeInfo,
           }
         )
       )
@@ -68,7 +68,7 @@ const getUserSKeysEpic: AppEpic = (action$, state$) =>
         mergeMap((result) => {
           const isAppUser = result.keys.find((v) => v.key === Skeys.appUser)?.value === AppUser.Yes;
           const selectedListId =
-            result.keys.find((v) => v.key === Skeys.userSelectedListId)?.value ?? 0;
+            result.keys.find((v) => v.key === Skeys.userSelectedListId)?.value ?? 1;
           return [
             {
               type: 'SET_APP_USER',

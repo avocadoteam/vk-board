@@ -25,6 +25,10 @@ const getEditTaskDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.EditTask] ?? {}) as FetchingDataType<boolean>
 );
+const getNotifTaskDataState = createSelector(
+  getStateUi,
+  (ui) => (ui.fetchingDatas[FetchingStateName.NotificationTask] ?? {}) as FetchingDataType<boolean>
+);
 
 export const isTasksUpdating = createSelector(
   getTasksDataState,
@@ -32,11 +36,6 @@ export const isTasksUpdating = createSelector(
 );
 
 export const getTasksData = createSelector(getTasksDataState, (dataState) => dataState.data ?? []);
-
-export const getFinishedTasksCount = createSelector(
-  getTasksData,
-  (tasks) => tasks.filter((t) => t.finished !== null).length
-);
 
 export const isNewTaskUpdating = createSelector(
   getPostNewTaskDataState,
@@ -72,6 +71,11 @@ export const getNewTaskInfo = createStructuredSelector<
 
 export const isTaskDeleteUpdating = createSelector(
   getTaskDeleteDataState,
+  (dataState) => dataState.status === FetchingStatus.Updating
+);
+
+export const isTaskNotifUpdating = createSelector(
+  getNotifTaskDataState,
   (dataState) => dataState.status === FetchingStatus.Updating
 );
 
@@ -122,4 +126,4 @@ export const getEditTaskInfo = createStructuredSelector<
 
 export const getSelectedTaskInfo = createSelector(getBoardUiState, (board) => board.selectedTask);
 export const getSelectedTaskId = createSelector(getSelectedTaskInfo, (task) => task.id);
-export const getSelectedTaskGUID = createSelector(getSelectedTaskInfo, (task) => task.taskGUID);
+export const getSelectedTaskNotification = createSelector(getSelectedTaskInfo, (task) => task.notification);

@@ -13,6 +13,8 @@ import { isDeleteListUpdating } from 'core/selectors/boardLists';
 import { vkBridge } from 'core/vk-bridge/instance';
 import { getAppId } from 'core/selectors/settings';
 import { ListItemName } from './ListItemName';
+import { hasUserPremium } from 'core/selectors/payment';
+import { isOnlyOneListLeft } from 'core/selectors/board';
 
 type Props = {
   goForward: (activePanel: MainView) => void;
@@ -23,33 +25,53 @@ type Props = {
 
 export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   const deletting = useSelector(isDeleteListUpdating);
+  const onlyOneLeft = useSelector(isOnlyOneListLeft);
+  const hasPremium = useSelector(hasUserPremium);
   const search = useSelector(getSearch);
   const appId = useSelector(getAppId);
   const { boardListOpenId } = useSelector(getBoardUiState);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
 
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
-
   const deleteList = React.useCallback(() => {
     dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
-    dispatch({ type: 'SET_MODAL', payload: ActiveModal.DeletList });
-  }, [dispatch, boardListOpenId]);
+    dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteList}${search}`) as any);
+  }, [dispatch, boardListOpenId, search]);
 
   const goToMembership = React.useCallback(() => {
-    closeModal();
     goForward(MainView.ListMembership);
     dispatch(push(`/${MainView.ListMembership}${search}`) as any);
-  }, [dispatch, goForward, closeModal, search]);
+  }, [dispatch, goForward, search]);
 
   const sharePost = React.useCallback(
-    async (listguid: string) => {
+    (listguid: string) => {
       vkBridge.send('VKWebAppShare', { link: `https://vk.com/app${appId}#${listguid}` });
     },
     [appId]
   );
+
+  const deleteBtn =
+    listItem.isOwner && !onlyOneLeft ? (
+      <CellButton
+        className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848 !important' })}
+        disabled={deletting}
+        onClick={deleteList}
+      >
+        {deletting ? (
+          <Spinner
+            size="regular"
+            className={css({
+              width: 'unset',
+              marginRight: '1rem',
+              color: '#FF4848 !important',
+            })}
+          />
+        ) : (
+          <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
+        )}
+        Удалить список
+      </CellButton>
+    ) : null;
 
   return (
     <span>
@@ -88,30 +110,10 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
               padding: '0 1rem',
             })}`}
           >
-            Список станет доступен другим пользователям с ссылкой (до 3-x человек в бесплатной
-            версии)
+            Список станет доступен другим пользователям с ссылкой{' '}
+            {hasPremium ? '' : '(до 3-x человек в бесплатной версии)'}
           </Text>
-          {listItem.isOwner && (
-            <CellButton
-              className={css({ paddingLeft: 16, paddingRight: 16, color: '#FF4848 !important' })}
-              disabled={deletting}
-              onClick={deleteList}
-            >
-              {deletting ? (
-                <Spinner
-                  size="regular"
-                  className={css({
-                    width: 'unset',
-                    marginRight: '1rem',
-                    color: '#FF4848 !important',
-                  })}
-                />
-              ) : (
-                <Icon28DeleteOutlineAndroid className={css(iconStyle)} />
-              )}
-              Удалить список
-            </CellButton>
-          )}
+          {deleteBtn}
         </Div>
       )}
     </span>

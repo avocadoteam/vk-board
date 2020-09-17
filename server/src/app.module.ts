@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from 'src/config/db.config';
@@ -15,6 +15,9 @@ import { PaymentModule } from './payment/payment.module';
 import { GoogleTasksModule } from './google-tasks/google-tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './notifications/notifications.module';
+import { FetchLimiter } from './interceptors/rate-limiter';
+import { ListController } from './list/list.controller';
+import { BoardController } from './board/board.controller';
 
 @Module({
   imports: [
@@ -55,4 +58,8 @@ import { NotificationsModule } from './notifications/notifications.module';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(FetchLimiter).forRoutes(ListController, BoardController);
+  }
+}

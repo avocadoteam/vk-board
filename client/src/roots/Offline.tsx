@@ -14,7 +14,6 @@ export const Offline = React.memo(() => {
   React.useEffect(() => {
     if (online) {
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.User });
-      dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Ads });
       setTimeout(() => {
         dispatch({
           type: 'HANDLE_ACTIVATE_INIT',

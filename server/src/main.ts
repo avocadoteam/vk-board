@@ -1,9 +1,3 @@
-const dotenv = require('dotenv');
-dotenv.config();
-if (process.env.NODE_ENV === 'production') {
-  require('newrelic');
-  require('./newrelic');
-}
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as helmet from 'helmet';
@@ -16,6 +10,8 @@ import * as logger from 'morgan';
 import { RedisIoAdapter } from './adapters/redis-io.adapter';
 import * as sentry from '@sentry/node';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
+import * as moment from 'moment';
+import { appV } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -27,6 +23,7 @@ async function bootstrap() {
   sentry.init({
     dsn: configService.get<string>('integration.sentryDNS', ''),
     enabled: !configService.get<boolean>('core.devMode', true),
+    release: appV,
   });
 
   app.use(
@@ -51,6 +48,7 @@ async function bootstrap() {
 
   const port = configService.get<number>('core.port', 3000);
   await app.listen(port, () => {
+    console.log(moment().format('DD MM YYYY hh:mm:ss'));
     console.log('Server listen on port', port);
   });
 }

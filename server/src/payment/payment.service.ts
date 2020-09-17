@@ -8,6 +8,7 @@ import { cacheKey, dayTTL } from 'src/contracts/cache';
 import * as moment from 'moment';
 import { EventBus } from 'src/events/events.bus';
 import { BusEvents } from 'src/contracts/enum';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class PaymentService {
@@ -31,8 +32,12 @@ export class PaymentService {
 
     const has =
       (await this.tablePayment.count({
-        user_id: vkUserId,
-        amount: premiumPrice.toString(),
+        where: [
+          {
+            user_id: vkUserId,
+            amount: premiumPrice.toString(),
+          },
+        ],
       })) > 0;
 
     await this.cache.set(cacheKey.hasPremium(vkUserId), has, {
@@ -42,22 +47,31 @@ export class PaymentService {
     return has;
   }
 
-  async makePremium(vkUserId: number, amount: string) {
+  async makePremium(vkUserId: number, amount: number) {
+    if (await this.hasUserPremium(vkUserId)) {
+      this.logger.log(`User ${vkUserId} already bought the premium`);
+      return;
+    }
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const newPayment = new Payment(amount, vkUserId);
+      const amountToNormal = `${amount / 1000}`;
+      const newPayment = new Payment(amountToNormal, vkUserId);
       await queryRunner.manager.save(newPayment);
 
       await queryRunner.commitTransaction();
 
+      this.logger.log(`User ${vkUserId} made a premium for ${amountToNormal}`);
+
       await this.cache.del(cacheKey.hasPremium(vkUserId));
+
+      EventBus.emit(BusEvents.PAYMENT_COMPLETE, vkUserId);
 
       return true;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -102,7 +116,7 @@ export class PaymentService {
       await this.cache.set(cacheKey.googleSync(user_id), hrs, { ttl: 60 });
       return hrs;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(errMap(error));
       return syncRestrictionHours;
     }
   }

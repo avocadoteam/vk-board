@@ -11,26 +11,14 @@ export class BoardCacheInterceptor extends CacheInterceptor {
     return cacheKey.boardList(userId);
   }
 }
-@Injectable()
-export class MembershipCacheInterceptor extends CacheInterceptor {
-  trackBy(context: ExecutionContext): string | undefined {
-    const query = context.switchToHttp().getRequest().query;
-
-    const userId = query['vk_user_id'] ?? '1';
-    const guid = query['guid'] ?? '1';
-
-    return cacheKey.membership(userId, guid);
-  }
-}
 
 @Injectable()
 export class TasksCacheInterceptor extends CacheInterceptor {
   trackBy(context: ExecutionContext): string | undefined {
     const query = context.switchToHttp().getRequest().query;
 
-    const userId = query['vk_user_id'] ?? '1';
     const listId = query['listId'] ?? '1';
 
-    return cacheKey.tasks(userId, listId);
+    return cacheKey.tasks(listId);
   }
 }

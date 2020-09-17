@@ -12,16 +12,19 @@ export type BoardListItem = {
 export type BoardTaskItem = {
   name: string;
   description: string | null;
-  id: number;
+  notification: boolean;
+  id: string;
   created: string;
   dueDate: string | null;
-  taskGUID: string;
   finished: string | null;
   deleted: null;
   memberships: MembershipItem[];
 };
 
-export type TaskInfo = Pick<BoardTaskItem, 'id' | 'dueDate' | 'name' | 'description' | 'taskGUID'>;
+export type TaskInfo = Pick<
+  BoardTaskItem,
+  'id' | 'dueDate' | 'name' | 'description' | 'notification'
+>;
 
 export type BoardState = {
   boardListName: string;
@@ -32,16 +35,16 @@ export type BoardState = {
   selectedList: {
     id: number;
     data: BoardListItem;
-    tasks: BoardTaskItem[]
+    tasks: BoardTaskItem[];
   };
   newTask: {
     name: string;
     description: string | null;
     dueDate: string | null;
+    notification: boolean;
   };
-  tasksToBeFinished: number[];
-  tasksToBeUnfinished: number[];
-  tasksToBeFinishedTimer: number;
+  tasksToBeFinished: string[];
+  tasksToBeUnfinished: string[];
   selectedTask: TaskInfo;
   editedTask: TaskInfo;
 };
@@ -51,8 +54,9 @@ export type NewTaskModel = {
   description: string;
   dueDate: string | null;
   listId: number;
+  notification: boolean;
 };
 
 export type EditTaskModel = {
-  id: number;
+  id: string;
 } & NewTaskModel;

@@ -19,6 +19,13 @@ import { cacheKey } from 'src/contracts/cache';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { uniq, unnest } from 'ramda';
 import { VkApiService } from 'src/vk-api/vk-api.service';
+import { errMap } from 'src/utils/errors';
+import { EventBus } from 'src/events/events.bus';
+import {
+  BusEvents,
+  ListUpdatedParams,
+  ListUpdatedType,
+} from 'src/contracts/enum';
 
 @Injectable()
 export class ListService {
@@ -58,7 +65,6 @@ export class ListService {
           .take(1)
           .getQuery()} is not null`,
       )
-      .setParameter('registered', true)
       .orderBy({
         'list.created': 'ASC',
       })
@@ -105,11 +111,10 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
-      await this.cache.del(cacheKey.canCreateList(vkUserId));
 
       return newList.id;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -154,6 +159,22 @@ export class ListService {
         .getCount()) > 0
     );
   }
+  async hasListMembershipWithTasks(
+    listIds: number[],
+    taskIds: string[],
+    vkUserId: number,
+  ) {
+    const tms: { id: string }[] = await this.tableList.query(`
+      select t.id from task t
+        inner join list l on l.id = t.list_id and l.deleted is null and l.id IN (${listIds.join(
+          ',',
+        )})
+        inner join list_membership lm on lm.list_id = l.id and lm.joined_id = ${vkUserId} and lm.left_date is null
+      where t.deleted is null and t.id IN (${taskIds.join(',')})
+    `);
+
+    return tms.map((t) => t.id);
+  }
 
   async hasListMembershipBeforeJoin(listId: number, vkUserId: number) {
     return (
@@ -169,21 +190,19 @@ export class ListService {
     );
   }
   async hasListMembershipBeforeJoinGUID(guid: string, vkUserId: number) {
-    return (
-      (await this.tableList
-        .createQueryBuilder('list')
-        .innerJoin(
-          'list.memberships',
-          'membership',
-          `membership.joined_id = ${vkUserId}`,
-        )
-        .where([
-          {
-            listguid: guid,
-          },
-        ])
-        .getCount()) > 0
-    );
+    return this.tableList
+      .createQueryBuilder('list')
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId}`,
+      )
+      .where([
+        {
+          listguid: guid,
+        },
+      ])
+      .getManyAndCount();
   }
   async previewMembershipByGUID(listguid: string) {
     const listPreview = await this.tableList
@@ -229,7 +248,19 @@ export class ListService {
     );
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
-    await this.cache.del(cacheKey.canJoinList(model.userId, model.listId));
+
+    const list = await this.tableList.findOne(model.listId, {
+      select: ['listguid'],
+    });
+    if (list) {
+      const avatars = await this.vkApiService.updateWithAvatars([model.userId]);
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.DropMember,
+        member: avatars[0],
+        userId: vkUserId,
+      } as ListUpdatedParams);
+    }
   }
 
   async deleteList(listId: number, vkUserId: number) {
@@ -238,13 +269,33 @@ export class ListService {
     await this.tableList.update(listId, { deleted: now });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
-    await this.cache.del(cacheKey.canCreateList(vkUserId));
+
+    const list = await this.tableList.findOne(listId, { select: ['listguid'] });
+    if (list) {
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.Deleted,
+        userId: vkUserId,
+      } as ListUpdatedParams);
+    }
   }
 
   async editListName(model: EditListModel, vkUserId: number) {
     await this.tableList.update(model.listId, { name: model.name });
 
     await this.cache.del(cacheKey.boardList(String(vkUserId)));
+
+    const list = await this.tableList.findOne(model.listId, {
+      select: ['listguid'],
+    });
+    if (list) {
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.Name,
+        name: model.name,
+        userId: vkUserId,
+      } as ListUpdatedParams);
+    }
   }
 
   async createMembership(model: CreateMembershipModel, vkUserId: number) {
@@ -267,11 +318,19 @@ export class ListService {
       await queryRunner.commitTransaction();
 
       await this.cache.del(cacheKey.boardList(String(vkUserId)));
-      await this.cache.del(cacheKey.canJoinList(vkUserId, model.listId));
+
+      const avatars = await this.vkApiService.updateWithAvatars([vkUserId]);
+
+      EventBus.emit(BusEvents.LIST_UPDATED, {
+        listGUID: list.listguid,
+        updatedType: ListUpdatedType.DropMember,
+        member: avatars[0],
+        userId: vkUserId,
+      } as ListUpdatedParams);
 
       return list.id;
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

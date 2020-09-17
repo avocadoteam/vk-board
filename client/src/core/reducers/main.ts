@@ -1,11 +1,5 @@
 import * as models from 'core/models';
-import {
-  FetchingStatus,
-  ClientTheme,
-  ActiveModal,
-  appId,
-  FINISH_TASK_TIMER_VALUE,
-} from 'core/models';
+import { FetchingStatus, ClientTheme, appId, FINISH_TASK_TIMER_VALUE } from 'core/models';
 
 const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
 
@@ -43,30 +37,32 @@ export const initialState: models.AppState['ui'] = {
       description: '',
       dueDate: '',
       name: '',
+      notification: false,
     },
     tasksToBeUnfinished: [],
     tasksToBeFinished: [],
-    tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
     selectedTask: {
-      id: 0,
+      id: '',
       name: '',
       description: '',
       dueDate: '',
-      taskGUID: '',
+      notification: false,
     },
     editedTask: {
-      id: 0,
+      id: '',
       name: '',
       description: '',
       dueDate: '',
-      taskGUID: '',
+      notification: false,
     },
   },
   membership: {
     dropUserId: 0,
   },
   showAds: true,
-  googleSyncProccess: false,
+  googleSyncClicked: false,
+  tasksToBeFinishedTimer: FINISH_TASK_TIMER_VALUE,
+  snackVisible: false,
 };
 
 export const reducer = (
@@ -166,7 +162,6 @@ export const reducer = (
       return {
         ...state,
         onlineHandleActivate: dispatch.payload,
-        activeModal: null,
       };
     }
 
@@ -231,6 +226,7 @@ export const reducer = (
             description: null,
             dueDate: null,
             name: '',
+            notification: state.notifications,
           },
         },
       };
@@ -301,7 +297,6 @@ export const reducer = (
           selectedTask: dispatch.payload,
           editedTask: dispatch.payload,
         },
-        activeModal: ActiveModal.SelectedTask,
       };
     }
     case 'EDIT_TASK': {
@@ -329,10 +324,7 @@ export const reducer = (
     case 'SET_FINISH_TASK_TIMER': {
       return {
         ...state,
-        board: {
-          ...state.board,
-          tasksToBeFinishedTimer: dispatch.payload,
-        },
+        tasksToBeFinishedTimer: dispatch.payload,
       };
     }
     case 'DROP_MEMBER_SHIP_ID': {
@@ -392,10 +384,23 @@ export const reducer = (
         errorsQueue: state.errorsQueue.filter((e) => e !== dispatch.payload),
       };
     }
+    case 'SET_SNACK': {
+      return {
+        ...state,
+        snackVisible: dispatch.payload,
+      };
+    }
+
+    case 'SET_QUEUE_ERROR': {
+      return {
+        ...state,
+        errorsQueue: dispatch.payload,
+      };
+    }
     case 'SET_GOOGLE_SYNC': {
       return {
         ...state,
-        googleSyncProccess: dispatch.payload,
+        googleSyncClicked: dispatch.payload,
       };
     }
 

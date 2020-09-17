@@ -18,7 +18,7 @@ import { BoardCacheInterceptor } from 'src/interceptors/cache.interceptor';
 import { ListService } from 'src/list/list.service';
 import { NewListModel, EditListModel } from 'src/contracts/list';
 import { RestricitionsService } from 'src/restricitions/restricitions.service';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception.';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 
 @Controller('api/board')
 @UseGuards(SignGuard)

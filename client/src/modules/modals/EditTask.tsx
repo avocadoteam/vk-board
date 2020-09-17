@@ -2,7 +2,15 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
-import { FormLayout, Input, withModalRootContext, Div, FormStatus, Spinner } from '@vkontakte/vkui';
+import {
+  FormLayout,
+  Input,
+  withModalRootContext,
+  Div,
+  FormStatus,
+  Spinner,
+  Textarea,
+} from '@vkontakte/vkui';
 import { getEditTaskValues } from 'core/selectors/board';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
@@ -10,22 +18,25 @@ import { Button } from 'atoms/Button';
 import { isThemeDrak } from 'core/selectors/common';
 import { format, isBefore, addDays } from 'date-fns';
 import { getEditTaskInfo } from 'core/selectors/task';
+import { safeTrim } from 'core/utils';
+import { goBack } from 'connected-react-router';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
 type Props = {
   updateModalHeight?: () => void;
-  editable: boolean;
-  stopEdit: () => void;
+  setHighlight: (p: boolean) => void;
 };
 
-const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit }) => {
+const EditTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const { css } = useFela();
+  const [wrongDate, setWrongDate] = React.useState(false);
   const dispatch = useDispatch<AppDispatchActions>();
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
-  const { error, hasError, updating, notSameData } = useSelector(getEditTaskInfo);
-  const disabledSubmit = !formValues.name || updating || !notSameData;
+  const { updating, notSameData } = useSelector(getEditTaskInfo);
+  const disabledSubmit = updating || !notSameData;
+  const errorName = 'Вы установили неверную дату, исправьте, пожалуйста.';
 
   const before = formValues.dueDate && isBefore(new Date(formValues.dueDate), new Date());
 
@@ -33,37 +44,48 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
     if (updateModalHeight) {
       updateModalHeight();
     }
-  }, [editable, hasError, updateModalHeight]);
+  }, [wrongDate, updateModalHeight, formValues]);
 
   React.useEffect(() => {
-    return () => {
-      stopEdit();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (before) {
-      dispatch({
-        type: 'EDIT_TASK',
-        payload: { name: 'dueDate', value: nextDay },
-      });
+    if (before && !wrongDate) {
+      setWrongDate(true);
     }
-  }, [before]);
+    if (!before && wrongDate) {
+      setWrongDate(false);
+    }
+  }, [before, wrongDate]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
+    if (name === 'description' && value.length > 1024) {
+      return;
+    }
     dispatch({ type: 'EDIT_TASK', payload: { name, value } });
   };
 
-  const submitForm = React.useCallback(() => {
-    dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
+  const submitForm = () => {
+    const trimName = safeTrim(formValues.name);
+    dispatch({
+      type: 'EDIT_TASK',
+      payload: { name: 'name', value: trimName },
+    });
+    if (!trimName) {
+      setHighlight(true);
+    } else if (!wrongDate) {
+      dispatch({
+        type: 'EDIT_TASK',
+        payload: { name: 'description', value: safeTrim(formValues.description ?? '') },
+      });
+
+      dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.EditTask });
+    }
+  };
+
+  const back = React.useCallback(() => {
+    dispatch(goBack() as any);
   }, [dispatch]);
 
-  const showError = hasError && <FormStatus header={error} mode="error" />;
-
-  if (!editable) {
-    return null;
-  }
+  const showError = wrongDate && <FormStatus header={errorName} mode="error" />;
 
   return (
     <>
@@ -77,11 +99,10 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
               color: dark ? '#5F5F5F' : '#CFCFCF',
             })}
           />
-          <Input
-            type="text"
+          <Textarea
             placeholder="Введите описание"
             minLength={1}
-            maxLength={2048}
+            maxLength={1024}
             className={css({
               marginLeft: '0 !important',
               width: '100%',
@@ -89,16 +110,21 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
                 border: 'none !important',
                 background: 'transparent !important',
               },
-              '>input': {
+              '>.Textarea__el': {
                 '::placeholder': {
                   color: dark ? '#5F5F5F' : '#CFCFCF',
                 },
+                maxHeight: 'unset !important',
               },
             } as any)}
             name="description"
             onChange={onChange}
             disabled={updating}
             value={formValues.description ?? ''}
+            grow
+            onResize={updateModalHeight}
+            onFocus={updateModalHeight}
+            onBlur={updateModalHeight}
           />
         </span>
         <span className={css({ display: 'flex' })}>
@@ -111,7 +137,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
           />
           <Input
             type="date"
-            placeholder="Выберите срок"
+            placeholder={!formValues.dueDate ? 'Выберите срок' : undefined}
             className={css({
               marginLeft: '0 !important',
               width: '100%',
@@ -139,7 +165,7 @@ const EditTaskPC = React.memo<Props>(({ editable, updateModalHeight, stopEdit })
           stretched
           size="xl"
           disabled={updating}
-          onClick={stopEdit}
+          onClick={back}
           className={css({ marginRight: '10px' })}
         >
           Отмена

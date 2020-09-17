@@ -1,24 +1,28 @@
+import { replace } from 'connected-react-router';
 import {
-  AppEpic,
-  FetchingStateName,
   AppDispatch,
-  FetchResponse,
-  BoardListItem,
-  EditBoardNamePayload,
-  FetchReadyAction,
-  Skeys,
+  AppEpic,
   AppUser,
+  BoardListItem,
+  EditBoardListNameAction,
+  FetchingStateName,
+  FetchReadyAction,
+  FetchResponse,
+  Skeys,
 } from 'core/models';
-import { ofType } from 'redux-observable';
-import { filter, switchMap, map, debounceTime, exhaustMap, delay, auditTime } from 'rxjs/operators';
-import { from, of, concat, iif } from 'rxjs';
-import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
-import { getBoard, newBoardList, editBoardList } from 'core/operations/board';
-import { safeCombineEpics } from './combine';
-import { getQToQuery } from 'core/selectors/user';
+import { editBoardList, getBoard, newBoardList } from 'core/operations/board';
 import { deletBoardList } from 'core/operations/boardList';
-import { selectedBoardListInfo, getSelectedListId } from 'core/selectors/boardLists';
-import { useTapticEpic, setStorageValueEpic } from './addons';
+import { getSelectedListId, selectedBoardListInfo } from 'core/selectors/boardLists';
+import { getLocationMainPath } from 'core/selectors/router';
+import { getQToQuery } from 'core/selectors/user';
+import { safeTrim } from 'core/utils';
+import { ofType } from 'redux-observable';
+import { concat, from, iif, of } from 'rxjs';
+import { auditTime, debounceTime, delay, exhaustMap, filter, map, switchMap } from 'rxjs/operators';
+import { setStorageValueEpic, useTapticEpic } from './addons';
+import { safeCombineEpics } from './combine';
+import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
+import { getBoardListData } from 'core/selectors/board';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -35,7 +39,6 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
               map((v) => v?.data ?? []),
               switchMap((data) => {
                 const state = state$.value;
-                const { name } = selectedBoardListInfo(state);
                 const id = getSelectedListId(state);
                 const boardDataList = data.find((bl) => bl.id === id);
                 if (!boardDataList) {
@@ -61,35 +64,19 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
                   );
                 }
 
-                if (boardDataList.name !== name) {
-                  return concat(
-                    of({
-                      type: 'SET_READY_DATA',
-                      payload: {
-                        name: FetchingStateName.Board,
-                        data,
-                      },
-                    } as AppDispatch),
-                    of({
-                      type: 'SELECT_BOARD_LIST',
-                      payload: {
-                        id,
-                        data: boardDataList,
-                      },
-                    } as AppDispatch),
-                    of({
-                      type: 'SET_UPDATING_DATA',
-                      payload: FetchingStateName.Tasks,
-                    } as AppDispatch)
-                  );
-                }
-
                 return concat(
                   of({
                     type: 'SET_READY_DATA',
                     payload: {
                       name: FetchingStateName.Board,
                       data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SELECT_BOARD_LIST',
+                    payload: {
+                      id: boardDataList.id,
+                      data: boardDataList,
                     },
                   } as AppDispatch),
                   of({
@@ -110,8 +97,8 @@ const fetchBoardEpic: AppEpic = (action$, state$) =>
 
 const saveBoardListEpic: AppEpic = (action$, state$) =>
   action$.pipe(
-    ofType('SET_BOARD_LIST_NAME'),
-    debounceTime(1500),
+    ofType('SET_UPDATING_DATA'),
+    filter(({ payload }) => payload === FetchingStateName.NewBoardList),
     map(() => ({
       q: getQToQuery(state$.value),
       listName: state$.value.ui.board.boardListName,
@@ -129,19 +116,33 @@ const saveBoardListEpic: AppEpic = (action$, state$) =>
         newBoardList(listName, q).pipe(
           switchMap((response) => {
             if (response.ok) {
-              return concat(
-                of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Board,
-                } as AppDispatch),
-                of({
-                  type: 'SET_READY_DATA',
-                  payload: {
-                    name: FetchingStateName.NewBoardList,
-                    data: true,
-                  },
-                } as AppDispatch),
-                useTapticEpic('success')
+              return from(response.json() as Promise<FetchResponse<number>>).pipe(
+                switchMap((response) => {
+                  return concat(
+                    of({
+                      type: 'SELECT_BOARD_LIST',
+                      payload: {
+                        id: response.data,
+                      },
+                    } as AppDispatch),
+                    of({
+                      type: 'SET_UPDATING_DATA',
+                      payload: FetchingStateName.Board,
+                    } as AppDispatch),
+                    of({
+                      type: 'SET_READY_DATA',
+                      payload: {
+                        name: FetchingStateName.NewBoardList,
+                        data: true,
+                      },
+                    } as AppDispatch),
+                    useTapticEpic('success'),
+                    of({
+                      type: 'SET_BOARD_LIST_NAME',
+                      payload: '',
+                    } as AppDispatch)
+                  );
+                })
               );
             } else {
               throw new Error(`Http ${response.status} on ${response.url}`);
@@ -171,19 +172,65 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
       deletBoardList(listId, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return concat(
-              of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
-              of({
-                type: 'SET_READY_DATA',
+            const state = state$.value;
+            const boardLists = getBoardListData(state);
+            const firstAvailList = boardLists.filter((l) => l.id !== listId)[0];
+            const info = selectedBoardListInfo(state);
+            const actions: AppDispatch[] = [];
+
+            if (firstAvailList && info.id === listId) {
+              actions.push({
+                type: 'SELECT_BOARD_LIST',
                 payload: {
-                  name: FetchingStateName.DeleteBoardList,
-                  data: true,
+                  id: firstAvailList.id,
+                  data: firstAvailList,
                 },
-              } as AppDispatch)
-            );
+              });
+              actions.push({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
+            } else if (info.id === listId) {
+              actions.push({
+                type: 'SELECT_BOARD_LIST',
+                payload: {
+                  id: 0,
+                  data: {
+                    created: '',
+                    createdBy: 0,
+                    id: 0,
+                    listguid: '',
+                    memberships: [],
+                    name: '',
+                  },
+                },
+              });
+              actions.push({
+                type: 'SET_BOARD_TASKS',
+                payload: [],
+              });
+            }
+
+            const newBoardLists = boardLists.reduce((acc, list) => {
+              if (list.id === listId) {
+                return acc;
+              }
+
+              return acc.concat(list);
+            }, [] as BoardListItem[]);
+
+            actions.push({
+              type: 'SET_READY_DATA',
+              payload: {
+                name: FetchingStateName.Board,
+                data: newBoardLists,
+              },
+            });
+            actions.push({
+              type: 'SET_READY_DATA',
+              payload: {
+                name: FetchingStateName.DeleteBoardList,
+                data: true,
+              },
+            });
+            return concat(...actions.map((a) => of(a)));
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }
@@ -196,31 +243,30 @@ const deleteBoardListEpic: AppEpic = (action$, state$) =>
 const editBoardListNameEpic: AppEpic = (action$, state$) =>
   action$.pipe(
     ofType('EDIT_BOARD_LIST_NAME'),
-    filter(({ payload }) => !!(payload as EditBoardNamePayload).id),
+    filter<EditBoardListNameAction>(({ payload }) => !!payload.id),
     debounceTime(1500),
     map((p) => ({
       q: getQToQuery(state$.value),
-      listName: state$.value.ui.board.editBoardListName,
-      listId: (p.payload as EditBoardNamePayload).id!,
+      listName: safeTrim(state$.value.ui.board.editBoardListName),
+      listId: p.payload.id!,
     })),
     switchMap(({ q, listName, listId }) =>
       iif(
         () => !listName.length,
-        of({
-          type: 'SET_READY_DATA',
-          payload: {
-            name: FetchingStateName.EditBoardList,
-            data: false,
-          },
-        } as AppDispatch),
+        concat(
+          of({
+            type: 'SET_ERROR_DATA',
+            payload: {
+              name: FetchingStateName.EditBoardList,
+              error: 'Вы ввели пустое название. Исправьте!',
+            },
+          } as AppDispatch),
+          useTapticEpic('error')
+        ),
         editBoardList(listName, listId, q).pipe(
           switchMap((response) => {
             if (response.ok) {
               return concat(
-                of({
-                  type: 'SET_UPDATING_DATA',
-                  payload: FetchingStateName.Board,
-                } as AppDispatch),
                 of({
                   type: 'SET_READY_DATA',
                   payload: {
@@ -268,27 +314,42 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
       return {
         q: getQToQuery(state),
         listName: state.ui.board.firstBoardListName,
+        mainView: getLocationMainPath(state),
       };
     }),
-    switchMap(({ q, listName }) =>
+    switchMap(({ q, listName, mainView }) =>
       newBoardList(listName, q).pipe(
         switchMap((response) => {
           if (response.ok) {
-            return concat(
-              useTapticEpic('success'),
-              of({
-                type: 'SET_UPDATING_DATA',
-                payload: FetchingStateName.Board,
-              } as AppDispatch),
-              of({ type: 'SET_APP_USER', payload: true } as AppDispatch),
-              of({
-                type: 'SET_READY_DATA',
-                payload: {
-                  name: FetchingStateName.FirstBoardList,
-                  data: true,
-                },
-              } as AppDispatch),
-              setStorageValueEpic(Skeys.appUser, AppUser.Yes)
+            return from(response.json() as Promise<FetchResponse<number>>).pipe(
+              switchMap((response) => {
+                return concat(
+                  of({
+                    type: 'SELECT_BOARD_LIST',
+                    payload: {
+                      id: response.data,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_UPDATING_DATA',
+                    payload: FetchingStateName.Board,
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_READY_DATA',
+                    payload: {
+                      name: FetchingStateName.FirstBoardList,
+                      data: true,
+                    },
+                  } as AppDispatch),
+                  of({
+                    type: 'SET_APP_USER',
+                    payload: true,
+                  } as AppDispatch),
+                  useTapticEpic('success'),
+                  of(replace(`/${mainView}${q}`) as any),
+                  setStorageValueEpic(Skeys.appUser, AppUser.Yes)
+                );
+              })
             );
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);

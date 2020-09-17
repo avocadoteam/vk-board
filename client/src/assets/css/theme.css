@@ -4,7 +4,7 @@ body[scheme='space_gray'] {
   --header_background: #222327;
 }
 body {
-  --accent: #42A4FF;
+  --accent: #42a4ff;
 }
 .Div--android {
   padding: 12px;
@@ -50,4 +50,18 @@ body {
 
 .FormLayout__row {
   padding-bottom: 0;
+}
+
+.MiniInfoCell__content {
+  max-height: unset !important;
+  display: flex !important;
+  height: 100%;
+}
+
+input[type='date']:before {
+  content: attr(placeholder) !important;
+}
+input[type='date']:focus:before,
+input[type='date']:valid:before {
+  content: '';
 }

@@ -2,6 +2,7 @@ import { Injectable, HttpService, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { buildQueryString } from 'src/utils/api';
 import { vkApiV, notificationMessage } from 'src/constants';
+import { errMap } from 'src/utils/errors';
 
 @Injectable()
 export class VkApiService {
@@ -11,6 +12,9 @@ export class VkApiService {
     private configService: ConfigService,
   ) {}
   async updateWithAvatars(userIds: number[]) {
+    if (!userIds.length) {
+      return [];
+    }
     try {
       const ids = userIds.join(',');
       const result = await this.httpService
@@ -25,6 +29,7 @@ export class VkApiService {
               ),
             },
             { v: vkApiV },
+            { lang: 'ru' },
           ])}`,
         )
         .toPromise();
@@ -67,12 +72,15 @@ export class VkApiService {
       return updatedUsers;
     } catch (error) {
       this.logger.log(`updateWithAvatars error`);
-      this.logger.error(error);
+      this.logger.error(errMap(error));
       return [];
     }
   }
 
   async notifyPersonsForIncomingTasks(userIds: number[]) {
+    if (!userIds.length) {
+      return;
+    }
     try {
       const result = await this.httpService
         .post(
@@ -104,7 +112,7 @@ export class VkApiService {
       this.logger.log(`notification sent`);
     } catch (error) {
       this.logger.log(`notification error`);
-      this.logger.error(error);
+      this.logger.error(errMap(error));
     }
   }
 }

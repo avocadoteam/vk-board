@@ -1,31 +1,41 @@
 import React from 'react';
 import './styleCbx.css';
 import { useFela } from 'react-fela';
-import { useDispatch } from 'react-redux';
-import { AppDispatchActions } from 'core/models';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatchActions, BoardTaskItem, MainView, ActiveModal } from 'core/models';
+import { getSearch, push } from 'connected-react-router';
 
 type Props = {
-  id: number;
-  name: string;
+  task: BoardTaskItem;
 };
 
-export const TaskCheckLabel = React.memo<Props>(({ id, name }) => {
+export const TaskCheckLabel = React.memo<Props>(({ task }) => {
   const { css } = useFela();
-  const uniqId = `${id}-${name}`;
+  const uniqId = `${task.id}-${task.name}`;
   const dispatch = useDispatch<AppDispatchActions>();
+  const search = useSelector(getSearch);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       dispatch({
         type: 'FINISH_TASK',
-        payload: id,
+        payload: task.id,
       });
     } else {
       dispatch({
         type: 'REMOVE_FINISH_TASK',
-        payload: id,
+        payload: task.id,
       });
     }
+  };
+
+  const selectTask = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
+    dispatch({
+      type: 'SELECT_TASK',
+      payload: task,
+    });
+    dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
   };
 
   return (
@@ -43,7 +53,12 @@ export const TaskCheckLabel = React.memo<Props>(({ id, name }) => {
             <polyline points="1 5 4 8 11 1" />
           </svg>
         </span>
-        <div className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500 })}`}>{name}</div>
+        <div
+          onClick={selectTask}
+          className={`useMonrope ${css({ fontSize: '15px', fontWeight: 500, overflow: 'hidden' })}`}
+        >
+          {task.name}
+        </div>
       </label>
     </span>
   );

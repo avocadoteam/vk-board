@@ -15,8 +15,8 @@ export class NotificationsService {
     private vkApiService: VkApiService,
   ) {}
 
-  @Cron('0 30 11 * * *')
   // @Cron('55 * * * * *')
+  @Cron('0 30 7 * * *')
   async handleCron() {
     this.logger.debug('Called cron job for notifications');
     const userIds = await this.fetchUserIdsFromTasksDayBeforeTheEnd();
@@ -33,7 +33,11 @@ export class NotificationsService {
         from task t 
         inner join list l on l.id = t.list_id and l.deleted is null
         inner join list_membership lm on lm.list_id = l.id and lm.left_date is null
-        where t.deleted is null and t.due_date is not null and date_trunc('day', now() + INTERVAL '1 day') = date_trunc('day', t.due_date)
+        inner join notification n on n.user_id = lm.joined_id and n.tasks @> array[t.id]::int8[]
+        where t.deleted is null 
+          and t.due_date is not null 
+          and date_trunc('day', now() + INTERVAL '1 day') = date_trunc('day', t.due_date)
+          and t.finished is null
     `);
 
     return (userIdsToNotify as { joined_id: string }[]).map((u) =>

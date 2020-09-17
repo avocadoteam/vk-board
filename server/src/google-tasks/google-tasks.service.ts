@@ -8,6 +8,7 @@ import { List } from 'src/db/tables/list';
 import { Task } from 'src/db/tables/task';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { PaymentService } from 'src/payment/payment.service';
+import { errMap } from 'src/utils/errors';
 
 const tasks = google.tasks('v1');
 
@@ -37,16 +38,16 @@ export class GoogleTasksService {
       : `https://${hostName}`;
   }
 
-  googleAuthFirstStep(hostName: string, userId: number) {
+  googleAuthFirstStep(hostName: string, userId: number, dark: 1 | 0) {
     const host = this.getHost(hostName);
     const url = `https://accounts.google.com/o/oauth2/v2/auth${buildQueryString(
       [
         { client_id: this.config.get<string>('integration.gClient', '') },
-        { redirect_uri: `${host}/google/complete` },
+        { redirect_uri: `${host}/gt/complete` },
         { response_type: 'code' },
         { scope: scopes.join('+') },
         { prompt: 'select_account' },
-        { state: `${userId}` },
+        { state: `${userId},${dark}` },
       ],
     )}`;
     return url;
@@ -57,12 +58,13 @@ export class GoogleTasksService {
 
     const accessToken = await this.getAccessToken(code, host);
     if (!accessToken) {
-      return `<h1>Что-то пошло не так у пользователя ${userId}. Сделайте скрин и напишите нам в поддержку.</h1>`;
+      return `Что-то пошло не так у пользователя ${userId}. Сделайте скрин и напишите нам в поддержку.`;
     }
 
+    this.logger.log(`Start google sync for user ${userId}`);
     this.getGoogleTaskLists(accessToken, Number(userId));
 
-    return '<h1>Google аккаунт успешно авторизован. Вы можете закрыть это окно.</h1><h2>Синхронизация займет какое-то время.</h2>';
+    return 'Google аккаунт успешно авторизован. Вы можете закрыть это окно. Синхронизация может занять некоторое время.';
   }
 
   async getAccessToken(code: string, host: string) {
@@ -77,7 +79,7 @@ export class GoogleTasksService {
               '',
             ),
           },
-          { redirect_uri: `${host}/google/complete` },
+          { redirect_uri: `${host}/gt/complete` },
           { grant_type: 'authorization_code' },
         ])}`,
       )
@@ -91,30 +93,63 @@ export class GoogleTasksService {
     return result.data.access_token ?? '';
   }
 
-  async getGoogleTaskLists(access_token: string, userId: number) {
-    let taskLists: tasks_v1.Schema$TaskList[] = [];
-
+  async fetchGoogleLists(access_token: string, nextPageToken?: string) {
     const response = await tasks.tasklists.list({
       access_token,
       maxResults: 100,
+      pageToken: nextPageToken,
     });
-    taskLists = response.data.items ?? [];
+    return {
+      list: response.data.items ?? [],
+      pageToken: response.data.nextPageToken,
+    };
+  }
 
-    while (taskLists.length === 100) {
-      const subResponse = await tasks.tasklists.list({
-        access_token,
-        maxResults: 100,
-      });
-      taskLists = subResponse.data.items ?? [];
-    }
-
-    await this.createLists(taskLists, userId);
-
-    await this.getGoogleTasks(
+  async fetchGoogleTasks(
+    access_token: string,
+    listId: string,
+    nextPageToken?: string,
+  ) {
+    const response = await tasks.tasks.list({
+      tasklist: listId,
       access_token,
-      userId,
-      taskLists.map((t) => t.id ?? ''),
-    );
+      maxResults: 100,
+      pageToken: nextPageToken,
+    });
+    return {
+      list: response.data.items ?? [],
+      pageToken: response.data.nextPageToken,
+    };
+  }
+
+  async getGoogleTaskLists(access_token: string, userId: number) {
+    let nextPageToken: string | undefined;
+    let firstCall = true;
+
+    while ((firstCall && !nextPageToken) || !!nextPageToken) {
+      const { list, pageToken } = await this.fetchGoogleLists(
+        access_token,
+        nextPageToken,
+      );
+      this.logger.log(`User ${userId} fetched list ${list.length}`);
+      if (list.length) {
+        await this.createLists(list, userId);
+      }
+
+      await this.getGoogleTasks(
+        access_token,
+        userId,
+        list.map((t) => t.id ?? ''),
+      );
+
+      if (pageToken) {
+        nextPageToken = pageToken;
+      } else {
+        nextPageToken = undefined;
+      }
+
+      firstCall = false;
+    }
 
     await this.paymentService.updatePremiumGoogleSync(userId);
   }
@@ -148,7 +183,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {
@@ -162,23 +197,30 @@ export class GoogleTasksService {
     listIds: string[],
   ) {
     for (const listId of listIds) {
-      let tasksList: tasks_v1.Schema$Task[] = [];
+      let nextPageToken: string | undefined;
+      let firstCall = true;
 
-      const response = await tasks.tasks.list({
-        tasklist: listId,
-        access_token,
-        maxResults: 100,
-      });
-      tasksList = response.data.items ?? [];
-
-      while (tasksList.length === 100) {
-        const subResponse = await tasks.tasks.list({
+      while ((firstCall && !nextPageToken) || !!nextPageToken) {
+        const { list, pageToken } = await this.fetchGoogleTasks(
           access_token,
-          maxResults: 100,
-        });
-        tasksList = subResponse.data.items ?? [];
+          listId,
+          nextPageToken,
+        );
+        this.logger.log(
+          `User ${userId} fetched tasks ${list.length} for list id ${listId}`,
+        );
+        if (list.length) {
+          await this.createTasks(list, userId, listId);
+        }
+
+        if (pageToken) {
+          nextPageToken = pageToken;
+        } else {
+          nextPageToken = undefined;
+        }
+
+        firstCall = false;
       }
-      await this.createTasks(tasksList, userId, listId);
     }
   }
 
@@ -226,7 +268,7 @@ export class GoogleTasksService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
       throw new Error(err);
     } finally {

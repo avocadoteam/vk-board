@@ -7,10 +7,12 @@ import { CellButton } from 'atoms/CellButton';
 import { getBoardUiState, isThemeDrak } from 'core/selectors/common';
 import * as sel from 'core/selectors/boardLists';
 import { useLongPress } from 'core/hooks';
-import { Input, Spinner, usePlatform, OS } from '@vkontakte/vkui';
+import { Input, Spinner } from '@vkontakte/vkui';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
 import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 import { tapticSelected } from 'core/vk-bridge/taptic';
+import { goBack } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 type Props = {
   listItem: BoardListItem & {
@@ -27,28 +29,26 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
   const created = useSelector(sel.isEditListCreated);
   const dispatch = useDispatch<AppDispatchActions>();
   const { css } = useFela();
-  const platform = usePlatform();
 
-  const detections = useLongPress<HTMLButtonElement>(() => {
-    if (platform === OS.IOS) {
-      tapticSelected();
-    }
-    dispatch({
-      type: 'EDIT_BOARD_LIST_NAME',
-      payload: { name: listItem.name },
-    });
-    setClicked(true);
-  });
-
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
+  const detections = useLongPress<HTMLButtonElement>(
+    () => {
+      if (isPlatformIOS()) {
+        tapticSelected();
+      }
+      dispatch({
+        type: 'EDIT_BOARD_LIST_NAME',
+        payload: { name: listItem.name },
+      });
+      setClicked(true);
+    },
+    { delay: 1500 }
+  );
 
   const handleClickList = () => {
     if (selectedBoardListId !== listItem.id) {
       dispatch({ type: 'SELECT_BOARD_LIST', payload: { id: listItem.id, data: listItem } });
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
-      closeModal();
+      dispatch(goBack() as any);
     }
   };
 
@@ -82,7 +82,7 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
           type="text"
           placeholder="Введите название"
           minLength={1}
-          maxLength={512}
+          maxLength={64}
           className={css({
             width: '100%',
             height: '50px',

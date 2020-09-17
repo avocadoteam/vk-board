@@ -6,37 +6,37 @@ export const useViewChange = <T = {}>(viewEnum: T, defaultKeyView: keyof T, with
 
   const [viewState, setView] = useState({
     activePanel: defaultView,
-    history: [defaultView],
+    h: [defaultView],
   });
 
   const goBack = () => {
-    if (viewState.history.length === 1) {
+    if (viewState.h.length === 1) {
       return;
     }
-    const history = [...viewState.history];
-    history.pop();
+    const localH = [...viewState.h];
+    localH.pop();
 
-    const activePanel = history[history.length - 1];
+    const activePanel = localH[localH.length - 1];
     if (activePanel === defaultView && withSwipe) {
       vkBridge.send('VKWebAppDisableSwipeBack');
     }
-    setView({ history, activePanel });
+    setView({ h: localH, activePanel });
   };
 
   const goForward = (activePanel: T[keyof T]) => {
-    const history = [...viewState.history];
-    history.push(activePanel);
+    const localH = [...viewState.h];
+    localH.push(activePanel);
 
     if (viewState.activePanel === defaultView && withSwipe) {
       vkBridge.send('VKWebAppEnableSwipeBack');
     }
-    setView({ history, activePanel });
+    setView({ h: localH, activePanel });
   };
 
   return {
     goBack,
     goForward,
     activeView: viewState.activePanel,
-    history: viewState.history,
+    history: viewState.h,
   };
 };

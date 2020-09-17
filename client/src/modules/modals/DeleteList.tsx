@@ -4,33 +4,30 @@ import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName, ActiveModal } from 'core/models';
+import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { goBack } from 'connected-react-router';
 
 export const DeleteList = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
   const dark = useSelector(isThemeDrak);
   const dispatch = useDispatch<AppDispatchActions>();
 
-  const closeModal = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: null });
-  }, [dispatch]);
-
   const back = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
+    dispatch(goBack() as any);
   }, [dispatch]);
 
   const deleteList = React.useCallback(() => {
-    dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
+    back();
     dispatch({
       type: 'SET_UPDATING_DATA',
       payload: FetchingStateName.DeleteBoardList,
     });
-  }, [dispatch]);
+  }, [dispatch, back]);
 
   return (
     <ModalPage
       id={id}
-      onClose={closeModal}
+      onClose={back}
       header={
         <Div>
           <Header
@@ -40,6 +37,7 @@ export const DeleteList = React.memo<{ id: string }>(({ id }) => {
               '>div': {
                 display: 'block',
               },
+              userSelect: 'none'
             } as any)}`}
           >
             {'Вы уверены?'}

@@ -9,15 +9,16 @@ import { VkApiService } from 'src/vk-api/vk-api.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { RestricitionsModule } from 'src/restricitions/restricitions.module';
+import { Notification } from 'src/db/tables/notification';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([List, ListMembership]),
+    TypeOrmModule.forFeature([List, ListMembership, Notification]),
     TasksModule,
     RedisCacheModule,
     HttpModule,
     ConfigModule,
-    RestricitionsModule
+    RestricitionsModule,
   ],
   providers: [ListService, VkApiService],
   exports: [ListService],

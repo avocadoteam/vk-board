@@ -1,9 +1,9 @@
-import { vkBridge } from './instance';
-import { store } from 'core/store';
-import { ClientTheme } from 'core/models';
+import { ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
-import { joinRoom, leaveRoom } from 'core/socket/list';
 import { getUserId } from 'core/selectors/user';
+import { joinRoom } from 'core/socket/list';
+import { store } from 'core/store';
+import { vkBridge } from './instance';
 
 // set client theme
 vkBridge.subscribe(({ detail: { type, data } }) => {
@@ -32,7 +32,16 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
       payload: hashListGUID ?? null,
     });
 
+    store.dispatch({
+      type: 'SET_UPDATING_DATA',
+      payload: FetchingStateName.PaymentInfo,
+    });
+
     const state = store.getState();
+
+    if (window.navigator.onLine) {
+      store.dispatch({ type: 'SET_APP_CONNECT', payload: true });
+    }
 
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
@@ -40,10 +49,14 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   }
 
   if (type === 'VKWebAppViewHide') {
-    const { listguid } = selectedBoardListInfo(store.getState());
-    if (listguid) {
-      leaveRoom(listguid);
-    }
+    store.dispatch({
+      type: 'SET_QUEUE_ERROR',
+      payload: [],
+    });
+    store.dispatch({
+      type: 'SET_SNACK',
+      payload: false,
+    });
   }
 });
 

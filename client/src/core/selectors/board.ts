@@ -26,5 +26,10 @@ export const getBoardLists = createSelector(getBoardListData, getUserId, (data, 
   }))
 );
 
+export const isOnlyOneListLeft = createSelector(
+  getBoardLists,
+  (list) => list.filter((l) => l.isOwner).length === 1
+);
+
 export const getNewTaskValues = createSelector(getBoardUiState, (board) => board.newTask);
 export const getEditTaskValues = createSelector(getBoardUiState, (board) => board.editedTask);

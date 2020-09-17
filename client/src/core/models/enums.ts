@@ -4,16 +4,17 @@ export enum MainView {
   Offline = 'offline',
   ListMembership = 'listMembership',
   About = 'about',
-  ListSharePreview = 'listSharePreview'
+  ListSharePreview = 'listSharePreview',
+  LoadingGeneralInfo = 'loading',
 }
 export enum WelcomeView {
   Greetings = 'greetings',
-  TaskCreation = 'taskCreation'
+  TaskCreation = 'taskCreation',
 }
 
 export enum Skeys {
   appUser = 'appUser',
-  userSelectedListId = 'userSelectedListId'
+  userSelectedListId = 'userSelectedListId',
 }
 
 export enum AppUser {
@@ -26,5 +27,7 @@ export enum ActiveModal {
   Lists = 'lists',
   NewTask = 'newtask',
   DropMembership = 'dropmembership',
-  DeletList = 'deletelist'
+  DeleteList = 'deletelist',
+  DeleteTask = 'deletetask',
+  EditTask = 'edittask',
 }

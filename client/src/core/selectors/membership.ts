@@ -33,10 +33,6 @@ export const isDropMembershipUpdating = createSelector(
   (dataState, boardUpdating) => dataState.status === FetchingStatus.Updating || boardUpdating
 );
 
-export const isPreviewMembershipReady = createSelector(
-  getPreviewMembershipDataState,
-  (dataState) => dataState.status === FetchingStatus.Ready && !!dataState.data
-);
 export const getPreviewMembershipData = createSelector(
   getPreviewMembershipDataState,
   (dataState) => dataState.data ?? { id: 0, name: '' }
