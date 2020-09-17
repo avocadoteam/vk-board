@@ -1,4 +1,4 @@
-export const appV = '1.0.4';
+export const appV = '1.2';
 
 export const vkApiV = '5.122';
 

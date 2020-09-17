@@ -114,6 +114,7 @@ export class EventsGateway implements OnGatewayInit {
           notification: model.notification,
         });
     };
+
     EventBus.on(BusEvents.STOP_G_SYNC, stopGsync);
     EventBus.on(BusEvents.NEW_TASK, newTask);
     EventBus.on(BusEvents.PAYMENT_COMPLETE, paymentComplete);
