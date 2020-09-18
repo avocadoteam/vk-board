@@ -12,7 +12,6 @@ import { useFela } from 'react-fela';
 import { useSelector } from 'react-redux';
 import { BoardEmpty } from './BoardEmpty';
 import { BoardFinishedTasks } from './BoardFinishedTasks';
-import { TasksRefresher } from 'modules/task/TasksRefresher';
 
 export const BoardLists = React.memo(() => {
   const [showUpdating, setShow] = React.useState(false);
