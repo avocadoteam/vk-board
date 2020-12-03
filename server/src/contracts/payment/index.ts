@@ -16,7 +16,6 @@ class PaymentPayload {
   amount!: number;
 
   description?: string;
-  date!: string;
 }
 
 export class PaymentCBModel {
