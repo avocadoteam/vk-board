@@ -11,6 +11,7 @@ import {
   Res,
   Inject,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
@@ -25,6 +26,7 @@ import { PaymentCBModel } from 'src/contracts/payment';
 
 @Controller('api/payment')
 export class PaymentController {
+  private readonly logger = new Logger(PaymentController.name);
   constructor(
     private readonly paymentService: PaymentService,
     @Inject(integrationConfig.KEY)
@@ -68,16 +70,23 @@ export class PaymentController {
     @Res()
     res: Response,
   ) {
+    this.logger.debug('Here comes vk callback');
+    this.logger.debug(`Group id is ${model.group_id}`);
     if (model.group_id !== avacadoGroupId) {
       throw new BadRequestException();
     }
 
+    this.logger.debug(`Type is ${model.type}`);
+    this.logger.debug(`Our code is ${this.config.vkConfirmCode}`);
     if (model.type === 'confirmation') {
       res.setHeader('content-type', 'text/plain');
       return res.status(HttpStatus.OK).send(`${this.config.vkConfirmCode}`);
     }
 
     if (model.type === 'vkpay_transaction' && model.object) {
+      this.logger.debug(`Lets make premium for  ${model.object.from_id}`);
+      this.logger.debug(`Premium payment value ${model.object.amount}`);
+
       this.paymentService.makePremium(
         model.object.from_id,
         model.object.amount,
