@@ -179,7 +179,7 @@ export class EventsGateway implements OnGatewayInit {
   }
 
   autoLeaveRooms(socket: Socket) {
-    return new Promise((res) => {
+    return new Promise<void>((res) => {
       const adapter = socket.adapter as RedisAdapter;
       adapter.clientRooms(socket.id, (err: Error, rooms: string[]) => {
         if (err) {

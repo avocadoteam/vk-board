@@ -26,6 +26,9 @@ export enum BusEvents {
   PAYMENT_COMPLETE = 'payment_complete',
   LIST_UPDATED = 'list_updated',
   TASK_NOTIFICATION = 'task_notification',
+
+  // internal
+  NewTask = 'newTask'
 }
 
 export type NewTaskParams = {

@@ -1,29 +1,30 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { and, not } from 'ramda';
+import { and } from 'ramda';
 import {
   MarusyaAsk,
+  marusyaCards,
   MarusyaCommand,
   MarusyaResponse,
   MarusyaResponseTxt,
 } from 'src/contracts/marusya';
+import { ScenarioService } from './scenario.service';
 
 @Controller('api/marusya')
 export class MarusyaController {
+  constructor(private readonly scenario: ScenarioService) {}
   @Post()
-  randomShit(@Body() ask: MarusyaAsk): MarusyaResponse {
-    const { command, nlu } = ask.request;
+  async randomShit(@Body() ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const { command } = ask.request;
     const { user } = ask.session;
+    const { wait } = ask.state.session;
 
-    if (not(user)) {
+    if (!user || !user.vk_user_id) {
       return {
         response: {
           text: MarusyaResponseTxt.noUser,
-          tts: MarusyaResponseTxt.noUser,
+          tts: MarusyaResponseTxt.noUser.join(' '),
           end_session: true,
-          card: {
-            type: 'MiniApp',
-            url: 'https://vk.com/app7566928',
-          },
+          card: marusyaCards.stuff,
         },
         session: {
           message_id: ask.session.message_id,
@@ -40,24 +41,29 @@ export class MarusyaController {
         command.includes(MarusyaCommand.Task),
       )
     ) {
-      const taskName = nlu.tokens.slice(
-        nlu.tokens.indexOf(MarusyaCommand.Task),
-      );
+      return this.scenario.marusyaCreateTask(ask);
+    }
 
-      if (taskName) {
-      }
-      console.log(taskName);
+    if (
+      and(
+        command.includes(MarusyaCommand.My),
+        command.includes(MarusyaCommand.Task),
+      ) &&
+      command.includes(MarusyaCommand.Show)
+    ) {
+      return this.scenario.marusyaShowTasks(ask);
+    }
+
+    if (wait) {
+      return this.scenario.marusyaWaitForTaskName(ask);
     }
 
     return {
       response: {
         text: MarusyaResponseTxt.noUser,
-        tts: MarusyaResponseTxt.noUser,
+        tts: MarusyaResponseTxt.noUser.join(' '),
         end_session: true,
-        card: {
-          type: 'MiniApp',
-          url: 'https://vk.com/app7566928',
-        },
+        card: marusyaCards.stuff,
       },
       session: {
         message_id: ask.session.message_id,

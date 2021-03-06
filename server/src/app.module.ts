@@ -1,24 +1,24 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import databaseConfig from 'src/config/db.config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import cacheConfig from 'src/config/cache.config';
 import coreConfig from 'src/config/core.config';
+import databaseConfig from 'src/config/db.config';
 import integrationConfig from 'src/config/integration.config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ListModule } from './list/list.module';
+import { AppController } from './app.controller';
+import { BoardController } from './board/board.controller';
 import { BoardModule } from './board/board.module';
-import { TasksModule } from './tasks/tasks.module';
 import { EventsModule } from './events/events.module';
-import { RestricitionsModule } from './restricitions/restricitions.module';
-import { PaymentModule } from './payment/payment.module';
 import { GoogleTasksModule } from './google-tasks/google-tasks.module';
-import { ScheduleModule } from '@nestjs/schedule';
-import { NotificationsModule } from './notifications/notifications.module';
 import { FetchLimiter } from './interceptors/rate-limiter';
 import { ListController } from './list/list.controller';
-import { BoardController } from './board/board.controller';
-import { MarusyaController } from './marusya/marusya.controller';
+import { ListModule } from './list/list.module';
+import { MarusyaModule } from './marusya/marusya.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PaymentModule } from './payment/payment.module';
+import { RestricitionsModule } from './restricitions/restricitions.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -56,8 +56,9 @@ import { MarusyaController } from './marusya/marusya.controller';
     PaymentModule,
     GoogleTasksModule,
     NotificationsModule,
+    MarusyaModule,
   ],
-  controllers: [AppController, MarusyaController],
+  controllers: [AppController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

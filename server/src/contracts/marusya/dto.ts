@@ -1,3 +1,5 @@
+import { MarusyaWaitState } from './commands';
+
 export type MarusyaAsk = {
   meta: {
     client_id: string;
@@ -42,12 +44,18 @@ export type MarusyaAsk = {
        * скилл + аккаунт.
        */
       user_id: string;
+
+      vk_user_id?: number;
     };
   };
 
   state: {
-    session: {};
-    user: {};
+    session: {
+      wait?: MarusyaWaitState;
+    };
+    user: {
+      list?: number;
+    };
   };
 
   /**
@@ -88,6 +96,12 @@ export type MarusyaResponse = {
     message_id: number;
   };
   version: '1.0';
+  session_state?: {
+    wait?: MarusyaWaitState;
+  };
+  user_state_update?: {
+    list?: number;
+  };
 };
 
 export type MarusyaCards =
