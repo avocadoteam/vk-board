@@ -21,11 +21,8 @@ export class MarusyaController {
           tts: MarusyaResponseTxt.noUser,
           end_session: true,
           card: {
-            type: 'Link',
+            type: 'MiniApp',
             url: 'https://vk.com/app7566928',
-            image_id: 457239017,
-            text: 'qq',
-            title: 'qq2',
           },
         },
         session: {
@@ -58,8 +55,8 @@ export class MarusyaController {
         tts: MarusyaResponseTxt.noUser,
         end_session: true,
         card: {
-          type: 'BigImage',
-          image_id: 457239017,
+          type: 'MiniApp',
+          url: 'https://vk.com/app7566928',
         },
       },
       session: {
