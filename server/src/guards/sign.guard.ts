@@ -11,6 +11,7 @@ import * as qs from 'querystring';
 import * as crypto from 'crypto';
 import integrationConfig from '../config/integration.config';
 import { ConfigType } from '@nestjs/config';
+import coreConfig from 'src/config/core.config';
 
 @Injectable()
 export class SignGuard implements CanActivate {
@@ -19,6 +20,8 @@ export class SignGuard implements CanActivate {
   constructor(
     @Inject(integrationConfig.KEY)
     private config: ConfigType<typeof integrationConfig>,
+    @Inject(coreConfig.KEY)
+    private core: ConfigType<typeof coreConfig>,
   ) {}
 
   canActivate(
@@ -48,6 +51,6 @@ export class SignGuard implements CanActivate {
     const signed = paramsHash === request.query.sign;
     this.logger.log(`controller ${request.path} result ${signed}`);
 
-    return signed;
+    return this.core.devMode || signed;
   }
 }

@@ -1,6 +1,6 @@
 export const appV = '1.2';
 
-export const vkApiV = '5.122';
+export const vkApiV = '5.130';
 
 export const appId = 7566928;
 export const payToGroupId = 197416979;

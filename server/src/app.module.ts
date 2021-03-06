@@ -18,6 +18,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { FetchLimiter } from './interceptors/rate-limiter';
 import { ListController } from './list/list.controller';
 import { BoardController } from './board/board.controller';
+import { MarusyaController } from './marusya/marusya.controller';
 
 @Module({
   imports: [
@@ -56,7 +57,7 @@ import { BoardController } from './board/board.controller';
     GoogleTasksModule,
     NotificationsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MarusyaController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
