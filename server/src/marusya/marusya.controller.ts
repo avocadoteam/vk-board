@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { and } from 'ramda';
+import { and, not } from 'ramda';
 import {
   MarusyaAsk,
   marusyaCards,
@@ -16,10 +16,10 @@ export class MarusyaController {
   @Post()
   async randomShit(@Body() ask: MarusyaAsk): Promise<MarusyaResponse> {
     try {
-      const { command } = ask.request;
+      const { command: vkCommand } = ask.request;
       const { user } = ask.session;
       const { wait } = ask.state.session;
-
+      const command = vkCommand.toLowerCase();
       // if (!user || !user.vk_user_id) {
       //   return {
       //     response: {
@@ -66,6 +66,13 @@ export class MarusyaController {
         and(
           command.includes(MarusyaCommand.Create),
           command.includes(MarusyaCommand.Task),
+        ) ||
+        and(
+          and(
+            not(command.includes(MarusyaCommand.My)),
+            not(command.includes(MarusyaCommand.Show)),
+          ),
+          command.includes(MarusyaCommand.Task),
         )
       ) {
         const mtres = await this.scenario.marusyaCreateTask(ask);
@@ -80,6 +87,10 @@ export class MarusyaController {
           command.includes(MarusyaCommand.Show)) ||
         and(
           command.includes(MarusyaCommand.My),
+          command.includes(MarusyaCommand.Task),
+        ) ||
+        and(
+          command.includes(MarusyaCommand.Show),
           command.includes(MarusyaCommand.Task),
         )
       ) {
