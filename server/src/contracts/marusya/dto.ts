@@ -1,4 +1,4 @@
-import { MarusyaWaitState } from './commands';
+import { MarusyaUserChoise, MarusyaWaitState } from './commands';
 
 export type MarusyaAsk = {
   meta: {
@@ -27,6 +27,14 @@ export type MarusyaAsk = {
       tokens: string[];
       entities: string[];
     };
+
+    payload?: {
+      choise?: MarusyaUserChoise;
+      /**
+       * YYYY-MM-DD
+       */
+      date?: string;
+    };
   };
 
   session: {
@@ -52,6 +60,7 @@ export type MarusyaAsk = {
   state: {
     session: {
       wait?: MarusyaWaitState;
+      taskId?: string;
     };
     user: {
       list?: number;
@@ -75,11 +84,7 @@ export type MarusyaResponse = {
      */
     tts?: string;
 
-    buttons?: {
-      title: string;
-      payload?: {};
-      url?: string;
-    }[];
+    buttons?: MarusyaButton[];
 
     /**
      * Признак конца разговора:
@@ -98,10 +103,17 @@ export type MarusyaResponse = {
   version: '1.0';
   session_state?: {
     wait?: MarusyaWaitState;
+    taskId?: string;
   };
   user_state_update?: {
     list?: number;
   };
+};
+
+export type MarusyaButton = {
+  title: string;
+  payload?: {};
+  url?: string;
 };
 
 export type MarusyaCards =

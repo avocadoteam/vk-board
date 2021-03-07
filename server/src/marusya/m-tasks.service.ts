@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { UpdateTaskModel } from 'src/contracts/task';
 import { ListService } from 'src/list/list.service';
 import { TasksService } from 'src/tasks/tasks.service';
 
@@ -38,5 +39,30 @@ export class MTasksService {
         taskId: t.id,
       },
     }));
+  }
+  async getTask(vkUserId: number, listId: number, taskId: string) {
+    const tasks = await this.taskServ.getTask(listId, vkUserId, taskId);
+
+    if (!tasks || !tasks[0]) {
+      return null;
+    }
+
+    return tasks[0];
+  }
+  async updateTask(model: UpdateTaskModel, vkUserId: number) {
+    const taskIdsToUpdate = await this.listServ.hasListMembershipWithTasks(
+      [model.listId],
+      [model.id],
+      vkUserId,
+    );
+
+    if (!taskIdsToUpdate) {
+      throw new Error('Someone hacking');
+    }
+
+    await this.taskServ.updateTask(model, vkUserId);
+  }
+  validateDueDate(dueDate: string | null) {
+    return this.taskServ.validateDueDate(dueDate);
   }
 }

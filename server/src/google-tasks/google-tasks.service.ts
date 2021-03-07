@@ -9,6 +9,7 @@ import { Task } from 'src/db/tables/task';
 import { ListMembership } from 'src/db/tables/listMembership';
 import { PaymentService } from 'src/payment/payment.service';
 import { errMap } from 'src/utils/errors';
+import * as moment from 'moment';
 
 const tasks = google.tasks('v1');
 
@@ -258,7 +259,7 @@ export class GoogleTasksService {
               userId,
               gListWithTasks?.list,
               task.notes,
-              task.due ?? null,
+              task.due ? moment(task.due).toDate() : null,
               task.id,
               gListWithTasks,
               task.completed,

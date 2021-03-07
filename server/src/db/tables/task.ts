@@ -92,7 +92,7 @@ export class Task {
     createdBy: number,
     list: List,
     description: string | null = null,
-    dueDate: string | null = null,
+    dueDate: Date | null = null,
     g_task_id: string | null = null,
     gList: GList | null = null,
     finished: string | null = null,
@@ -100,7 +100,7 @@ export class Task {
     this.name = name;
     this.createdBy = createdBy;
     this.created = new Date();
-    this.dueDate = dueDate ? new Date(dueDate) : null;
+    this.dueDate = dueDate;
     this.list = list;
     this.taskGUID = v4();
     this.description = description;

@@ -49,7 +49,7 @@ export class GeneralTaskModel {
   @IsNotEmpty()
   @IsString()
   @Length(1, 1024)
-  dueDate!: string | null;
+  dueDate!: Date | string | null;
 }
 
 export class NewTaskModel extends GeneralTaskModel {

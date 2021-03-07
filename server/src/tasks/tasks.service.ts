@@ -51,7 +51,7 @@ export class TasksService {
         vkUserId,
         list,
         model.description,
-        model.dueDate,
+        model.dueDate ? moment(model.dueDate).toDate() : null,
       );
       await queryRunner.manager.save(newTask);
 
@@ -103,7 +103,7 @@ export class TasksService {
       await queryRunner.manager.update<Task>(Task, model.id, {
         name: model.name,
         description: model.description,
-        dueDate: model.dueDate ? new Date(model.dueDate) : null,
+        dueDate: model.dueDate ? moment(model.dueDate).toDate() : null,
       });
 
       await queryRunner.commitTransaction();
@@ -164,6 +164,29 @@ export class TasksService {
         notification: notificationTasks.tasks?.includes(t.id),
       })) ?? []
     );
+  }
+  async getTask(listId: number, vkUserId: number, taskId: string) {
+    let list = await this.tableList
+      .createQueryBuilder('list')
+      .innerJoinAndSelect(
+        'list.tasks',
+        'task',
+        `task.list_id = ${listId} and task.deleted is null and task.id = ${taskId}`,
+      )
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+      )
+      .where([
+        {
+          deleted: null,
+          id: listId,
+        },
+      ])
+      .getOne();
+
+    return list?.tasks;
   }
 
   async finishTasks(taskIds: string[], listId: number, vkUserId: number) {
@@ -265,7 +288,7 @@ export class TasksService {
   }
 
   // TODO move to decorator
-  validateDueDate(dueDate: string | null) {
+  validateDueDate(dueDate: Date | string | null) {
     if (dueDate === null) {
       return true;
     }
