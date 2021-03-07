@@ -51,6 +51,12 @@ export class MarusyaController {
           case MarusyaWaitState.WaitForTime:
             const ctres = await this.scenario.marusyaChangeTime(ask);
             return ctres;
+          case MarusyaWaitState.WaitForShowTaskInfo:
+            const stires = await this.scenario.marusyaShowTaskInfo(ask);
+            return stires;
+          case MarusyaWaitState.WaitForChangeTaskName:
+            const ctnres = await this.scenario.marusyaChangeTaskName(ask);
+            return ctnres;
           default:
             break;
         }

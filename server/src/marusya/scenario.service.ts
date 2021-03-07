@@ -6,6 +6,7 @@ import {
   MarusyaCommand,
   MarusyaResponse,
   MarusyaResponseTxt,
+  MarusyaTaskState,
   MarusyaUserChoise,
   MarusyaWaitState,
 } from 'src/contracts/marusya';
@@ -53,6 +54,7 @@ export class ScenarioService {
           },
           session_state: {
             wait: MarusyaWaitState.WaitForUserChoise,
+            taskState: MarusyaTaskState.create,
             taskId: data.task,
           },
         };
@@ -72,6 +74,7 @@ export class ScenarioService {
         version: '1.0',
         session_state: {
           wait: MarusyaWaitState.WaitForTaskName,
+          taskState: MarusyaTaskState.create,
         },
       };
     }
@@ -81,6 +84,7 @@ export class ScenarioService {
     const { nlu } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
+    const { taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
     const foundTokens = nlu.tokens;
@@ -106,6 +110,7 @@ export class ScenarioService {
         session_state: {
           wait: MarusyaWaitState.WaitForUserChoise,
           taskId: data.task,
+          taskState,
         },
       };
     });
@@ -115,7 +120,7 @@ export class ScenarioService {
     const { command } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
-    const { taskId } = ask.state.session;
+    const { taskId, taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
     const task = await this.m.getTask(vkUserId, list!, taskId!);
@@ -148,17 +153,18 @@ export class ScenarioService {
       session_state: {
         wait: MarusyaWaitState.WaitForUserChoise,
         taskId,
+        taskState,
       },
     };
   }
   async marusyaChangeTime(ask: MarusyaAsk): Promise<MarusyaResponse> {
-    const { command, payload } = ask.request;
+    const { command, payload, nlu } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
-    const { taskId } = ask.state.session;
+    const { taskId, taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
-    const time = payload?.date ?? moment().day(command).format();
+    const time = payload?.date ?? this.parseTime(command, nlu.tokens);
     if (!this.m.validateDueDate(time)) {
       return {
         response: {
@@ -176,6 +182,7 @@ export class ScenarioService {
         session_state: {
           wait: MarusyaWaitState.WaitForTime,
           taskId,
+          taskState,
         },
       };
     }
@@ -210,15 +217,59 @@ export class ScenarioService {
       session_state: {
         wait: MarusyaWaitState.WaitForUserChoise,
         taskId,
+        taskState,
       },
     };
+  }
+  marusyaChangeTaskName(ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const { command } = ask.request;
+    const { user } = ask.session;
+    const { list } = ask.state.user;
+    const { taskId, taskState } = ask.state.session;
+    const vkUserId = 11437372; //user?.vk_user_id!;
+
+    return this.validateTaskName(command, ask, async () => {
+      const task = await this.m.getTask(vkUserId, list!, taskId!);
+      if (!task) return this.marusyaError(ask);
+
+      await this.m.updateTask(
+        {
+          description: task.description,
+          dueDate: task.dueDate ? moment(task.dueDate).toDate() : null,
+          id: task.id,
+          listId: list!,
+          name: command,
+        },
+        vkUserId,
+      );
+
+      return {
+        response: {
+          text: MarusyaResponseTxt.wantsChangeDone,
+          tts: MarusyaResponseTxt.wantsChangeDone,
+          end_session: false,
+          buttons: marusyaButtons.choise,
+        },
+        session: {
+          message_id: ask.session.message_id,
+          session_id: ask.session.session_id,
+          user_id: ask.session.application.application_id,
+        },
+        version: '1.0',
+        session_state: {
+          wait: MarusyaWaitState.WaitForUserChoise,
+          taskId,
+          taskState,
+        },
+      };
+    });
   }
 
   async marusyaProcessUserChoise(ask: MarusyaAsk): Promise<MarusyaResponse> {
     const { payload } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
-    const { taskId } = ask.state.session;
+    const { taskId, taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
     if (!payload?.choise || !taskId) {
@@ -242,6 +293,26 @@ export class ScenarioService {
           session_state: {
             wait: MarusyaWaitState.WaitForDescription,
             taskId,
+            taskState,
+          },
+        };
+      case MarusyaUserChoise.name:
+        return {
+          response: {
+            text: MarusyaResponseTxt.listen,
+            tts: MarusyaResponseTxt.listen,
+            end_session: false,
+          },
+          session: {
+            message_id: ask.session.message_id,
+            session_id: ask.session.session_id,
+            user_id: ask.session.application.application_id,
+          },
+          version: '1.0',
+          session_state: {
+            wait: MarusyaWaitState.WaitForChangeTaskName,
+            taskId,
+            taskState,
           },
         };
       case MarusyaUserChoise.time:
@@ -261,6 +332,7 @@ export class ScenarioService {
           session_state: {
             wait: MarusyaWaitState.WaitForTime,
             taskId,
+            taskState,
           },
         };
 
@@ -269,8 +341,16 @@ export class ScenarioService {
         if (!task) return this.marusyaError(ask);
         return {
           response: {
-            text: MarusyaResponseTxt.taskCreated(task.name, task.dueDate),
-            tts: MarusyaResponseTxt.taskCreated(task.name, task.dueDate),
+            text: MarusyaResponseTxt.taskCreated(
+              task.name,
+              task.dueDate,
+              taskState!,
+            ),
+            tts: MarusyaResponseTxt.taskCreated(
+              task.name,
+              task.dueDate,
+              taskState!,
+            ),
             end_session: true,
             // card: marusyaCards.stuff,
           },
@@ -300,7 +380,7 @@ export class ScenarioService {
         tts: tasks.length
           ? MarusyaResponseTxt.tasks
           : MarusyaResponseTxt.noTasks,
-        end_session: false,
+        end_session: !tasks.length,
         buttons: tasks.length ? tasks : undefined,
       },
       session: {
@@ -309,6 +389,52 @@ export class ScenarioService {
         user_id: ask.session.application.application_id,
       },
       version: '1.0',
+      session_state: tasks.length
+        ? {
+            wait: MarusyaWaitState.WaitForShowTaskInfo,
+            taskState: MarusyaTaskState.update,
+          }
+        : undefined,
+    };
+  }
+  async marusyaShowTaskInfo(ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const { payload } = ask.request;
+    const { user } = ask.session;
+    const { list } = ask.state.user;
+    const { taskState } = ask.state.session;
+    const vkUserId = 11437372; //user?.vk_user_id!;
+
+    // TODO: get by task name
+    if (!payload?.taskId) return this.marusyaError(ask);
+    const task = await this.m.getTask(vkUserId, list!, payload.taskId);
+    if (!task) return this.marusyaError(ask);
+
+    return {
+      response: {
+        text: MarusyaResponseTxt.taskFound(
+          task.name,
+          task.dueDate,
+          task.description,
+        ),
+        tts: MarusyaResponseTxt.taskFound(
+          task.name,
+          task.dueDate,
+          task.description,
+        ),
+        end_session: false,
+        buttons: marusyaButtons.choise,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
+      session_state: {
+        wait: MarusyaWaitState.WaitForUserChoise,
+        taskId: task.id,
+        taskState,
+      },
     };
   }
 
@@ -330,9 +456,7 @@ export class ScenarioService {
           user_id: ask.session.application.application_id,
         },
         version: '1.0',
-        session_state: {
-          wait: MarusyaWaitState.WaitForTaskName,
-        },
+        session_state: ask.state.session,
       };
     }
     const res = await action();
@@ -354,5 +478,23 @@ export class ScenarioService {
       },
       version: '1.0',
     };
+  }
+
+  private parseTime(time: string, tokens: string[]) {
+    moment.locale('ru');
+    if (moment(time, 'DD.MM').isValid()) {
+      return moment(time, 'DD.MM').format();
+    }
+
+    const index = tokens.indexOf(
+      tokens.find((v) => moment.weekdays().includes(v)) ?? '',
+    );
+    const foundDay = index !== -1 ? tokens[index] : null;
+
+    if (foundDay) {
+      return moment().day(foundDay).format();
+    }
+
+    return 'unknown';
   }
 }

@@ -1,4 +1,4 @@
-import { MarusyaUserChoise } from './commands';
+import { MarusyaTaskState, MarusyaUserChoise } from './commands';
 import { MarusyaButton, MarusyaCards } from './dto';
 import * as moment from 'moment';
 
@@ -7,25 +7,42 @@ export const MarusyaResponseTxt = {
     'Похоже, что для Вас у меня есть отличное приложение. Stuff послужит Вам прекрасным приложением для создания задач.',
   askTaskName: 'Какую задачу Вы хотите создать?',
   taskNameLong: 'Название слишком длинное. Попробуйте выбрать другое.',
-  wantsMore: 'Я создала задачу. Хотите что-то еще добавить?',
-  wantsChangeDone: 'Сделано. Хотите что-то изменить?',
-  wantsChangeReady: 'Готово. Хотите что-то изменить?',
+  wantsMore: 'Я создала задачу. Хотите что-то ещё добавить или изменить?',
+  wantsChangeDone: 'Сделано. Хотите ещё что-то изменить?',
+  wantsChangeReady: 'Готово. Хотите ещё что-то изменить?',
   listen: 'Слушаю вас',
-  time: 'Укажите дату или день?',
-  wrongTime: 'Я не понимаю. Попробуйте изменить дату или день.',
+  time: 'Укажите дату или день недели.',
+  wrongTime: 'Я не понимаю. Попробуйте изменить дату или день недели.',
   error:
-    'Кажется я сломалась... Но Вы всегда можете использовать приложение Stuff.',
+    'Кажется я что-то не поняла... Но Вы всегда можете использовать приложение Stuff.',
   tasks: 'Вот список Ваших задач.',
   noTasks: 'Кажется у меня нет Ваших задач.',
-  taskCreated: (task: string, time: Date | null) => {
-    let res = `Задача "${task}" создана.`;
+  taskCreated: (
+    task: string,
+    time: Date | null,
+    taskState: MarusyaTaskState,
+  ) => {
+    const state =
+      taskState === MarusyaTaskState.create ? 'создана' : 'обновлена';
+    let res = `Задача "${task}" ${state}.`;
     if (time) {
       moment.locale('ru');
       res += ` Необходимо её закончить до ${moment(time).format(
-        'MMMM Do YYYY',
+        'Do MMMM YYYY',
       )}.`;
     }
-    return `${res} Вы можете управлять своими задачами прямо в прлижении Stuff`;
+    return `${res}\nВы можете управлять своими задачами прямо в прлижении Stuff`;
+  },
+  taskFound: (task: string, time: Date | null, desc: string | null) => {
+    let res = `Задача - "${task}".\n`;
+    if (time) {
+      moment.locale('ru');
+      res += `Крайний срок до ${moment(time).format('Do MMMM YYYY')}.\n`;
+    }
+    if (desc) {
+      res += `Подробное описание - ${desc}.\n`;
+    }
+    return `${res}Хотите что-то изменить?`;
   },
 };
 
@@ -54,6 +71,12 @@ export const marusyaButtons: MarusyaButtons = {
       title: 'Время',
       payload: {
         choise: MarusyaUserChoise.time,
+      },
+    },
+    {
+      title: 'Название',
+      payload: {
+        choise: MarusyaUserChoise.name,
       },
     },
     {

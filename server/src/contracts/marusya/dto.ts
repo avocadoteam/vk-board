@@ -1,4 +1,4 @@
-import { MarusyaUserChoise, MarusyaWaitState } from './commands';
+import { MarusyaTaskState, MarusyaUserChoise, MarusyaWaitState } from './commands';
 
 export type MarusyaAsk = {
   meta: {
@@ -34,6 +34,8 @@ export type MarusyaAsk = {
        * YYYY-MM-DD
        */
       date?: string;
+
+      taskId?: string;
     };
   };
 
@@ -61,6 +63,7 @@ export type MarusyaAsk = {
     session: {
       wait?: MarusyaWaitState;
       taskId?: string;
+      taskState?: MarusyaTaskState;
     };
     user: {
       list?: number;
@@ -103,6 +106,7 @@ export type MarusyaResponse = {
   version: '1.0';
   session_state?: {
     wait?: MarusyaWaitState;
+    taskState?: MarusyaTaskState;
     taskId?: string;
   };
   user_state_update?: {
