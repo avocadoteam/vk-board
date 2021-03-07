@@ -31,7 +31,7 @@ export class MTasksService {
   }
 
   async getTasks(vkUserId: number, listId: number) {
-    const tasks = await this.taskServ.getTasks(listId, vkUserId);
+    const tasks = await this.taskServ.getNotFinishedTasks(listId, vkUserId);
 
     return tasks.map((t) => ({
       title: t.name,
@@ -42,6 +42,15 @@ export class MTasksService {
   }
   async getTask(vkUserId: number, listId: number, taskId: string) {
     const tasks = await this.taskServ.getTask(listId, vkUserId, taskId);
+
+    if (!tasks || !tasks[0]) {
+      return null;
+    }
+
+    return tasks[0];
+  }
+  async getTaskByName(vkUserId: number, listId: number, taskName: string) {
+    const tasks = await this.taskServ.getTaskByName(listId, vkUserId, taskName);
 
     if (!tasks || !tasks[0]) {
       return null;

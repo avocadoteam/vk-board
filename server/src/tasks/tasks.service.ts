@@ -165,13 +165,73 @@ export class TasksService {
       })) ?? []
     );
   }
+  async getNotFinishedTasks(listId: number, vkUserId: number) {
+    const notificationTasks = (await this.tableNotification.findOne(
+      {
+        userId: vkUserId,
+      },
+      { select: ['tasks'] },
+    )) ?? { tasks: [] as string[] };
+    let list = await this.tableList
+      .createQueryBuilder('list')
+      .innerJoinAndSelect(
+        'list.tasks',
+        'task',
+        `task.list_id = ${listId} and task.deleted is null and task.finished is null`,
+      )
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+      )
+      .where([
+        {
+          deleted: null,
+          id: listId,
+        },
+      ])
+      .orderBy({
+        'task.created': 'DESC',
+      })
+      .getOne();
+
+    return (
+      list?.tasks.map((t) => ({
+        ...t,
+        notification: notificationTasks.tasks?.includes(t.id),
+      })) ?? []
+    );
+  }
   async getTask(listId: number, vkUserId: number, taskId: string) {
     let list = await this.tableList
       .createQueryBuilder('list')
       .innerJoinAndSelect(
         'list.tasks',
         'task',
-        `task.list_id = ${listId} and task.deleted is null and task.id = ${taskId}`,
+        `task.list_id = ${listId} and task.deleted is null and task.id = ${taskId} and task.finished is null`,
+      )
+      .innerJoin(
+        'list.memberships',
+        'membership',
+        `membership.joined_id = ${vkUserId} and membership.left_date is null`,
+      )
+      .where([
+        {
+          deleted: null,
+          id: listId,
+        },
+      ])
+      .getOne();
+
+    return list?.tasks;
+  }
+  async getTaskByName(listId: number, vkUserId: number, taskName: string) {
+    let list = await this.tableList
+      .createQueryBuilder('list')
+      .innerJoinAndSelect(
+        'list.tasks',
+        'task',
+        `task.list_id = ${listId} and task.deleted is null and task.name = ${taskName} and task.finished is null`,
       )
       .innerJoin(
         'list.memberships',
