@@ -89,8 +89,8 @@ export class MarusyaController {
 
       return {
         response: {
-          text: MarusyaResponseTxt.noUser,
-          tts: MarusyaResponseTxt.noUser,
+          text: MarusyaResponseTxt.noCommands,
+          tts: MarusyaResponseTxt.noCommands,
           end_session: true,
           // card: marusyaCards.stuff,
         },
