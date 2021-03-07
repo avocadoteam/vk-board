@@ -20,6 +20,12 @@ export enum MarusyaUserChoise {
   time = 'time',
   end = 'end',
 }
+export enum MarusyaUserChoiseVoice {
+  description = 'описание',
+  name = 'название',
+  time = 'время',
+  end = 'нет',
+}
 export enum MarusyaTaskState {
   create = 'create',
   update = 'update'

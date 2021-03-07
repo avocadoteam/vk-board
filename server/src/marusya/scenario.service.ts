@@ -8,6 +8,7 @@ import {
   MarusyaResponseTxt,
   MarusyaTaskState,
   MarusyaUserChoise,
+  MarusyaUserChoiseVoice,
   MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MTasksService } from './m-tasks.service';
@@ -266,17 +267,18 @@ export class ScenarioService {
   }
 
   async marusyaProcessUserChoise(ask: MarusyaAsk): Promise<MarusyaResponse> {
-    const { payload } = ask.request;
+    const { payload, nlu } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
     const { taskId, taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
-    if (!payload?.choise || !taskId) {
+    const choise = payload?.choise ?? this.getChoiseFromCommand(nlu.tokens);
+    if (!choise || !taskId) {
       return this.marusyaError(ask);
     }
 
-    switch (payload.choise) {
+    switch (choise) {
       case MarusyaUserChoise.description:
         return {
           response: {
@@ -496,5 +498,21 @@ export class ScenarioService {
     }
 
     return 'unknown';
+  }
+
+  private getChoiseFromCommand(tokens: string[]) {
+    if (tokens.includes(MarusyaUserChoiseVoice.end)) {
+      return MarusyaUserChoise.end;
+    }
+    if (tokens.includes(MarusyaUserChoiseVoice.description)) {
+      return MarusyaUserChoise.description;
+    }
+    if (tokens.includes(MarusyaUserChoiseVoice.name)) {
+      return MarusyaUserChoise.name;
+    }
+    if (tokens.includes(MarusyaUserChoiseVoice.time)) {
+      return MarusyaUserChoise.time;
+    }
+    return '';
   }
 }
