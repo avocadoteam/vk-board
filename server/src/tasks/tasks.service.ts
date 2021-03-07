@@ -231,7 +231,7 @@ export class TasksService {
       .innerJoinAndSelect(
         'list.tasks',
         'task',
-        `task.list_id = ${listId} and task.deleted is null and task.name = ${taskName} and task.finished is null`,
+        `task.list_id = ${listId} and task.deleted is null and task.name like '%${taskName}%' and task.finished is null`,
       )
       .innerJoin(
         'list.memberships',

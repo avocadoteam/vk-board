@@ -3,10 +3,12 @@ export enum MarusyaCommand {
   My = 'мо',
   Show = 'покажи',
   Task = 'задач',
+  Finish = 'заверш'
 }
 
 export enum MarusyaWaitState {
   WaitForTaskName = 'WaitForTaskName',
+  WaitForTaskNameToFinish = 'WaitForTaskNameToFinish',
   WaitForChangeTaskName = 'WaitForChangeTaskName',
   WaitForUserChoise = 'WaitForUserChoise',
   WaitForDescription = 'WaitForDescription',

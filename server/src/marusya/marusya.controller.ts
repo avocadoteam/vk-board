@@ -42,6 +42,11 @@ export class MarusyaController {
           case MarusyaWaitState.WaitForTaskName:
             const tnres = await this.scenario.marusyaWaitForTaskName(ask);
             return tnres;
+          case MarusyaWaitState.WaitForTaskNameToFinish:
+            const tnfres = await this.scenario.marusyaWaitForTaskNameToFinish(
+              ask,
+            );
+            return tnfres;
           case MarusyaWaitState.WaitForUserChoise:
             const ucres = await this.scenario.marusyaProcessUserChoise(ask);
             return ucres;
@@ -60,6 +65,16 @@ export class MarusyaController {
           default:
             break;
         }
+      }
+
+      if (
+        and(
+          command.includes(MarusyaCommand.Finish),
+          command.includes(MarusyaCommand.Task),
+        )
+      ) {
+        const mtres = await this.scenario.marusyaFinishTask(ask);
+        return mtres;
       }
 
       if (

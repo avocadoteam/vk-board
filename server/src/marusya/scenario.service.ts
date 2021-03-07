@@ -81,6 +81,119 @@ export class ScenarioService {
     }
   }
 
+  async marusyaWaitForTaskNameToFinish(
+    ask: MarusyaAsk,
+  ): Promise<MarusyaResponse> {
+    const { command } = ask.request;
+    const { user } = ask.session;
+    const { list } = ask.state.user;
+
+    const vkUserId = 11437372; //user?.vk_user_id!;
+
+    const task = await this.m.getTaskByName(
+      vkUserId,
+      list!,
+      command.toLowerCase(),
+    );
+
+    if (!task) return this.noTask(ask);
+
+    await this.m.finishTask([task.id], list!, vkUserId);
+
+    return {
+      response: {
+        text: MarusyaResponseTxt.taskFinished(task.name),
+        tts: MarusyaResponseTxt.taskFinished(task.name),
+        end_session: true,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
+    };
+  }
+
+  async marusyaFinishTask(ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const { nlu } = ask.request;
+    const { user } = ask.session;
+    const { list } = ask.state.user;
+
+    const vkUserId = 11437372; //user?.vk_user_id!;
+
+    if (!list) return this.noTasks(ask);
+
+    const foundTokens = nlu.tokens.slice(
+      nlu.tokens.indexOf(
+        nlu.tokens.find((v) => v.includes(MarusyaCommand.Task)) ?? '',
+      ),
+    );
+
+    if (foundTokens.length > 1) {
+      foundTokens.shift();
+      const taskName = foundTokens.join(' ');
+      const task = await this.m.getTaskByName(vkUserId, list, taskName);
+
+      if (!task) {
+        const tasks = await this.m.getTasks(vkUserId, list);
+
+        return {
+          response: {
+            text: MarusyaResponseTxt.foundTasksToFinish,
+            tts: MarusyaResponseTxt.foundTasksToFinish,
+            end_session: false,
+            buttons: tasks,
+          },
+          session: {
+            message_id: ask.session.message_id,
+            session_id: ask.session.session_id,
+            user_id: ask.session.application.application_id,
+          },
+          version: '1.0',
+          session_state: {
+            wait: MarusyaWaitState.WaitForTaskNameToFinish,
+          },
+        };
+      }
+
+      await this.m.finishTask([task.id], list, vkUserId);
+
+      return {
+        response: {
+          text: MarusyaResponseTxt.taskFinished(task.name),
+          tts: MarusyaResponseTxt.taskFinished(task.name),
+          end_session: true,
+        },
+        session: {
+          message_id: ask.session.message_id,
+          session_id: ask.session.session_id,
+          user_id: ask.session.application.application_id,
+        },
+        version: '1.0',
+      };
+    } else {
+      const tasks = await this.m.getTasks(vkUserId, list);
+      return {
+        response: {
+          text: MarusyaResponseTxt.askTaskNameFinish,
+          tts: MarusyaResponseTxt.askTaskNameFinish,
+          end_session: false,
+          buttons: tasks,
+        },
+        session: {
+          message_id: ask.session.message_id,
+          session_id: ask.session.session_id,
+          user_id: ask.session.application.application_id,
+        },
+        version: '1.0',
+        session_state: {
+          wait: MarusyaWaitState.WaitForTaskNameToFinish,
+        },
+      };
+    }
+  }
+
   marusyaWaitForTaskName(ask: MarusyaAsk): Promise<MarusyaResponse> {
     const { nlu } = ask.request;
     const { user } = ask.session;
@@ -374,16 +487,13 @@ export class ScenarioService {
 
     const vkUserId = 11437372; //user?.vk_user_id!;
     const tasks = list ? await this.m.getTasks(vkUserId, list) : [];
+    if (!tasks.length) return this.noTasks(ask);
     return {
       response: {
-        text: tasks.length
-          ? MarusyaResponseTxt.tasks
-          : MarusyaResponseTxt.noTasks,
-        tts: tasks.length
-          ? MarusyaResponseTxt.tasks
-          : MarusyaResponseTxt.noTasks,
-        end_session: !tasks.length,
-        buttons: tasks.length ? tasks : undefined,
+        text: MarusyaResponseTxt.tasks,
+        tts: MarusyaResponseTxt.tasks,
+        end_session: false,
+        buttons: tasks,
       },
       session: {
         message_id: ask.session.message_id,
@@ -391,24 +501,25 @@ export class ScenarioService {
         user_id: ask.session.application.application_id,
       },
       version: '1.0',
-      session_state: tasks.length
-        ? {
-            wait: MarusyaWaitState.WaitForShowTaskInfo,
-            taskState: MarusyaTaskState.update,
-          }
-        : undefined,
+      session_state: {
+        wait: MarusyaWaitState.WaitForShowTaskInfo,
+        taskState: MarusyaTaskState.update,
+      },
     };
   }
   async marusyaShowTaskInfo(ask: MarusyaAsk): Promise<MarusyaResponse> {
-    const { payload } = ask.request;
+    const { payload, command } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
     const { taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
-    // TODO: get by task name
-    if (!payload?.taskId) return this.marusyaError(ask);
-    const task = await this.m.getTask(vkUserId, list!, payload.taskId);
+    const taskId =
+      payload?.taskId ??
+      (await this.m.getTaskByName(vkUserId, list!, command.toLowerCase()))?.id;
+
+    if (!taskId) return this.noTask(ask);
+    const task = await this.m.getTask(vkUserId, list!, taskId);
     if (!task) return this.marusyaError(ask);
 
     return {
@@ -437,6 +548,37 @@ export class ScenarioService {
         taskId: task.id,
         taskState,
       },
+    };
+  }
+
+  private noTasks(ask: MarusyaAsk): MarusyaResponse {
+    return {
+      response: {
+        text: MarusyaResponseTxt.noTasks,
+        tts: MarusyaResponseTxt.noTasks,
+        end_session: true,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
+    };
+  }
+  private noTask(ask: MarusyaAsk): MarusyaResponse {
+    return {
+      response: {
+        text: MarusyaResponseTxt.noTask,
+        tts: MarusyaResponseTxt.noTask,
+        end_session: true,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
     };
   }
 

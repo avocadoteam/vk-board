@@ -71,6 +71,9 @@ export class MTasksService {
 
     await this.taskServ.updateTask(model, vkUserId);
   }
+  finishTask(taskIds: string[], listId: number, vkUserId: number) {
+    return this.taskServ.finishTasks(taskIds, listId, vkUserId);
+  }
   validateDueDate(dueDate: string | null) {
     return this.taskServ.validateDueDate(dueDate);
   }
