@@ -9,12 +9,14 @@ import integrationConfig from 'src/config/integration.config';
 import { AppController } from './app.controller';
 import { BoardController } from './board/board.controller';
 import { BoardModule } from './board/board.module';
+import { appV } from './constants';
 import { EventsModule } from './events/events.module';
 import { GoogleTasksModule } from './google-tasks/google-tasks.module';
 import { FetchLimiter } from './interceptors/rate-limiter';
 import { ListController } from './list/list.controller';
 import { ListModule } from './list/list.module';
 import { MarusyaModule } from './marusya/marusya.module';
+import { SentryModule } from './modules/sentry';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentModule } from './payment/payment.module';
 import { RestricitionsModule } from './restricitions/restricitions.module';
@@ -47,6 +49,15 @@ import { TasksModule } from './tasks/tasks.module';
         logNotifications: true,
         logger: 'advanced-console',
         logging: ['query', 'schema', 'error'],
+      }),
+      inject: [ConfigService],
+    }),
+    SentryModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        dsn: configService.get<string>('integration.sentryDNS', ''),
+        release: appV,
+        enabled: !configService.get<boolean>('core.devMode', true),
+        environment: 'stuff-be',
       }),
       inject: [ConfigService],
     }),

@@ -1,17 +1,14 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import * as helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
-import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
-import * as logger from 'morgan';
-import { RedisIoAdapter } from './adapters/redis-io.adapter';
-import * as sentry from '@sentry/node';
-import { SentryInterceptor } from './interceptors/sentry.interceptor';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as helmet from 'helmet';
 import * as moment from 'moment';
-import { appV } from './constants';
+import * as logger from 'morgan';
+import { join } from 'path';
+import { RedisIoAdapter } from './adapters/redis-io.adapter';
+import { AppModule } from './app.module';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -19,12 +16,6 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-
-  sentry.init({
-    dsn: configService.get<string>('integration.sentryDNS', ''),
-    enabled: !configService.get<boolean>('core.devMode', true),
-    release: appV,
-  });
 
   app.use(
     helmet({
@@ -39,9 +30,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  app.use(sentry.Handlers.errorHandler());
   app.useWebSocketAdapter(new RedisIoAdapter(app));
-  app.useGlobalInterceptors(new TimeoutInterceptor(), new SentryInterceptor());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
