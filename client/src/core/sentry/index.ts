@@ -2,14 +2,23 @@ import * as sentry from '@sentry/browser';
 import { Severity, User } from '@sentry/types';
 import { store } from 'core/store';
 import { UserInfo } from '@vkontakte/vk-bridge';
-import { appV } from 'core/models';
+import { appV, isDev } from 'core/models';
 
 export const captureUrlEvent = (message: string, request: sentry.Request = {}) => {
+  if (isDev) {
+    console.error(message);
+  }
   sentry.captureEvent({
     message,
     request,
     level: Severity.Error,
   });
+};
+export const captureException = (exception: any) => {
+  if (isDev) {
+    console.error(exception);
+  }
+  sentry.captureException(exception);
 };
 
 const beforeSend: sentry.BrowserOptions['beforeSend'] = (event) => {
@@ -45,7 +54,7 @@ export async function initSentry() {
     release: appV.toString(),
     beforeSend,
     enabled: process.env.NODE_ENV === 'production',
-    environment: 'production',
+    environment: 'stuff-fe',
     ignoreErrors: [/Non-Error promise rejection captured with keys/i],
   });
 }
