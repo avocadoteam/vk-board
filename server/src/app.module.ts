@@ -47,7 +47,7 @@ import { TasksModule } from './tasks/tasks.module';
         synchronize: false,
         migrationsRun: true,
         logNotifications: true,
-        logger: 'advanced-console',
+        logger: 'simple-console',
         logging: ['query', 'schema', 'error'],
       }),
       inject: [ConfigService],
@@ -56,7 +56,7 @@ import { TasksModule } from './tasks/tasks.module';
       useFactory: (configService: ConfigService) => ({
         dsn: configService.get<string>('integration.sentryDNS', ''),
         release: appV,
-        enabled: !configService.get<boolean>('core.devMode', true),
+        enabled: true,
         environment: 'stuff-be',
       }),
       inject: [ConfigService],

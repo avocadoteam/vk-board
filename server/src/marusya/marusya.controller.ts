@@ -1,14 +1,13 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { and, not } from 'ramda';
-import coreConfig from 'src/config/core.config';
 import {
   MarusyaAsk,
   marusyaCards,
   MarusyaCommand,
   MarusyaResponse,
   MarusyaResponseTxt,
-  MarusyaWaitState,
+  MarusyaWaitState
 } from 'src/contracts/marusya';
 import { ScenarioService } from './scenario.service';
 
@@ -16,8 +15,7 @@ import { ScenarioService } from './scenario.service';
 export class MarusyaController {
   constructor(
     private readonly scenario: ScenarioService,
-    @Inject(coreConfig.KEY)
-    private core: ConfigType<typeof coreConfig>,
+    private readonly config: ConfigService,
   ) {}
   @Post()
   async randomShit(@Body() ask: MarusyaAsk): Promise<MarusyaResponse> {
@@ -124,7 +122,7 @@ export class MarusyaController {
           text: MarusyaResponseTxt.noCommands,
           tts: MarusyaResponseTxt.noCommands,
           end_session: true,
-          card: this.core.devMode ? undefined : marusyaCards.stuff,
+          card: this.config.get('core.devMode') ? undefined : marusyaCards.stuff,
         },
         session: {
           message_id: ask.session.message_id,
