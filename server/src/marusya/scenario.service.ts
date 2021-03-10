@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   MarusyaAsk,
   marusyaButtons,
@@ -13,11 +13,17 @@ import {
 } from 'src/contracts/marusya';
 import { MTasksService } from './m-tasks.service';
 import * as moment from 'moment';
+import { ConfigType } from '@nestjs/config';
+import coreConfig from 'src/config/core.config';
 
 @Injectable()
 export class ScenarioService {
   private readonly logger = new Logger(ScenarioService.name);
-  constructor(private readonly m: MTasksService) {}
+  constructor(
+    private readonly m: MTasksService,
+    @Inject(coreConfig.KEY)
+    private core: ConfigType<typeof coreConfig>,
+  ) {}
 
   async marusyaCreateTask(ask: MarusyaAsk): Promise<MarusyaResponse> {
     const { nlu } = ask.request;
@@ -467,7 +473,7 @@ export class ScenarioService {
               taskState!,
             ),
             end_session: true,
-            // card: marusyaCards.stuff,
+            card: this.core.devMode ? undefined : marusyaCards.stuff,
           },
           session: {
             message_id: ask.session.message_id,
@@ -613,7 +619,7 @@ export class ScenarioService {
         text: MarusyaResponseTxt.error,
         tts: MarusyaResponseTxt.error,
         end_session: true,
-        // card: marusyaCards.stuff,
+        card: this.core.devMode ? undefined : marusyaCards.stuff,
       },
       session: {
         message_id: ask.session.message_id,
