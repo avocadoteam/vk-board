@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { and, not } from 'ramda';
+import { and, not, or } from 'ramda';
 import {
   MarusyaAsk,
   marusyaCards,
@@ -52,6 +52,24 @@ export class MarusyaController {
       //     version: '1.0',
       //   };
       // }
+
+      if (
+        or(command === MarusyaCommand.Exit, command === MarusyaCommand.Stop)
+      ) {
+        return {
+          response: {
+            text: MarusyaResponseTxt.bye,
+            tts: MarusyaResponseTxt.bye,
+            end_session: true,
+          },
+          session: {
+            message_id: ask.session.message_id,
+            session_id: ask.session.session_id,
+            user_id: ask.session.application.application_id,
+          },
+          version: '1.0',
+        };
+      }
 
       if (wait) {
         switch (wait) {

@@ -3,7 +3,9 @@ export enum MarusyaCommand {
   My = 'мо',
   Show = 'покажи',
   Task = 'задач',
-  Finish = 'заверш'
+  Finish = 'заверш',
+  Stop = 'cтоп',
+  Exit = 'выход'
 }
 
 export enum MarusyaWaitState {
