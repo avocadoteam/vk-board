@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsObject,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -50,6 +51,7 @@ class MarusyaRequest {
     entities: string[];
   };
 
+  @ValidateIf((o) => !!o.payload)
   @IsObject()
   payload?: {
     choise?: MarusyaUserChoise;
