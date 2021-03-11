@@ -29,10 +29,13 @@ export class MarusyaController {
 
   private async getMarusyaRes(ask: MarusyaAsk): Promise<MarusyaResponse> {
     try {
-      const { command: vkCommand } = ask.request;
+      const { command: vkCommand, nlu } = ask.request;
       const { user } = ask.session;
       const { wait } = ask.state.session;
-      const command = vkCommand.toLowerCase();
+      const command = !!vkCommand
+        ? vkCommand.toLowerCase()
+        : nlu.tokens.join(' ').toLowerCase();
+      ask.request.command = command;
       // if (!user || !user.vk_user_id) {
       //   return {
       //     response: {

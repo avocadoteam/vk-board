@@ -472,9 +472,9 @@ export class ScenarioService {
               taskState!,
             ),
             end_session: true,
-            card: this.config.get('core.devMode')
-              ? undefined
-              : marusyaCards.stuff,
+            // card: this.config.get('core.devMode')
+            //   ? undefined
+            //   : marusyaCards.stuff,
           },
           session: {
             message_id: ask.session.message_id,
@@ -620,7 +620,7 @@ export class ScenarioService {
         text: MarusyaResponseTxt.error,
         tts: MarusyaResponseTxt.error,
         end_session: true,
-        card: this.config.get('core.devMode') ? undefined : marusyaCards.stuff,
+        // card: this.config.get('core.devMode') ? undefined : marusyaCards.stuff,
       },
       session: {
         message_id: ask.session.message_id,
