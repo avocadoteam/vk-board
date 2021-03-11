@@ -5,7 +5,8 @@ export enum MarusyaCommand {
   Task = 'задач',
   Finish = 'заверш',
   Stop = 'cтоп',
-  Exit = 'выход'
+  Exit = 'выход',
+  Interrupt = 'on_interrupt'
 }
 
 export enum MarusyaWaitState {

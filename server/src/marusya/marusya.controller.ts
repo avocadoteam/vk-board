@@ -29,11 +29,11 @@ export class MarusyaController {
 
   private async getMarusyaRes(ask: MarusyaAsk): Promise<MarusyaResponse> {
     try {
-      const { command: vkCommand, nlu } = ask.request;
+      const { command: vkCommand, nlu, original_utterance } = ask.request;
       const { user } = ask.session;
       const { wait } = ask.state.session;
-      const command = !!vkCommand
-        ? vkCommand.toLowerCase()
+      const command = !!original_utterance
+        ? original_utterance.toLowerCase()
         : nlu.tokens.join(' ').toLowerCase();
       ask.request.command = command;
       // if (!user || !user.vk_user_id) {
@@ -54,6 +54,7 @@ export class MarusyaController {
       // }
 
       if (
+        vkCommand === MarusyaCommand.Interrupt ||
         or(command === MarusyaCommand.Exit, command === MarusyaCommand.Stop)
       ) {
         return {
