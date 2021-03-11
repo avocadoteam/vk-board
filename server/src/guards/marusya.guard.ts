@@ -28,7 +28,7 @@ export class MarusyaGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
 
     const sameSecret =
-      request.body.session.skill_id === this.config.marusyaSkillId;
+      request.body?.session?.skill_id === this.config.marusyaSkillId;
 
     this.logger.log(`controller ${request.path} result ${sameSecret}`);
 
