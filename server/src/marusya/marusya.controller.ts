@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { and, not } from 'ramda';
 import {
@@ -7,11 +7,13 @@ import {
   MarusyaCommand,
   MarusyaResponse,
   MarusyaResponseTxt,
-  MarusyaWaitState
+  MarusyaWaitState,
 } from 'src/contracts/marusya';
+import { MarusyaGuard } from 'src/guards/marusya.guard';
 import { ScenarioService } from './scenario.service';
 
 @Controller('api/marusya')
+@UseGuards(MarusyaGuard)
 export class MarusyaController {
   constructor(
     private readonly scenario: ScenarioService,
@@ -122,7 +124,9 @@ export class MarusyaController {
           text: MarusyaResponseTxt.noCommands,
           tts: MarusyaResponseTxt.noCommands,
           end_session: true,
-          card: this.config.get('core.devMode') ? undefined : marusyaCards.stuff,
+          card: this.config.get('core.devMode')
+            ? undefined
+            : marusyaCards.stuff,
         },
         session: {
           message_id: ask.session.message_id,

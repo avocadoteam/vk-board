@@ -43,5 +43,3 @@ async function bootstrap() {
   });
 }
 bootstrap();
-
-setTimeout(() => console.dir('PRIVET'), 50000);

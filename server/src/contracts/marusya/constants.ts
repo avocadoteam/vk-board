@@ -98,11 +98,26 @@ export const marusyaButtons: MarusyaButtons = {
 
     const weekDays = moment.weekdaysMin();
     weekDays.shift();
-    return weekDays.map((wd) => ({
-      title: wd,
-      payload: {
-        date: moment().day(wd).format('YYYY-MM-DD'),
-      },
-    }));
+    return weekDays
+      .map((wd) => {
+        const tomorrow = moment().add(1, 'day');
+        const dueDate = moment().day(wd);
+        return {
+          title: wd,
+          payload: {
+            date: isBeforeTomorrow(tomorrow, dueDate)
+              ? dueDate.add(1, 'week').format('YYYY-MM-DD')
+              : dueDate.format('YYYY-MM-DD'),
+          },
+        };
+      })
+      .sort((a, b) =>
+        moment(a.payload.date).isAfter(b.payload.date) ? 1 : -1,
+      );
   },
 };
+
+export const isBeforeTomorrow = (
+  tomorrow: moment.Moment,
+  dueDate: moment.Moment,
+) => moment(dueDate).isBefore(tomorrow, 'day');

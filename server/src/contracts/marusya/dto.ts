@@ -1,80 +1,138 @@
-import { MarusyaTaskState, MarusyaUserChoise, MarusyaWaitState } from './commands';
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import {
+  MarusyaTaskState,
+  MarusyaUserChoise,
+  MarusyaWaitState,
+} from './commands';
 
-export type MarusyaAsk = {
-  meta: {
-    client_id: string;
+class MarusyaMeta {
+  @IsString()
+  client_id!: string;
+  /**
+   * ru_RU
+   */
+  @IsString()
+  locale!: string;
+  /**
+   * 'Europe/Prague'
+   */
+  @IsString()
+  timezone!: string;
+
+  @IsObject()
+  interfaces!: {
+    screen: {};
+  };
+  @IsString()
+  _city_ru!: string;
+}
+
+class MarusyaRequest {
+  /**
+   * stuff умения
+   */
+  @IsString()
+  command!: string;
+
+  @IsString()
+  original_utterance!: string;
+
+  @IsObject()
+  nlu!: {
+    tokens: string[];
+    entities: string[];
+  };
+
+  @IsObject()
+  payload?: {
+    choise?: MarusyaUserChoise;
     /**
-     * ru_RU
+     * YYYY-MM-DD
      */
-    locale: string;
+    date?: string;
+
+    taskId?: string;
+  };
+}
+
+class MarusyaSession {
+  @IsString()
+  session_id!: string;
+
+  @IsString()
+  skill_id!: string;
+
+  @IsBoolean()
+  new!: boolean;
+
+  @IsNumber()
+  message_id!: number;
+
+  @IsObject()
+  application!: {
+    application_id: string;
+    application_type: 'mobile' | 'speaker' | 'other';
+  };
+
+  @IsObject()
+  user?: {
     /**
-     * 'Europe/Prague'
+     * скилл + аккаунт.
      */
-    timezone: string;
-    interfaces: {
-      screen: {};
-    };
-    _city_ru: string;
+    user_id: string;
+
+    vk_user_id?: number;
+  };
+}
+
+export class MarusyaState {
+  @IsObject()
+  session!: {
+    wait?: MarusyaWaitState;
+    taskId?: string;
+    taskState?: MarusyaTaskState;
   };
 
-  request: {
-    /**
-     * stuff умения
-     */
-    command: string;
-    original_utterance: string;
-    nlu: {
-      tokens: string[];
-      entities: string[];
-    };
-
-    payload?: {
-      choise?: MarusyaUserChoise;
-      /**
-       * YYYY-MM-DD
-       */
-      date?: string;
-
-      taskId?: string;
-    };
+  @IsObject()
+  user!: {
+    list?: number;
   };
+}
 
-  session: {
-    session_id: string;
-    skill_id: string;
-    new: boolean;
-    message_id: number;
-    application: {
-      application_id: string;
-      application_type: 'mobile' | 'speaker' | 'other';
-    };
+export class MarusyaAsk {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MarusyaMeta)
+  meta!: MarusyaMeta;
 
-    user?: {
-      /**
-       * скилл + аккаунт.
-       */
-      user_id: string;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MarusyaRequest)
+  request!: MarusyaRequest;
 
-      vk_user_id?: number;
-    };
-  };
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MarusyaSession)
+  session!: MarusyaSession;
 
-  state: {
-    session: {
-      wait?: MarusyaWaitState;
-      taskId?: string;
-      taskState?: MarusyaTaskState;
-    };
-    user: {
-      list?: number;
-    };
-  };
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MarusyaState)
+  state!: MarusyaState;
 
   /**
    * 1.0
    */
-  version: string;
-};
+  @IsString()
+  version!: string;
+}
 
 export type MarusyaResponse = {
   response: {

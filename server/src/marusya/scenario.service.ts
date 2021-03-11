@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as moment from 'moment';
 import {
+  isBeforeTomorrow,
   MarusyaAsk,
   marusyaButtons,
   marusyaCards,
@@ -11,7 +12,7 @@ import {
   MarusyaTaskState,
   MarusyaUserChoise,
   MarusyaUserChoiseVoice,
-  MarusyaWaitState
+  MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MTasksService } from './m-tasks.service';
 
@@ -471,7 +472,9 @@ export class ScenarioService {
               taskState!,
             ),
             end_session: true,
-            card: this.config.get('core.devMode') ? undefined : marusyaCards.stuff,
+            card: this.config.get('core.devMode')
+              ? undefined
+              : marusyaCards.stuff,
           },
           session: {
             message_id: ask.session.message_id,
@@ -637,10 +640,24 @@ export class ScenarioService {
     const index = tokens.indexOf(
       tokens.find((v) => moment.weekdays().includes(v)) ?? '',
     );
+    const index2 = tokens.indexOf(
+      tokens.find((v) => moment.weekdaysShort().includes(v)) ?? '',
+    );
+    const index3 = tokens.indexOf(
+      tokens.find((v) => moment.weekdaysMin().includes(v)) ?? '',
+    );
     const foundDay = index !== -1 ? tokens[index] : null;
+    const foundDay2 = index2 !== -1 ? tokens[index2] : null;
+    const foundDay3 = index3 !== -1 ? tokens[index3] : null;
 
-    if (foundDay) {
-      return moment().day(foundDay).format();
+    const day = foundDay ?? foundDay2 ?? foundDay3;
+
+    if (day) {
+      const tomorrow = moment().add(1, 'day');
+      const dueDate = moment().day(day);
+      return isBeforeTomorrow(tomorrow, dueDate)
+        ? dueDate.add(1, 'week').format()
+        : dueDate.format();
     }
 
     return 'unknown';

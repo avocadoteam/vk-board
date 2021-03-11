@@ -8,4 +8,5 @@ export default registerAs('integration', () => ({
   sentryDNS: process.env.SENTRY_DNS,
   vkConfirmCode: process.env.VK_CONFIRM_CODE,
   vkCbSecret: process.env.VK_CB_SECRET,
+  marusyaSkillId: process.env.MARUSYA
 }));
