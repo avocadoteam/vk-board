@@ -27,8 +27,7 @@ export class MarusyaGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    console.log(request.body);
-    console.log(JSON.stringify(request.body))
+    console.log(JSON.stringify(request.body));
     const sameSecret =
       request.body?.session?.skill_id === this.config.marusyaSkillId;
 

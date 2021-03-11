@@ -21,6 +21,13 @@ export class MarusyaController {
   ) {}
   @Post()
   async randomShit(@Body() ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const res = await this.getMarusyaRes(ask);
+
+    console.log(JSON.stringify(res));
+    return res;
+  }
+
+  private async getMarusyaRes(ask: MarusyaAsk): Promise<MarusyaResponse> {
     try {
       const { command: vkCommand } = ask.request;
       const { user } = ask.session;
