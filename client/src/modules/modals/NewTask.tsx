@@ -14,6 +14,7 @@ import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { getNewTaskValues } from 'core/selectors/board';
 import { isThemeDrak } from 'core/selectors/common';
 import { getNewTaskInfo } from 'core/selectors/task';
+import { isAdmin } from 'core/selectors/user';
 import { safeTrim } from 'core/utils';
 import { addDays, format, isBefore } from 'date-fns';
 import React from 'react';
@@ -34,6 +35,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const dispatch = useDispatch<AppDispatchActions>();
   const formValues = useSelector(getNewTaskValues);
   const dark = useSelector(isThemeDrak);
+  const admin = useSelector(isAdmin);
   const { updating } = useSelector(getNewTaskInfo);
   const errorName = 'Вы установили неверную дату, исправьте, пожалуйста.';
 
@@ -131,7 +133,7 @@ const NewTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             })}
           />
           <Input
-            type="date"
+            type={admin ? 'datetime-local' : 'date'}
             placeholder={!formValues.dueDate ? 'Выберите срок' : undefined}
             className={css({
               marginLeft: '0 !important',

@@ -20,6 +20,7 @@ import { format, isBefore, addDays } from 'date-fns';
 import { getEditTaskInfo } from 'core/selectors/task';
 import { safeTrim } from 'core/utils';
 import { goBack } from 'connected-react-router';
+import { isAdmin } from 'core/selectors/user';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -35,6 +36,7 @@ const EditTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   const dark = useSelector(isThemeDrak);
   const formValues = useSelector(getEditTaskValues);
   const { updating, notSameData } = useSelector(getEditTaskInfo);
+  const admin = useSelector(isAdmin);
   const disabledSubmit = updating || !notSameData;
   const errorName = 'Вы установили неверную дату, исправьте, пожалуйста.';
 
@@ -136,7 +138,7 @@ const EditTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
             })}
           />
           <Input
-            type="date"
+            type={admin ? 'datetime-local' : 'date'}
             placeholder={!formValues.dueDate ? 'Выберите срок' : undefined}
             className={css({
               marginLeft: '0 !important',
