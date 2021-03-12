@@ -210,10 +210,10 @@ export class MarusyaController {
 
   private notIncludesOtherCommands(command: string) {
     return (
-      !command.includes(MarusyaCommand.Finish) ||
-      !command.includes(MarusyaCommand.Create) ||
-      !command.includes(MarusyaCommand.Show) ||
-      !command.includes(MarusyaCommand.My) ||
+      !command.includes(MarusyaCommand.Finish) &&
+      !command.includes(MarusyaCommand.Create) &&
+      !command.includes(MarusyaCommand.Show) &&
+      !command.includes(MarusyaCommand.My) &&
       !command.includes(MarusyaCommand.List)
     );
   }
