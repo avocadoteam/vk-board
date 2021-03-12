@@ -6,7 +6,7 @@ import {
 } from 'src/constants/premium';
 import { List } from 'src/db/tables/list';
 import { PaymentService } from 'src/payment/payment.service';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class RestricitionsService {
@@ -19,7 +19,7 @@ export class RestricitionsService {
   async canUserContinueCreateLists(vkUserId: number) {
     const can =
       (await this.paymentService.hasUserPremium(vkUserId)) ||
-      (await this.tableList.count({ createdBy: vkUserId, deleted: null })) <
+      (await this.tableList.count({ createdBy: vkUserId, deleted: IsNull() })) <
         MaxFreeListsPerPerson;
     return can;
   }

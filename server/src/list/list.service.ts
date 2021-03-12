@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { List } from 'src/db/tables/list';
-import { Repository, Connection } from 'typeorm';
+import { Repository, Connection, IsNull } from 'typeorm';
 import {
   NewListModel,
   DropMembershipModel,
@@ -51,7 +51,7 @@ export class ListService {
       )
       .where([
         {
-          deleted: null,
+          deleted: IsNull(),
         },
       ])
       .andWhere(
@@ -122,25 +122,6 @@ export class ListService {
     }
   }
 
-  async isListExists(listId: number, createdBy: number) {
-    return (
-      (await this.tableList.count({
-        where: [
-          {
-            id: listId,
-            createdBy,
-            deleted: null,
-          },
-          {
-            id: listId,
-            createdBy: null,
-            deleted: null,
-          },
-        ],
-      })) > 0
-    );
-  }
-
   async hasListMembership(listIds: number[], vkUserId: number) {
     return (
       (await this.tableList
@@ -152,7 +133,7 @@ export class ListService {
         )
         .where([
           {
-            deleted: null,
+            deleted: IsNull(),
           },
         ])
         .andWhereInIds(listIds)
@@ -231,7 +212,7 @@ export class ListService {
         )
         .where([
           {
-            deleted: null,
+            deleted: IsNull(),
             createdBy: vkUserId,
           },
         ])
@@ -305,7 +286,7 @@ export class ListService {
     await queryRunner.startTransaction();
     try {
       const list = await queryRunner.manager.findOne<List>(List, {
-        where: { deleted: null, id: model.listId },
+        where: { deleted: IsNull(), id: model.listId },
       });
 
       if (!list) {

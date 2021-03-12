@@ -1,7 +1,7 @@
 import { Injectable, CACHE_MANAGER, Inject, Logger } from '@nestjs/common';
 import { Task } from 'src/db/tables/task';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Connection } from 'typeorm';
+import { Repository, Connection, IsNull } from 'typeorm';
 import {
   NewTaskModel,
   UpdateTaskModel,
@@ -39,7 +39,7 @@ export class TasksService {
     await queryRunner.startTransaction();
     try {
       const list = await queryRunner.manager.findOne<List>(List, model.listId, {
-        where: { deleted: null },
+        where: { deleted: IsNull() },
       });
 
       if (!list) {
@@ -93,7 +93,7 @@ export class TasksService {
     await queryRunner.startTransaction();
     try {
       const list = await queryRunner.manager.findOne<List>(List, model.listId, {
-        where: { deleted: null },
+        where: { deleted: IsNull() },
       });
 
       if (!list) {
@@ -149,7 +149,7 @@ export class TasksService {
       )
       .where([
         {
-          deleted: null,
+          deleted: IsNull(),
           id: listId,
         },
       ])
@@ -186,7 +186,7 @@ export class TasksService {
       )
       .where([
         {
-          deleted: null,
+          deleted: IsNull(),
           id: listId,
         },
       ])
@@ -217,7 +217,7 @@ export class TasksService {
       )
       .where([
         {
-          deleted: null,
+          deleted: IsNull(),
           id: listId,
         },
       ])
@@ -240,7 +240,7 @@ export class TasksService {
       )
       .where([
         {
-          deleted: null,
+          deleted: IsNull(),
           id: listId,
         },
       ])
