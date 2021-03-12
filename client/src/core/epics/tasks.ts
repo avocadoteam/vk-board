@@ -1,34 +1,34 @@
+import { goBack } from 'connected-react-router';
 import {
-  AppEpic,
-  FetchingStateName,
-  NewTaskModel,
-  FetchResponse,
   AppDispatch,
+  AppEpic,
   BoardTaskItem,
-  FINISH_TASK_TIMER_VALUE,
   EditTaskModel,
-  UNFINISH_TASK_TIMER_VALUE,
-  TaskInfo,
+  FetchingStateName,
+  FetchResponse,
   FetchUpdateAction,
+  FINISH_TASK_TIMER_VALUE,
+  NewTaskModel,
+  TaskInfo,
+  UNFINISH_TASK_TIMER_VALUE,
 } from 'core/models';
-import { ofType } from 'redux-observable';
-import { filter, map, switchMap, exhaustMap, debounceTime } from 'rxjs/operators';
-import { getNewTaskValues, getEditTaskValues } from 'core/selectors/board';
-import { getQToQuery } from 'core/selectors/user';
-import { from, concat, of, iif, empty } from 'rxjs';
-import {
-  captureFetchErrorUserErr,
-  captureFetchError,
-  captureFetchErrorMoreActions,
-  captureFetchErrorWithTaptic,
-} from './errors';
-import { safeCombineEpics } from './combine';
 import * as ops from 'core/operations/task';
+import { getEditTaskValues, getNewTaskValues } from 'core/selectors/board';
+import { getSelectedList, getSelectedListId } from 'core/selectors/boardLists';
 import { getBoardUiState } from 'core/selectors/common';
 import { getSelectedTaskId, getSelectedTaskNotification } from 'core/selectors/task';
-import { getSelectedListId, getSelectedList } from 'core/selectors/boardLists';
-import { goBack } from 'connected-react-router';
-import { format } from 'date-fns';
+import { getQToQuery } from 'core/selectors/user';
+import { timeBasedOnTz } from 'core/utils/time';
+import { ofType } from 'redux-observable';
+import { concat, empty, from, iif, of } from 'rxjs';
+import { debounceTime, exhaustMap, filter, map, switchMap } from 'rxjs/operators';
+import { safeCombineEpics } from './combine';
+import {
+  captureFetchError,
+  captureFetchErrorMoreActions,
+  captureFetchErrorUserErr,
+  captureFetchErrorWithTaptic,
+} from './errors';
 
 const postNewTaskEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -62,7 +62,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                     payload: [
                       {
                         id: r.data,
-                        created: format(new Date(), 'yyyy-MM-dd'),
+                        created: timeBasedOnTz(new Date()),
                         deleted: null,
                         description: data.description,
                         dueDate: data.dueDate,

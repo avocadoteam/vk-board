@@ -69,7 +69,7 @@ export class TasksService {
           created: newTask.created,
           deleted: null,
           description: newTask.description,
-          dueDate: newTask.dueDate ? moment(newTask.dueDate).format() : null,
+          dueDate: newTask.dueDate,
           finished: null,
           name: newTask.name,
           notificationUserId: model.notification ? vkUserId : null,
@@ -114,7 +114,7 @@ export class TasksService {
         task: {
           id: model.id,
           description: model.description,
-          dueDate: model.dueDate ? moment(model.dueDate).format() : null,
+          dueDate: model.dueDate,
           name: model.name,
         } as TaskInfo,
         listGUID: list.listguid,
@@ -162,7 +162,6 @@ export class TasksService {
       list?.tasks.map((t) => ({
         ...t,
         notification: notificationTasks.tasks?.includes(t.id),
-        dueDate: t.dueDate ? moment(t.dueDate).format() : null,
       })) ?? []
     );
   }
@@ -200,7 +199,6 @@ export class TasksService {
       list?.tasks.map((t) => ({
         ...t,
         notification: notificationTasks.tasks?.includes(t.id),
-        dueDate: t.dueDate ? moment(t.dueDate).format() : null,
       })) ?? []
     );
   }

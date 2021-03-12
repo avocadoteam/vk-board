@@ -1,26 +1,25 @@
-import React from 'react';
-import { useFela } from 'react-fela';
-import { useSelector, useDispatch } from 'react-redux';
-import { MiniInfoCell, Text, Div, Spinner } from '@vkontakte/vkui';
 import Icon20ArticleOutline from '@vkontakte/icons/dist/20/article_outline';
 import Icon20RecentOutline from '@vkontakte/icons/dist/20/recent_outline';
-import Icon28WriteOutline from '@vkontakte/icons/dist/28/write_outline';
 import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_android';
 import Icon28Notifications from '@vkontakte/icons/dist/28/notifications';
 import Icon28NotificationDisableOutline from '@vkontakte/icons/dist/28/notification_disable_outline';
-import { ru } from 'date-fns/locale';
+import Icon28WriteOutline from '@vkontakte/icons/dist/28/write_outline';
+import { Div, MiniInfoCell, Spinner, Text } from '@vkontakte/vkui';
 import { Button } from 'atoms/Button';
+import { getSearch, push } from 'connected-react-router';
+import { ActiveModal, AppDispatchActions, FetchingStateName, MainView } from 'core/models';
+import { isThemeDrak } from 'core/selectors/common';
+import { getNotifications } from 'core/selectors/settings';
 import {
-  isTaskDeleteUpdating,
   getSelectedTaskInfo,
+  isTaskDeleteUpdating,
   isTaskNotifUpdating,
 } from 'core/selectors/task';
-import { isThemeDrak } from 'core/selectors/common';
-import { format } from 'date-fns';
-import { AppDispatchActions, FetchingStateName, MainView, ActiveModal } from 'core/models';
-import { getNotifications } from 'core/selectors/settings';
+import { timeBasedOnTz } from 'core/utils/time';
 import { vkBridge } from 'core/vk-bridge/instance';
-import { push, getSearch } from 'connected-react-router';
+import React from 'react';
+import { useFela } from 'react-fela';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const SelectedTask = React.memo(() => {
   const { css } = useFela();
@@ -109,7 +108,7 @@ export const SelectedTask = React.memo(() => {
               weight="medium"
               className={`useMonrope ${css({ color: dark ? '#fff' : '#000' })}`}
             >
-              до {format(new Date(info.dueDate), 'dd MMMM', { locale: ru })}
+              до {timeBasedOnTz(info.dueDate)}
             </Text>
           </MiniInfoCell>
         </Div>

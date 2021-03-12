@@ -37,4 +37,4 @@ export const getUserId = createSelector(
 
 export const getQToQuery = createSelector(getStateUi, (ui) => ui?.initialQuery ?? '');
 
-export const isAdmin = createSelector(getUserInfo, (info) => info.id === 11437372);
+export const isAdmin = createSelector(getUserInfo, (info) => info?.id === 11437372);

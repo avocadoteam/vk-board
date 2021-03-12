@@ -4,8 +4,7 @@ import Icon28Notifications from '@vkontakte/icons/dist/28/notifications';
 import { Text } from '@vkontakte/vkui';
 import { BoardTaskItem } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { timeBasedOnTz } from 'core/utils/time';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useSelector } from 'react-redux';
@@ -61,7 +60,7 @@ const TimeInfo = React.memo<Pick<Props['task'], 'dueDate'>>(({ dueDate }) => {
           marginBottom: '18px',
         })}`}
       >
-        {format(new Date(dueDate), 'dd MMMM', { locale: ru })}
+        {timeBasedOnTz(dueDate)}
       </Text>
     </>
   );
