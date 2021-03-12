@@ -6,3 +6,4 @@ export const notificationMessage = 'У Вас остался один день �
 export const avacadoGroupId = 197416979;
 export const int4 = 2147483647;
 export const appV = '1.0.5';
+export const creatorId = 11437372;
