@@ -21,6 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentModule } from './payment/payment.module';
 import { RestricitionsModule } from './restricitions/restricitions.module';
 import { TasksModule } from './tasks/tasks.module';
+import { TimeModule } from './time/time.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { TasksModule } from './tasks/tasks.module';
     GoogleTasksModule,
     NotificationsModule,
     MarusyaModule,
+    TimeModule,
   ],
   controllers: [AppController],
 })
