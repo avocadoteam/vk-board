@@ -10,6 +10,7 @@ import {
   MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MarusyaGuard } from 'src/guards/marusya.guard';
+import { MTasksService } from './m-tasks.service';
 import { ScenarioService } from './scenario.service';
 
 @Controller('api/marusya')
@@ -17,14 +18,33 @@ import { ScenarioService } from './scenario.service';
 export class MarusyaController {
   constructor(
     private readonly scenario: ScenarioService,
+    private readonly m: MTasksService,
     private readonly config: ConfigService,
   ) {}
   @Post()
   async randomShit(@Body() ask: MarusyaAsk): Promise<MarusyaResponse> {
+    const vkUserId = 11437372; //user?.vk_user_id!;
+
+    const list = await this.checkUserList(vkUserId, ask.state.user.list);
+    ask.state.user.list = list;
     const res = await this.getMarusyaRes(ask);
 
+    if (list) {
+      res.user_state_update = {
+        ...(res.user_state_update ?? {}),
+        list,
+      };
+    }
     console.log(JSON.stringify(res));
     return res;
+  }
+
+  private async checkUserList(vkUserId: number, list?: number) {
+    if (!list) return list;
+
+    const newList = await this.m.checkListOrCreateNew(vkUserId, list);
+
+    return newList;
   }
 
   private async getMarusyaRes(ask: MarusyaAsk): Promise<MarusyaResponse> {
@@ -32,6 +52,7 @@ export class MarusyaController {
       const { command: vkCommand, nlu, original_utterance } = ask.request;
       const { user } = ask.session;
       const { wait } = ask.state.session;
+      const { list } = ask.state.user;
       const command = !!original_utterance
         ? original_utterance.toLowerCase()
         : nlu.tokens.join(' ').toLowerCase();

@@ -11,6 +11,18 @@ export class MTasksService {
     private readonly taskServ: TasksService,
   ) {}
 
+  async checkListOrCreateNew(vkUserId: number, listId: number) {
+    if (await this.listServ.hasListMembership([listId], vkUserId)) {
+      return listId;
+    }
+
+    const newListId = await this.listServ.createList(
+      { name: 'Список задач' },
+      vkUserId,
+    );
+    return newListId;
+  }
+
   async createTaskAndList(vkUserId: number, taskName: string, listId?: number) {
     let list =
       listId ??
