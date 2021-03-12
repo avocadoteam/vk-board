@@ -129,7 +129,10 @@ export class MarusyaController {
         }
       }
 
-      if (and(command.includes(MarusyaCommand.Task), ask.session.new)) {
+      if (
+        and(command.includes(MarusyaCommand.Task), ask.session.new) &&
+        this.notIncludesOtherCommands(command)
+      ) {
         return this.scenario.marusyaWelcomeChoices(ask);
       }
 
@@ -203,5 +206,15 @@ export class MarusyaController {
       console.error(error);
       return this.scenario.marusyaError(ask);
     }
+  }
+
+  private notIncludesOtherCommands(command: string) {
+    return (
+      !command.includes(MarusyaCommand.Finish) ||
+      !command.includes(MarusyaCommand.Create) ||
+      !command.includes(MarusyaCommand.Show) ||
+      !command.includes(MarusyaCommand.My) ||
+      !command.includes(MarusyaCommand.List)
+    );
   }
 }
