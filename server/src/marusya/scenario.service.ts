@@ -10,8 +10,8 @@ import {
   MarusyaResponse,
   MarusyaResponseTxt,
   MarusyaTaskState,
-  MarusyaUserChoise,
-  MarusyaUserChoiseVoice,
+  MarusyaUserChoice,
+  MarusyaUserChoiceVoice,
   MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MTasksService } from './m-tasks.service';
@@ -23,6 +23,23 @@ export class ScenarioService {
     private readonly m: MTasksService,
     private readonly config: ConfigService,
   ) {}
+
+  marusyaWelcomeChoices(ask: MarusyaAsk): MarusyaResponse {
+    return {
+      response: {
+        text: MarusyaResponseTxt.welcome,
+        tts: MarusyaResponseTxt.welcome,
+        end_session: false,
+        buttons: marusyaButtons.welcome,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
+    };
+  }
 
   async marusyaCreateTask(ask: MarusyaAsk): Promise<MarusyaResponse> {
     const { nlu } = ask.request;
@@ -47,7 +64,7 @@ export class ScenarioService {
             text: MarusyaResponseTxt.wantsMore,
             tts: MarusyaResponseTxt.wantsMore,
             end_session: false,
-            buttons: marusyaButtons.choise,
+            buttons: marusyaButtons.choice,
           },
           session: {
             message_id: ask.session.message_id,
@@ -59,7 +76,7 @@ export class ScenarioService {
             list: data.list,
           },
           session_state: {
-            wait: MarusyaWaitState.WaitForUserChoise,
+            wait: MarusyaWaitState.WaitForUserChoice,
             taskState: MarusyaTaskState.create,
             taskId: data.task,
           },
@@ -215,7 +232,7 @@ export class ScenarioService {
           text: MarusyaResponseTxt.wantsMore,
           tts: MarusyaResponseTxt.wantsMore,
           end_session: false,
-          buttons: marusyaButtons.choise,
+          buttons: marusyaButtons.choice,
         },
         session: {
           message_id: ask.session.message_id,
@@ -227,7 +244,7 @@ export class ScenarioService {
           list: data.list,
         },
         session_state: {
-          wait: MarusyaWaitState.WaitForUserChoise,
+          wait: MarusyaWaitState.WaitForUserChoice,
           taskId: data.task,
           taskState,
         },
@@ -261,7 +278,7 @@ export class ScenarioService {
         text: MarusyaResponseTxt.wantsChangeReady,
         tts: MarusyaResponseTxt.wantsChangeReady,
         end_session: false,
-        buttons: marusyaButtons.choise,
+        buttons: marusyaButtons.choice,
       },
       session: {
         message_id: ask.session.message_id,
@@ -270,7 +287,7 @@ export class ScenarioService {
       },
       version: '1.0',
       session_state: {
-        wait: MarusyaWaitState.WaitForUserChoise,
+        wait: MarusyaWaitState.WaitForUserChoice,
         taskId,
         taskState,
       },
@@ -325,7 +342,7 @@ export class ScenarioService {
         text: MarusyaResponseTxt.wantsChangeDone,
         tts: MarusyaResponseTxt.wantsChangeDone,
         end_session: false,
-        buttons: marusyaButtons.choise,
+        buttons: marusyaButtons.choice,
       },
       session: {
         message_id: ask.session.message_id,
@@ -334,7 +351,7 @@ export class ScenarioService {
       },
       version: '1.0',
       session_state: {
-        wait: MarusyaWaitState.WaitForUserChoise,
+        wait: MarusyaWaitState.WaitForUserChoice,
         taskId,
         taskState,
       },
@@ -367,7 +384,7 @@ export class ScenarioService {
           text: MarusyaResponseTxt.wantsChangeDone,
           tts: MarusyaResponseTxt.wantsChangeDone,
           end_session: false,
-          buttons: marusyaButtons.choise,
+          buttons: marusyaButtons.choice,
         },
         session: {
           message_id: ask.session.message_id,
@@ -376,7 +393,7 @@ export class ScenarioService {
         },
         version: '1.0',
         session_state: {
-          wait: MarusyaWaitState.WaitForUserChoise,
+          wait: MarusyaWaitState.WaitForUserChoice,
           taskId,
           taskState,
         },
@@ -384,20 +401,20 @@ export class ScenarioService {
     });
   }
 
-  async marusyaProcessUserChoise(ask: MarusyaAsk): Promise<MarusyaResponse> {
+  async marusyaProcessUserChoice(ask: MarusyaAsk): Promise<MarusyaResponse> {
     const { payload, nlu } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
     const { taskId, taskState } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
-    const choise = payload?.choise ?? this.getChoiseFromCommand(nlu.tokens);
-    if (!choise || !taskId) {
+    const choice = payload?.choice ?? this.getChoiceFromCommand(nlu.tokens);
+    if (!choice || !taskId) {
       return this.marusyaError(ask);
     }
 
-    switch (choise) {
-      case MarusyaUserChoise.description:
+    switch (choice) {
+      case MarusyaUserChoice.description:
         return {
           response: {
             text: MarusyaResponseTxt.listen,
@@ -416,7 +433,7 @@ export class ScenarioService {
             taskState,
           },
         };
-      case MarusyaUserChoise.name:
+      case MarusyaUserChoice.name:
         return {
           response: {
             text: MarusyaResponseTxt.listen,
@@ -435,7 +452,7 @@ export class ScenarioService {
             taskState,
           },
         };
-      case MarusyaUserChoise.time:
+      case MarusyaUserChoice.time:
         return {
           response: {
             text: MarusyaResponseTxt.time,
@@ -456,7 +473,7 @@ export class ScenarioService {
           },
         };
 
-      case MarusyaUserChoise.end:
+      case MarusyaUserChoice.end:
         const task = await this.m.getTask(vkUserId, list!, taskId);
         if (!task) return this.marusyaError(ask);
         return {
@@ -542,7 +559,7 @@ export class ScenarioService {
           task.description,
         ),
         end_session: false,
-        buttons: marusyaButtons.choise,
+        buttons: marusyaButtons.choice,
       },
       session: {
         message_id: ask.session.message_id,
@@ -551,7 +568,7 @@ export class ScenarioService {
       },
       version: '1.0',
       session_state: {
-        wait: MarusyaWaitState.WaitForUserChoise,
+        wait: MarusyaWaitState.WaitForUserChoice,
         taskId: task.id,
         taskState,
       },
@@ -663,18 +680,18 @@ export class ScenarioService {
     return 'unknown';
   }
 
-  private getChoiseFromCommand(tokens: string[]) {
-    if (tokens.includes(MarusyaUserChoiseVoice.end)) {
-      return MarusyaUserChoise.end;
+  private getChoiceFromCommand(tokens: string[]) {
+    if (tokens.includes(MarusyaUserChoiceVoice.end)) {
+      return MarusyaUserChoice.end;
     }
-    if (tokens.includes(MarusyaUserChoiseVoice.description)) {
-      return MarusyaUserChoise.description;
+    if (tokens.includes(MarusyaUserChoiceVoice.description)) {
+      return MarusyaUserChoice.description;
     }
-    if (tokens.includes(MarusyaUserChoiseVoice.name)) {
-      return MarusyaUserChoise.name;
+    if (tokens.includes(MarusyaUserChoiceVoice.name)) {
+      return MarusyaUserChoice.name;
     }
-    if (tokens.includes(MarusyaUserChoiseVoice.time)) {
-      return MarusyaUserChoise.time;
+    if (tokens.includes(MarusyaUserChoiceVoice.time)) {
+      return MarusyaUserChoice.time;
     }
     return '';
   }

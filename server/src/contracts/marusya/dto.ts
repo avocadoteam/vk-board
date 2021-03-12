@@ -9,7 +9,8 @@ import {
 } from 'class-validator';
 import {
   MarusyaTaskState,
-  MarusyaUserChoise,
+  MarusyaUserChoice,
+  MarusyaUserWelcomeChoice,
   MarusyaWaitState,
 } from './commands';
 
@@ -54,7 +55,8 @@ class MarusyaRequest {
   @ValidateIf((o) => !!o.payload)
   @IsObject()
   payload?: {
-    choise?: MarusyaUserChoise;
+    choice?: MarusyaUserChoice;
+    welcome?: MarusyaUserWelcomeChoice;
     /**
      * YYYY-MM-DD
      */

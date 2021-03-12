@@ -1,8 +1,14 @@
-import { MarusyaTaskState, MarusyaUserChoise } from './commands';
+import {
+  MarusyaTaskState,
+  MarusyaUserChoice,
+  MarusyaUserWelcomeChoice,
+} from './commands';
 import { MarusyaButton, MarusyaCards } from './dto';
 import * as moment from 'moment';
 
 export const MarusyaResponseTxt = {
+  welcome:
+    'Я могу помочь с организацией Ваших задач. Для этого выберете то, что Вы хотите сделать: создать задачу, завершить задачу или посмотреть список задач.',
   noUser:
     'Похоже, что для Вас у меня есть отличное приложение. Stuff послужит Вам прекрасным приложением для создания задач.',
   noCommands:
@@ -64,33 +70,34 @@ export const marusyaCards: Record<CardKey, MarusyaCards> = {
 };
 
 type MarusyaButtons = {
-  choise: MarusyaButton[];
+  choice: MarusyaButton[];
+  welcome: MarusyaButton[];
   weekDays: () => MarusyaButton[];
 };
 export const marusyaButtons: MarusyaButtons = {
-  choise: [
+  choice: [
     {
       title: 'Описание',
       payload: {
-        choise: MarusyaUserChoise.description,
+        choice: MarusyaUserChoice.description,
       },
     },
     {
       title: 'Время',
       payload: {
-        choise: MarusyaUserChoise.time,
+        choice: MarusyaUserChoice.time,
       },
     },
     {
       title: 'Название',
       payload: {
-        choise: MarusyaUserChoise.name,
+        choice: MarusyaUserChoice.name,
       },
     },
     {
       title: 'Нет',
       payload: {
-        choise: MarusyaUserChoise.end,
+        choice: MarusyaUserChoice.end,
       },
     },
   ],
@@ -116,6 +123,26 @@ export const marusyaButtons: MarusyaButtons = {
         moment(a.payload.date).isAfter(b.payload.date) ? 1 : -1,
       );
   },
+  welcome: [
+    {
+      title: 'Создать задачу',
+      payload: {
+        welcome: MarusyaUserWelcomeChoice.create,
+      },
+    },
+    {
+      title: 'Завершить задачу',
+      payload: {
+        welcome: MarusyaUserWelcomeChoice.end,
+      },
+    },
+    {
+      title: 'Список задач',
+      payload: {
+        welcome: MarusyaUserWelcomeChoice.list,
+      },
+    },
+  ],
 };
 
 export const isBeforeTomorrow = (

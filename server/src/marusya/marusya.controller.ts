@@ -1,12 +1,13 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { and, not, or } from 'ramda';
+import { and, or } from 'ramda';
 import {
   MarusyaAsk,
   marusyaCards,
   MarusyaCommand,
   MarusyaResponse,
   MarusyaResponseTxt,
+  MarusyaUserWelcomeChoice,
   MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MarusyaGuard } from 'src/guards/marusya.guard';
@@ -49,7 +50,12 @@ export class MarusyaController {
 
   private async getMarusyaRes(ask: MarusyaAsk): Promise<MarusyaResponse> {
     try {
-      const { command: vkCommand, nlu, original_utterance } = ask.request;
+      const {
+        command: vkCommand,
+        nlu,
+        original_utterance,
+        payload,
+      } = ask.request;
       const { user } = ask.session;
       const { wait } = ask.state.session;
       const { list } = ask.state.user;
@@ -103,8 +109,8 @@ export class MarusyaController {
               ask,
             );
             return tnfres;
-          case MarusyaWaitState.WaitForUserChoise:
-            const ucres = await this.scenario.marusyaProcessUserChoise(ask);
+          case MarusyaWaitState.WaitForUserChoice:
+            const ucres = await this.scenario.marusyaProcessUserChoice(ask);
             return ucres;
           case MarusyaWaitState.WaitForDescription:
             const cdres = await this.scenario.marusyaChangeDescription(ask);
@@ -123,10 +129,17 @@ export class MarusyaController {
         }
       }
 
+      if (and(command.includes(MarusyaCommand.Task), ask.session.new)) {
+        return this.scenario.marusyaWelcomeChoices(ask);
+      }
+
       if (
-        and(
-          command.includes(MarusyaCommand.Finish),
-          command.includes(MarusyaCommand.Task),
+        or(
+          and(
+            command.includes(MarusyaCommand.Finish),
+            command.includes(MarusyaCommand.Task),
+          ),
+          payload?.welcome === MarusyaUserWelcomeChoice.end,
         )
       ) {
         const mtres = await this.scenario.marusyaFinishTask(ask);
@@ -134,16 +147,12 @@ export class MarusyaController {
       }
 
       if (
-        and(
-          command.includes(MarusyaCommand.Create),
-          command.includes(MarusyaCommand.Task),
-        ) ||
-        and(
+        or(
           and(
-            not(command.includes(MarusyaCommand.My)),
-            not(command.includes(MarusyaCommand.Show)),
+            command.includes(MarusyaCommand.Create),
+            command.includes(MarusyaCommand.Task),
           ),
-          command.includes(MarusyaCommand.Task),
+          payload?.welcome === MarusyaUserWelcomeChoice.create,
         )
       ) {
         const mtres = await this.scenario.marusyaCreateTask(ask);
@@ -163,7 +172,12 @@ export class MarusyaController {
         and(
           command.includes(MarusyaCommand.Show),
           command.includes(MarusyaCommand.Task),
-        )
+        ) ||
+        and(
+          command.includes(MarusyaCommand.List),
+          command.includes(MarusyaCommand.Task),
+        ) ||
+        payload?.welcome === MarusyaUserWelcomeChoice.list
       ) {
         const stres = await this.scenario.marusyaShowTasks(ask);
         return stres;
