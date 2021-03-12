@@ -45,7 +45,7 @@ export const MarusyaResponseTxt = {
         'Do MMMM YYYY',
       )}.`;
     }
-    return `${res}\nВы можете управлять своими задачами прямо в прлижении Stuff`;
+    return `${res}\nВы можете управлять своими задачами прямо в приложении Stuff`;
   },
   taskFound: (task: string, time: Date | null, desc: string | null) => {
     let res = `Задача - "${task}".\n`;
