@@ -25,12 +25,12 @@ export class AdminGuard implements CanActivate {
 
     const vkUserId = request.query['vk_user_id'] as string;
     const unixts = request.query['vk_ts'] as string;
-    const isOlderThan5mins =
-      moment().diff(moment.unix(Number(unixts)), 'minutes') >= 5;
+    const isOlderThan5days =
+      moment().diff(moment.unix(Number(unixts)), 'days') >= 5;
 
     return or(
+      and(`${creatorId}` === vkUserId, not(isOlderThan5days)),
       this.core.devMode,
-      and(`${creatorId}` === vkUserId, not(isOlderThan5mins)),
     );
   }
 }
