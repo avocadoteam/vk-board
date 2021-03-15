@@ -3,22 +3,30 @@ import { ConfigService } from '@nestjs/config';
 import { and, or } from 'ramda';
 import {
   MarusyaAsk,
-  marusyaCards,
   MarusyaCommand,
+  MarusyaPayload,
   MarusyaResponse,
-  MarusyaResponseTxt,
   MarusyaUserWelcomeChoice,
   MarusyaWaitState,
 } from 'src/contracts/marusya';
 import { MarusyaGuard } from 'src/guards/marusya.guard';
 import { MTasksService } from './m-tasks.service';
-import { ScenarioService } from './scenario.service';
+import { marusyaBye, marusyaError, marusyaNoCommands } from './quick-response';
+import { CreateScenario } from './scenarios/create.scenario';
+import { FinishScenario } from './scenarios/finish.scenario';
+import { ShowScenario } from './scenarios/show.scenario';
+import { UserChoiceScenario } from './scenarios/user-choice.scenario';
+import { WelcomeScenario } from './scenarios/welcome.scenario';
 
 @Controller('api/marusya')
 @UseGuards(MarusyaGuard)
 export class MarusyaController {
   constructor(
-    private readonly scenario: ScenarioService,
+    private readonly ws: WelcomeScenario,
+    private readonly fs: FinishScenario,
+    private readonly cs: CreateScenario,
+    private readonly ss: ShowScenario,
+    private readonly ucs: UserChoiceScenario,
     private readonly m: MTasksService,
     private readonly config: ConfigService,
   ) {}
@@ -56,9 +64,6 @@ export class MarusyaController {
         original_utterance,
         payload,
       } = ask.request;
-      const { user } = ask.session;
-      const { wait } = ask.state.session;
-      const { list } = ask.state.user;
       const command = !!original_utterance
         ? original_utterance.toLowerCase()
         : nlu.tokens.join(' ').toLowerCase();
@@ -80,134 +85,71 @@ export class MarusyaController {
       //   };
       // }
 
-      if (
-        vkCommand === MarusyaCommand.Interrupt ||
-        or(command === MarusyaCommand.Exit, command === MarusyaCommand.Stop)
-      ) {
-        return {
-          response: {
-            text: MarusyaResponseTxt.bye,
-            tts: MarusyaResponseTxt.bye,
-            end_session: true,
-            // card: this.config.get('core.devMode')
-            //   ? undefined
-            //   : marusyaCards.stuff,
-          },
-          session: {
-            message_id: ask.session.message_id,
-            session_id: ask.session.session_id,
-            user_id: ask.session.application.application_id,
-          },
-          version: '1.0',
-        };
+      if (this.shouldStopSkill(vkCommand, command)) {
+        return marusyaBye(ask);
       }
 
-      if (wait) {
-        switch (wait) {
-          case MarusyaWaitState.WaitForTaskName:
-            const tnres = await this.scenario.marusyaWaitForTaskName(ask);
-            return tnres;
-          case MarusyaWaitState.WaitForTaskNameToFinish:
-            const tnfres = await this.scenario.marusyaWaitForTaskNameToFinish(
-              ask,
-            );
-            return tnfres;
-          case MarusyaWaitState.WaitForUserChoice:
-            const ucres = await this.scenario.marusyaProcessUserChoice(ask);
-            return ucres;
-          case MarusyaWaitState.WaitForDescription:
-            const cdres = await this.scenario.marusyaChangeDescription(ask);
-            return cdres;
-          case MarusyaWaitState.WaitForTime:
-            const ctres = await this.scenario.marusyaChangeTime(ask);
-            return ctres;
-          case MarusyaWaitState.WaitForShowTaskInfo:
-            const stires = await this.scenario.marusyaShowTaskInfo(ask);
-            return stires;
-          case MarusyaWaitState.WaitForChangeTaskName:
-            const ctnres = await this.scenario.marusyaChangeTaskName(ask);
-            return ctnres;
-          default:
-            break;
-        }
+      const userInProgress = await this.processWaitState(ask);
+
+      if (userInProgress) {
+        return userInProgress;
       }
 
-      if (
-        and(command.includes(MarusyaCommand.Task), ask.session.new) &&
-        this.notIncludesOtherCommands(command)
-      ) {
-        return this.scenario.marusyaWelcomeChoices(ask);
+      if (this.shouldDisplayWelcome(command, ask.session.new)) {
+        return this.ws.marusyaWelcomeChoices(ask);
       }
 
-      if (
-        or(
-          and(
-            command.includes(MarusyaCommand.Finish),
-            command.includes(MarusyaCommand.Task),
-          ),
-          payload?.welcome === MarusyaUserWelcomeChoice.end,
-        )
-      ) {
-        const mtres = await this.scenario.marusyaFinishTask(ask);
+      if (this.shouldFinishTask(command, payload)) {
+        const mtres = await this.fs.marusyaFinishTask(ask);
         return mtres;
       }
 
-      if (
-        or(
-          and(
-            command.includes(MarusyaCommand.Create),
-            command.includes(MarusyaCommand.Task),
-          ),
-          payload?.welcome === MarusyaUserWelcomeChoice.create,
-        )
-      ) {
-        const mtres = await this.scenario.marusyaCreateTask(ask);
+      if (this.shouldCreateTask(command, payload)) {
+        const mtres = await this.cs.marusyaCreateTask(ask);
         return mtres;
       }
 
-      if (
-        (and(
-          command.includes(MarusyaCommand.My),
-          command.includes(MarusyaCommand.Task),
-        ) &&
-          command.includes(MarusyaCommand.Show)) ||
-        and(
-          command.includes(MarusyaCommand.My),
-          command.includes(MarusyaCommand.Task),
-        ) ||
-        and(
-          command.includes(MarusyaCommand.Show),
-          command.includes(MarusyaCommand.Task),
-        ) ||
-        and(
-          command.includes(MarusyaCommand.List),
-          command.includes(MarusyaCommand.Task),
-        ) ||
-        payload?.welcome === MarusyaUserWelcomeChoice.list
-      ) {
-        const stres = await this.scenario.marusyaShowTasks(ask);
+      if (this.shouldShowTaskList(command, payload)) {
+        const stres = await this.ss.marusyaShowTasks(ask);
         return stres;
       }
 
-      return {
-        response: {
-          text: MarusyaResponseTxt.noCommands,
-          tts: MarusyaResponseTxt.noCommands,
-          end_session: true,
-          // card: this.config.get('core.devMode')
-          //   ? undefined
-          //   : marusyaCards.stuff,
-        },
-        session: {
-          message_id: ask.session.message_id,
-          session_id: ask.session.session_id,
-          user_id: ask.session.application.application_id,
-        },
-        version: '1.0',
-      };
+      return marusyaNoCommands(ask);
     } catch (error) {
       console.error(error);
-      return this.scenario.marusyaError(ask);
+      return marusyaError(ask);
+    }
+  }
+
+  private async processWaitState(
+    ask: MarusyaAsk,
+  ): Promise<MarusyaResponse | undefined> {
+    const { wait } = ask.state.session;
+    if (!wait) return undefined;
+    switch (wait) {
+      case MarusyaWaitState.WaitForTaskName:
+        const tnres = await this.ucs.marusyaWaitForTaskName(ask);
+        return tnres;
+      case MarusyaWaitState.WaitForTaskNameToFinish:
+        const tnfres = await this.fs.marusyaWaitForTaskNameToFinish(ask);
+        return tnfres;
+      case MarusyaWaitState.WaitForUserChoice:
+        const ucres = await this.ucs.marusyaProcessUserChoice(ask);
+        return ucres;
+      case MarusyaWaitState.WaitForDescription:
+        const cdres = await this.ucs.marusyaChangeDescription(ask);
+        return cdres;
+      case MarusyaWaitState.WaitForTime:
+        const ctres = await this.ucs.marusyaChangeTime(ask);
+        return ctres;
+      case MarusyaWaitState.WaitForShowTaskInfo:
+        const stires = await this.ss.marusyaShowTaskInfo(ask);
+        return stires;
+      case MarusyaWaitState.WaitForChangeTaskName:
+        const ctnres = await this.ucs.marusyaChangeTaskName(ask);
+        return ctnres;
+      default:
+        break;
     }
   }
 
@@ -218,6 +160,63 @@ export class MarusyaController {
       !command.includes(MarusyaCommand.Show) &&
       !command.includes(MarusyaCommand.My) &&
       !command.includes(MarusyaCommand.List)
+    );
+  }
+
+  private shouldShowTaskList(command: string, payload?: MarusyaPayload) {
+    return (
+      (and(
+        command.includes(MarusyaCommand.My),
+        command.includes(MarusyaCommand.Task),
+      ) &&
+        command.includes(MarusyaCommand.Show)) ||
+      and(
+        command.includes(MarusyaCommand.My),
+        command.includes(MarusyaCommand.Task),
+      ) ||
+      and(
+        command.includes(MarusyaCommand.Show),
+        command.includes(MarusyaCommand.Task),
+      ) ||
+      and(
+        command.includes(MarusyaCommand.List),
+        command.includes(MarusyaCommand.Task),
+      ) ||
+      payload?.welcome === MarusyaUserWelcomeChoice.list
+    );
+  }
+
+  private shouldCreateTask(command: string, payload?: MarusyaPayload) {
+    return or(
+      and(
+        command.includes(MarusyaCommand.Create),
+        command.includes(MarusyaCommand.Task),
+      ),
+      payload?.welcome === MarusyaUserWelcomeChoice.create,
+    );
+  }
+
+  private shouldFinishTask(command: string, payload?: MarusyaPayload) {
+    return or(
+      and(
+        command.includes(MarusyaCommand.Finish),
+        command.includes(MarusyaCommand.Task),
+      ),
+      payload?.welcome === MarusyaUserWelcomeChoice.end,
+    );
+  }
+
+  private shouldDisplayWelcome(command: string, newSession: boolean) {
+    return (
+      and(command.includes(MarusyaCommand.Task), newSession) &&
+      this.notIncludesOtherCommands(command)
+    );
+  }
+
+  private shouldStopSkill(vkCommand: string, command: string) {
+    return (
+      vkCommand === MarusyaCommand.Interrupt ||
+      or(command === MarusyaCommand.Exit, command === MarusyaCommand.Stop)
     );
   }
 }

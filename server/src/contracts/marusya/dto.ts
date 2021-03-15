@@ -14,6 +14,17 @@ import {
   MarusyaWaitState,
 } from './commands';
 
+export type MarusyaPayload = {
+  choice?: MarusyaUserChoice;
+  welcome?: MarusyaUserWelcomeChoice;
+  /**
+   * YYYY-MM-DD
+   */
+  date?: string;
+
+  taskId?: string;
+};
+
 class MarusyaMeta {
   @IsString()
   client_id!: string;
@@ -54,16 +65,7 @@ class MarusyaRequest {
 
   @ValidateIf((o) => !!o.payload)
   @IsObject()
-  payload?: {
-    choice?: MarusyaUserChoice;
-    welcome?: MarusyaUserWelcomeChoice;
-    /**
-     * YYYY-MM-DD
-     */
-    date?: string;
-
-    taskId?: string;
-  };
+  payload?: MarusyaPayload;
 }
 
 class MarusyaSession {

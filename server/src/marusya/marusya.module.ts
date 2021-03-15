@@ -1,20 +1,24 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Task } from 'src/db/tables/task';
-import { RedisCacheModule } from 'src/redis-cache/redis-cache.module';
 import { List } from 'src/db/tables/list';
+import { ListMembership } from 'src/db/tables/listMembership';
 import { Notification } from 'src/db/tables/notification';
-import { MarusyaController } from './marusya.controller';
-import { TasksService } from 'src/tasks/tasks.service';
-import { MTasksService } from './m-tasks.service';
-import { TasksModule } from 'src/tasks/tasks.module';
+import { Task } from 'src/db/tables/task';
 import { ListModule } from 'src/list/list.module';
 import { ListService } from 'src/list/list.service';
-import { ListMembership } from 'src/db/tables/listMembership';
-import { ConfigModule } from '@nestjs/config';
+import { RedisCacheModule } from 'src/redis-cache/redis-cache.module';
 import { RestricitionsModule } from 'src/restricitions/restricitions.module';
+import { TasksModule } from 'src/tasks/tasks.module';
+import { TasksService } from 'src/tasks/tasks.service';
 import { VkApiService } from 'src/vk-api/vk-api.service';
-import { ScenarioService } from './scenario.service';
+import { MTasksService } from './m-tasks.service';
+import { MarusyaController } from './marusya.controller';
+import { CreateScenario } from './scenarios/create.scenario';
+import { FinishScenario } from './scenarios/finish.scenario';
+import { ShowScenario } from './scenarios/show.scenario';
+import { UserChoiceScenario } from './scenarios/user-choice.scenario';
+import { WelcomeScenario } from './scenarios/welcome.scenario';
 
 @Module({
   imports: [
@@ -31,7 +35,11 @@ import { ScenarioService } from './scenario.service';
     MTasksService,
     ListService,
     VkApiService,
-    ScenarioService,
+    WelcomeScenario,
+    FinishScenario,
+    CreateScenario,
+    ShowScenario,
+    UserChoiceScenario,
   ],
   controllers: [MarusyaController],
 })

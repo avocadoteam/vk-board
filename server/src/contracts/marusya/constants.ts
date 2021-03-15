@@ -14,7 +14,7 @@ export const MarusyaResponseTxt = {
   noCommands:
     'Похоже, что по Вашему запросу у меня есть отличное приложение Stuff.',
   askTaskName: 'Какую задачу Вы хотите создать?',
-  askTaskNameFinish: 'Какую задачу Вы хотите завершить?',
+  askTaskNameFinish: (taskNames: string[]) => `Какую задачу Вы хотите завершить?\n${taskNames.join('.\n')}`,
   taskNameLong: 'Название слишком длинное. Попробуйте выбрать другое.',
   wantsMore:
     'Я создала задачу. Хотите добавить описание, время или изменить название?',
