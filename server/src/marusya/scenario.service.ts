@@ -118,7 +118,33 @@ export class ScenarioService {
       command.toLowerCase(),
     );
 
-    if (!task) return this.noTask(ask);
+    if (!task) {
+      const tasks = await this.m.getTasks(vkUserId, list!);
+
+      return {
+        response: {
+          text: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+            command,
+            tasks.map((t) => t.title).slice(0, 5),
+          ),
+          tts: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+            command,
+            tasks.map((t) => t.title).slice(0, 5),
+          ),
+          end_session: false,
+          buttons: tasks,
+        },
+        session: {
+          message_id: ask.session.message_id,
+          session_id: ask.session.session_id,
+          user_id: ask.session.application.application_id,
+        },
+        version: '1.0',
+        session_state: {
+          wait: MarusyaWaitState.WaitForTaskNameToFinish,
+        },
+      };
+    }
 
     await this.m.finishTask([task.id], list!, vkUserId);
 
@@ -160,10 +186,18 @@ export class ScenarioService {
       if (!task) {
         const tasks = await this.m.getTasks(vkUserId, list);
 
+        if (!tasks.length) return this.noTasks(ask);
+
         return {
           response: {
-            text: MarusyaResponseTxt.foundTasksToFinish,
-            tts: MarusyaResponseTxt.foundTasksToFinish,
+            text: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+              taskName,
+              tasks.map((t) => t.title).slice(0, 5),
+            ),
+            tts: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+              taskName,
+              tasks.map((t) => t.title).slice(0, 5),
+            ),
             end_session: false,
             buttons: tasks,
           },
@@ -514,8 +548,8 @@ export class ScenarioService {
     if (!tasks.length) return this.noTasks(ask);
     return {
       response: {
-        text: MarusyaResponseTxt.tasks,
-        tts: MarusyaResponseTxt.tasks,
+        text: MarusyaResponseTxt.tasks(tasks.map((t) => t.title).slice(0, 5)),
+        tts: MarusyaResponseTxt.tasks(tasks.map((t) => t.title).slice(0, 5)),
         end_session: false,
         buttons: tasks,
       },
@@ -535,14 +569,42 @@ export class ScenarioService {
     const { payload, command } = ask.request;
     const { user } = ask.session;
     const { list } = ask.state.user;
-    const { taskState } = ask.state.session;
+    const { taskState, wait } = ask.state.session;
     const vkUserId = 11437372; //user?.vk_user_id!;
 
     const taskId =
       payload?.taskId ??
       (await this.m.getTaskByName(vkUserId, list!, command.toLowerCase()))?.id;
 
-    if (!taskId) return this.noTask(ask);
+    if (!taskId) {
+      const tasks = await this.m.getTasks(vkUserId, list!);
+      if (!tasks.length) return this.noTasks(ask);
+
+      return {
+        response: {
+          text: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+            command,
+            tasks.map((t) => t.title).slice(0, 5),
+          ),
+          tts: MarusyaResponseTxt.notFoundTaskButHasMoreTasks(
+            command,
+            tasks.map((t) => t.title).slice(0, 5),
+          ),
+          end_session: false,
+          buttons: tasks,
+        },
+        session: {
+          message_id: ask.session.message_id,
+          session_id: ask.session.session_id,
+          user_id: ask.session.application.application_id,
+        },
+        version: '1.0',
+        session_state: {
+          wait,
+          taskState,
+        },
+      };
+    }
     const task = await this.m.getTask(vkUserId, list!, taskId);
     if (!task) return this.marusyaError(ask);
 
@@ -580,7 +642,7 @@ export class ScenarioService {
       response: {
         text: MarusyaResponseTxt.noTasks,
         tts: MarusyaResponseTxt.noTasks,
-        end_session: true,
+        end_session: false,
       },
       session: {
         message_id: ask.session.message_id,
@@ -588,21 +650,9 @@ export class ScenarioService {
         user_id: ask.session.application.application_id,
       },
       version: '1.0',
-    };
-  }
-  private noTask(ask: MarusyaAsk): MarusyaResponse {
-    return {
-      response: {
-        text: MarusyaResponseTxt.noTask,
-        tts: MarusyaResponseTxt.noTask,
-        end_session: true,
+      session_state: {
+        wait: MarusyaWaitState.WaitForReactionAfterNoTaskFound,
       },
-      session: {
-        message_id: ask.session.message_id,
-        session_id: ask.session.session_id,
-        user_id: ask.session.application.application_id,
-      },
-      version: '1.0',
     };
   }
 

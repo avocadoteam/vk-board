@@ -89,6 +89,9 @@ export class MarusyaController {
             text: MarusyaResponseTxt.bye,
             tts: MarusyaResponseTxt.bye,
             end_session: true,
+            // card: this.config.get('core.devMode')
+            //   ? undefined
+            //   : marusyaCards.stuff,
           },
           session: {
             message_id: ask.session.message_id,

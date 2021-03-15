@@ -18,6 +18,8 @@ export enum MarusyaWaitState {
   WaitForDescription = 'WaitForDescription',
   WaitForTime = 'WaitForTime',
   WaitForShowTaskInfo = 'WaitForShowTaskInfo',
+  // TODO
+  WaitForReactionAfterNoTaskFound = 'WaitForReactionAfterNoTaskFound'
 }
 
 export enum MarusyaUserChoice {
