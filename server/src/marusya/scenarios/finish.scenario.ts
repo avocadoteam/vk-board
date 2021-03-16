@@ -83,6 +83,7 @@ export class FinishScenario {
       };
     } else {
       const tasks = await this.m.getTasks(vkUserId, list);
+      if (!tasks.length) return noTasks(ask);
       return {
         response: {
           text: MarusyaResponseTxt.askTaskNameFinish(sliceTasks(tasks)),
@@ -121,6 +122,8 @@ export class FinishScenario {
 
     if (!task) {
       const tasks = await this.m.getTasks(vkUserId, list!);
+
+      if (!tasks.length) return noTasks(ask);
 
       return {
         response: {
