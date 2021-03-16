@@ -59,23 +59,27 @@ export class CreateScenario {
         };
       });
     } else {
-      return {
-        response: {
-          text: MarusyaResponseTxt.askTaskName,
-          tts: MarusyaResponseTxt.askTaskName,
-          end_session: false,
-        },
-        session: {
-          message_id: ask.session.message_id,
-          session_id: ask.session.session_id,
-          user_id: ask.session.application.application_id,
-        },
-        version: '1.0',
-        session_state: {
-          wait: MarusyaWaitState.WaitForTaskName,
-          taskState: MarusyaTaskState.create,
-        },
-      };
+      return this.marusyaAskTaskName(ask);
     }
+  }
+
+  marusyaAskTaskName(ask: MarusyaAsk): MarusyaResponse {
+    return {
+      response: {
+        text: MarusyaResponseTxt.askTaskName,
+        tts: MarusyaResponseTxt.askTaskName,
+        end_session: false,
+      },
+      session: {
+        message_id: ask.session.message_id,
+        session_id: ask.session.session_id,
+        user_id: ask.session.application.application_id,
+      },
+      version: '1.0',
+      session_state: {
+        wait: MarusyaWaitState.WaitForTaskName,
+        taskState: MarusyaTaskState.create,
+      },
+    };
   }
 }

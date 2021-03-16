@@ -18,8 +18,7 @@ export enum MarusyaWaitState {
   WaitForDescription = 'WaitForDescription',
   WaitForTime = 'WaitForTime',
   WaitForShowTaskInfo = 'WaitForShowTaskInfo',
-  // TODO
-  WaitForReactionAfterNoTaskFound = 'WaitForReactionAfterNoTaskFound'
+  WaitForReactionAfterNoTaskFound = 'WaitForReactionAfterNoTaskFound',
 }
 
 export enum MarusyaUserChoice {
@@ -46,3 +45,19 @@ export enum MarusyaTaskState {
   create = 'create',
   update = 'update',
 }
+
+export enum UserWantsToken {
+  Yes = 'да',
+  Want = 'хочу',
+  Wanted = 'хотел',
+  Give = 'дава',
+}
+export const userWantsTokens = Object.values(UserWantsToken);
+export enum UserNotWantToken {
+  No = 'не',
+  Want = 'не хочу',
+  Wanted = 'не хотел',
+  Need = 'не надо',
+  Needed = 'не нужно',
+}
+export const userNotWantTokens = Object.values(UserNotWantToken);

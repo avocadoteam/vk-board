@@ -14,6 +14,7 @@ import { MTasksService } from './m-tasks.service';
 import { marusyaBye, marusyaError, marusyaNoCommands } from './quick-response';
 import { CreateScenario } from './scenarios/create.scenario';
 import { FinishScenario } from './scenarios/finish.scenario';
+import { NoTaskScenario } from './scenarios/no-task.scenario';
 import { ShowScenario } from './scenarios/show.scenario';
 import { UserChoiceScenario } from './scenarios/user-choice.scenario';
 import { WelcomeScenario } from './scenarios/welcome.scenario';
@@ -27,6 +28,7 @@ export class MarusyaController {
     private readonly cs: CreateScenario,
     private readonly ss: ShowScenario,
     private readonly ucs: UserChoiceScenario,
+    private readonly nts: NoTaskScenario,
     private readonly m: MTasksService,
     private readonly config: ConfigService,
   ) {}
@@ -89,10 +91,10 @@ export class MarusyaController {
         return marusyaBye(ask);
       }
 
-      const userInProgress = await this.processWaitState(ask);
+      const userInProgress = this.processWaitState(ask);
 
       if (userInProgress) {
-        return userInProgress;
+        return await userInProgress;
       }
 
       if (this.shouldDisplayWelcome(command, ask.session.new)) {
@@ -121,33 +123,36 @@ export class MarusyaController {
     }
   }
 
-  private async processWaitState(
+  private processWaitState(
     ask: MarusyaAsk,
-  ): Promise<MarusyaResponse | undefined> {
+  ): Promise<MarusyaResponse> | undefined {
     const { wait } = ask.state.session;
     if (!wait) return undefined;
     switch (wait) {
       case MarusyaWaitState.WaitForTaskName:
-        const tnres = await this.ucs.marusyaWaitForTaskName(ask);
-        return tnres;
+        return this.ucs.marusyaWaitForTaskName(ask);
+
       case MarusyaWaitState.WaitForTaskNameToFinish:
-        const tnfres = await this.fs.marusyaWaitForTaskNameToFinish(ask);
-        return tnfres;
+        return this.fs.marusyaWaitForTaskNameToFinish(ask);
+
       case MarusyaWaitState.WaitForUserChoice:
-        const ucres = await this.ucs.marusyaProcessUserChoice(ask);
-        return ucres;
+        return this.ucs.marusyaProcessUserChoice(ask);
+
       case MarusyaWaitState.WaitForDescription:
-        const cdres = await this.ucs.marusyaChangeDescription(ask);
-        return cdres;
+        return this.ucs.marusyaChangeDescription(ask);
+
       case MarusyaWaitState.WaitForTime:
-        const ctres = await this.ucs.marusyaChangeTime(ask);
-        return ctres;
+        return this.ucs.marusyaChangeTime(ask);
+
       case MarusyaWaitState.WaitForShowTaskInfo:
-        const stires = await this.ss.marusyaShowTaskInfo(ask);
-        return stires;
+        return this.ss.marusyaShowTaskInfo(ask);
+
       case MarusyaWaitState.WaitForChangeTaskName:
-        const ctnres = await this.ucs.marusyaChangeTaskName(ask);
-        return ctnres;
+        return this.ucs.marusyaChangeTaskName(ask);
+
+      case MarusyaWaitState.WaitForReactionAfterNoTaskFound:
+        return this.nts.marusyaWaitForReaction(ask);
+
       default:
         break;
     }

@@ -16,6 +16,7 @@ import { MTasksService } from './m-tasks.service';
 import { MarusyaController } from './marusya.controller';
 import { CreateScenario } from './scenarios/create.scenario';
 import { FinishScenario } from './scenarios/finish.scenario';
+import { NoTaskScenario } from './scenarios/no-task.scenario';
 import { ShowScenario } from './scenarios/show.scenario';
 import { UserChoiceScenario } from './scenarios/user-choice.scenario';
 import { WelcomeScenario } from './scenarios/welcome.scenario';
@@ -40,6 +41,7 @@ import { WelcomeScenario } from './scenarios/welcome.scenario';
     CreateScenario,
     ShowScenario,
     UserChoiceScenario,
+    NoTaskScenario
   ],
   controllers: [MarusyaController],
 })
