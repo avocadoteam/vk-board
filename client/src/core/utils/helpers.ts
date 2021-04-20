@@ -3,7 +3,7 @@ import { OS } from '@vkontakte/vkui';
 export const getOrigin = window.location.origin;
 
 export const errMap = (error: any) => {
-  if (error.error_type && error.error_data) {
+  if (error && error.error_type && error.error_data) {
     return mapVkError(error);
   } else {
     return JSON.stringify(error, ['message', 'statusCode']);
