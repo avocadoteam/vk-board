@@ -15,8 +15,9 @@ import {
   getLastGoogleSyncHrs,
 } from 'core/selectors/payment';
 import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
-import { getQToQuery } from 'core/selectors/user';
+import { getQToQuery, isAdmin } from 'core/selectors/user';
 import { ruSyntaxHelper } from 'core/helpers';
+import { vkBridge } from 'core/vk-bridge/instance';
 
 const itemsToAppear = [
   {
@@ -60,6 +61,7 @@ export const PremiumCard = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
   const computedTime = Math.trunc(24 - gHrs);
   const humanTime = computedTime > 1 ? computedTime : 1;
+  const admin = useSelector(isAdmin);
 
   React.useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -78,11 +80,18 @@ export const PremiumCard = React.memo(() => {
   }, [gClicked]);
 
   const handleBuy = React.useCallback(() => {
-    dispatch({
-      type: 'SET_UPDATING_DATA',
-      payload: FetchingStateName.PaymentProccess,
-    });
-  }, [dispatch]);
+    if (admin) {
+      vkBridge
+        .send('VKWebAppShowOrderBox', { type: 'item', item: 'KUPIT PREMIUM' })
+        .then(console.debug)
+        .catch(console.error);
+    } else {
+      dispatch({
+        type: 'SET_UPDATING_DATA',
+        payload: FetchingStateName.PaymentProccess,
+      });
+    }
+  }, [admin]);
 
   const startSync = React.useCallback(() => {
     setTimeout(() => {
