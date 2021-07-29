@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   HttpStatus,
@@ -14,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { createHash } from 'crypto';
+import { Request } from 'express';
 import integrationConfig from 'src/config/integration.config';
 import { NotificationType, PaymentVoice } from 'src/contracts/payment';
 import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
@@ -58,27 +58,20 @@ export class PaymentController {
     }
     return this.paymentService.getDurationOf24HoursBeforeNewSync(vkUserId);
   }
-
+  objKeys = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[];
   @Post('/ordered')
-  async orderedPayment(
-    @Req() req: any,
-    @Body()
-    model: PaymentVoice,
-  ) {
-    console.debug(model);
-    console.debug(req.body);
+  async orderedPayment(@Req() req: Request) {
+    const model: PaymentVoice = req.body;
     const { sig, ...newToSort } = model;
 
     const signString =
-      Object.keys(newToSort)
+      this.objKeys(newToSort)
         .sort()
-        .map((k) => `${k}=${(newToSort as any)[k]}`)
+        .map((k) => `${k}=${newToSort[k]}`)
         .join('') + this.config.vkSecretKey;
 
     const hash = createHash('md5').update(signString).digest('hex');
 
-    console.debug(signString);
-    console.debug(newToSort);
     this.logger.debug(`Lets check hash ${hash}`);
     this.logger.debug(`Lets check sig ${sig}`);
 
@@ -95,9 +88,11 @@ export class PaymentController {
       case NotificationType.GetItem:
       case NotificationType.GetItemTest:
         return {
-          title: 'Премиум подписка',
-          price: 100,
-          discount: 50,
+          response: {
+            title: 'Премиум подписка',
+            price: 100,
+            discount: 50,
+          },
         };
 
       case NotificationType.OrderStatusChange:
@@ -111,8 +106,10 @@ export class PaymentController {
           );
 
           return {
-            order_id: model.order_id,
-            app_order_id: id,
+            response: {
+              order_id: model.order_id,
+              app_order_id: id,
+            },
           };
         } else if (model.status === 'refunded') {
         } else {
