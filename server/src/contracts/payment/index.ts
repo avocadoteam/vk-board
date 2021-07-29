@@ -41,5 +41,7 @@ export class PaymentVoice {
   @Allow()
   item_price: string;
   @Allow()
+  lang: string;
+  @Allow()
   item_discount: string;
 }
