@@ -106,13 +106,6 @@ client.stop_g_sync = () => {
 
 client.payment_complete = () => {
   console.warn('payment_complete');
-  store.dispatch({
-    type: 'SET_READY_DATA',
-    payload: {
-      name: FetchingStateName.PaymentProccess,
-      data: true,
-    },
-  });
   store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
 };
 

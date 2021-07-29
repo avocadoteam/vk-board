@@ -1,38 +1,11 @@
 import { getSearch } from 'connected-react-router';
 import { AppDispatch, AppEpic, FetchingStateName, FetchResponse } from 'core/models';
 import { lastGoogleSyncInfo, paymentInfo } from 'core/operations/payment';
-import { buyPremium } from 'core/vk-bridge/user';
 import { ofType } from 'redux-observable';
-import { concat, empty, from, of } from 'rxjs';
+import { concat, from, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { devTimeout } from './addons';
 import { safeCombineEpics } from './combine';
-import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
-
-const userMakePaymentEpic: AppEpic = (action$, state$) =>
-  action$.pipe(
-    ofType('SET_UPDATING_DATA'),
-    filter(({ payload }) => payload === FetchingStateName.PaymentProccess),
-    switchMap(() =>
-      from(buyPremium()).pipe(
-        devTimeout(),
-        switchMap((pr) => {
-          if ('result' in pr) {
-            if (!pr.result.status) {
-              throw new Error(`Платеж не завершен`);
-            }
-          } else if (!pr.status) {
-            throw new Error(`Платеж не завершен`);
-          }
-          return empty();
-        }),
-        captureFetchErrorWithTaptic(
-          FetchingStateName.PaymentProccess,
-          'Не удалось произвести покупку премиума'
-        )
-      )
-    )
-  );
+import { captureFetchError } from './errors';
 
 const ensurePaymentEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -131,8 +104,4 @@ const lastGoogleSyncInfoEpic: AppEpic = (action$, state$) =>
     )
   );
 
-export const paymentEpics = safeCombineEpics(
-  userMakePaymentEpic,
-  ensurePaymentEpic,
-  lastGoogleSyncInfoEpic
-);
+export const paymentEpics = safeCombineEpics(ensurePaymentEpic, lastGoogleSyncInfoEpic);

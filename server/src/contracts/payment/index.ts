@@ -1,34 +1,48 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsNumber,
-  ValidateIf,
-  IsObject,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsString, ValidateIf } from 'class-validator';
+import { IsNotBlank } from 'src/interceptors/exts/isBlank';
 
-class PaymentPayload {
-  @IsNumber()
-  from_id!: number;
-
-  @IsNumber()
-  amount!: number;
-
-  description?: string;
+export enum NotificationType {
+  GetItem = 'get_item', //— получение информации о товаре;
+  GetItemTest = 'get_item_test', //— получение информации о товаре;
+  OrderStatusChange = 'order_status_change', // — изменение статуса заказа;
+  OrderStatusChangeTest = 'order_status_change_test', // — изменение статуса заказа;
+  GetSub = 'get_subscription', // — получение информации о подписке;
+  SubChange = 'subscription_status_change', // — изменение статуса подписки.
 }
 
-export class PaymentCBModel {
-  @IsString()
-  @IsNotEmpty()
-  type!: 'vkpay_transaction' | 'confirmation';
+export class PaymentVoice {
+  @IsEnum(NotificationType)
+  notification_type: NotificationType;
 
   @IsNumber()
-  group_id!: number;
+  app_id: number;
+  @IsNumber()
+  user_id: number;
+  @IsNumber()
+  receiver_id: number;
 
-  @ValidateIf((o) => !!o.object)
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PaymentPayload)
-  object?: PaymentPayload;
+  @ValidateIf((o) => !o.subscription_id)
+  @IsNumber()
+  order_id: number;
+
+  @ValidateIf((o) => !o.order_id)
+  @IsNumber()
+  subscription_id: number;
+
+  @IsString()
+  @IsNotBlank()
+  version: string;
+
+  @IsString()
+  @IsNotBlank()
+  sig: string;
+
+  date: number;
+  status: 'chargeable' | 'refunded';
+  item: string;
+  item_id: number;
+  item_title: string;
+  item_photo_url: string;
+  item_price: string;
+  item_discount: string;
 }

@@ -115,7 +115,6 @@ export enum FetchingStateName {
   DropMembership = 'drop_membership',
   SaveMembership = 'save_membership',
   ListMembershipPreview = 'list_membership_preview',
-  PaymentProccess = 'payment_proccess',
   PaymentInfo = 'payment_info',
   LastGoogleSync = 'last_google_sync',
   AddToHomeInfo = 'add_to_home_info',

@@ -1,23 +1,22 @@
-import React from 'react';
-import { Div, CardGrid, Card, Text, MiniInfoCell, Spinner, Subhead } from '@vkontakte/vkui';
-import { useFela, CssFelaStyle } from 'react-fela';
-import { useSelector, useDispatch } from 'react-redux';
-import { isThemeDrak } from 'core/selectors/common';
 import Icon24DoneOutline from '@vkontakte/icons/dist/24/done_outline';
-import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName, premiumPrice } from 'core/models';
-import { isPlatformIOS } from 'core/selectors/settings';
-import { useTransition, useChain, animated } from 'react-spring';
-import {
-  hasUserPremium,
-  isPaymentUpdating,
-  isLastGoogleSyncUpdating,
-  getLastGoogleSyncHrs,
-} from 'core/selectors/payment';
 import Icon24LogoGoogle from '@vkontakte/icons/dist/24/logo_google';
-import { getQToQuery, isAdmin } from 'core/selectors/user';
+import { Card, CardGrid, Div, MiniInfoCell, Spinner, Subhead, Text } from '@vkontakte/vkui';
+import { Button } from 'atoms/Button';
 import { ruSyntaxHelper } from 'core/helpers';
+import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { isThemeDrak } from 'core/selectors/common';
+import {
+  getLastGoogleSyncHrs,
+  isLastGoogleSyncUpdating,
+  isPaymentUpdating,
+} from 'core/selectors/payment';
+import { isPlatformIOS } from 'core/selectors/settings';
+import { getQToQuery, isAdmin } from 'core/selectors/user';
 import { vkBridge } from 'core/vk-bridge/instance';
+import React from 'react';
+import { CssFelaStyle, useFela } from 'react-fela';
+import { useDispatch, useSelector } from 'react-redux';
+import { animated, useChain, useTransition } from 'react-spring';
 
 const itemsToAppear = [
   {
@@ -51,7 +50,7 @@ export const PremiumCard = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const q = useSelector(getQToQuery);
   const updating = useSelector(isPaymentUpdating);
-  const hasPremium = useSelector(hasUserPremium);
+  const hasPremium = false; //useSelector(hasUserPremium);
   const gUpdating = useSelector(isLastGoogleSyncUpdating);
   const gHrs = useSelector(getLastGoogleSyncHrs);
   const gClicked = useSelector((state) => state.ui.googleSyncClicked);
@@ -80,17 +79,7 @@ export const PremiumCard = React.memo(() => {
   }, [gClicked]);
 
   const handleBuy = React.useCallback(() => {
-    if (admin) {
-      vkBridge
-        .send('VKWebAppShowOrderBox', { type: 'item', item: 'KUPIT PREMIUM' })
-        .then(console.debug)
-        .catch(console.error);
-    } else {
-      dispatch({
-        type: 'SET_UPDATING_DATA',
-        payload: FetchingStateName.PaymentProccess,
-      });
-    }
+    vkBridge.send('VKWebAppShowOrderBox', { type: 'item', item: 'KUPIT_PREMIUM' });
   }, [admin]);
 
   const startSync = React.useCallback(() => {
@@ -149,7 +138,7 @@ export const PremiumCard = React.memo(() => {
       disabled={updating}
       before={updating ? <Spinner className={css({ color: dark ? '#222327' : '#fff' })} /> : null}
     >
-      Купить {premiumPrice} ₽
+      Купить
     </Button>
   );
 

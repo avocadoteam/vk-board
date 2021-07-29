@@ -1,28 +1,24 @@
 import {
+  Body,
   Controller,
+  Get,
+  HttpStatus,
+  Inject,
+  Logger,
+  ParseIntPipe,
+  Post,
+  Query,
   UseGuards,
   UseInterceptors,
-  Get,
-  Query,
-  ParseIntPipe,
-  HttpStatus,
-  Post,
-  Body,
-  Res,
-  Inject,
-  BadRequestException,
-  Logger,
 } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { createHash } from 'crypto';
+import integrationConfig from 'src/config/integration.config';
+import { NotificationType, PaymentVoice } from 'src/contracts/payment';
+import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
 import { SignGuard } from 'src/guards/sign.guard';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { PaymentService } from './payment.service';
-import { PaymentRequiredException } from 'src/exceptions/Payment.exception';
-import { Response } from 'express';
-import integrationConfig from 'src/config/integration.config';
-import { ConfigType } from '@nestjs/config';
-import { avacadoGroupId } from 'src/constants';
-import { VkCallbackGuard } from 'src/guards/vkCb.guard';
-import { PaymentCBModel } from 'src/contracts/payment';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -62,36 +58,81 @@ export class PaymentController {
     return this.paymentService.getDurationOf24HoursBeforeNewSync(vkUserId);
   }
 
-  @UseGuards(VkCallbackGuard)
-  @Post('/finished')
-  makePayment(
+  @Post('/ordered')
+  async orderedPayment(
     @Body()
-    model: PaymentCBModel,
-    @Res()
-    res: Response,
+    model: PaymentVoice,
   ) {
-    this.logger.debug('Here comes vk callback');
-    this.logger.debug(`Group id is ${model.group_id}`);
-    if (model.group_id !== avacadoGroupId) {
-      throw new BadRequestException();
+    const { sig, ...newToSort } = model;
+
+    const ordered = Object.keys(newToSort)
+      .sort()
+      .reduce((obj, key) => {
+        obj[key] = (model as any)[key];
+        return obj;
+      }, {} as any);
+
+    let str = '';
+    for (const key in ordered) {
+      const value = ordered[key];
+      str = str + `${key}=${value}`;
     }
 
-    this.logger.debug(`Type is ${model.type}`);
-    this.logger.debug(`Our code is ${this.config.vkConfirmCode}`);
-    if (model.type === 'confirmation') {
-      res.setHeader('content-type', 'text/plain');
-      return res.status(HttpStatus.OK).send(`${this.config.vkConfirmCode}`);
+    const hash = createHash('md5')
+      .update(str + this.config.vkSecretKey)
+      .digest('hex');
+
+    console.debug(str);
+    console.debug(ordered);
+    this.logger.debug(`Lets check hash ${hash}`);
+    this.logger.debug(`Lets check sig ${sig}`);
+
+    if (sig !== hash) {
+      return {
+        error: {
+          error_code: 10,
+          critical: true,
+        },
+      };
     }
 
-    if (model.type === 'vkpay_transaction' && model.object) {
-      this.logger.debug(`Lets make premium for  ${model.object.from_id}`);
-      this.logger.debug(`Premium payment value ${model.object.amount}`);
+    switch (model.notification_type) {
+      case NotificationType.GetItem:
+      case NotificationType.GetItemTest:
+        return {
+          title: 'Премиум подписка',
+          price: 100,
+          discount: 50,
+        };
 
-      this.paymentService.makePremium(
-        model.object.from_id,
-        model.object.amount,
-      );
+      case NotificationType.OrderStatusChange:
+      case NotificationType.OrderStatusChangeTest:
+        if (model.status === 'chargeable') {
+          this.logger.debug(`Lets make premium for  ${model.user_id}`);
+          this.logger.debug(`Premium payment value ${model.item_price}`);
+          const id = await this.paymentService.makePremium(
+            model.user_id,
+            `${Number(model.item_price) - Number(model.item_discount)}`,
+          );
+
+          return {
+            order_id: model.order_id,
+            app_order_id: id,
+          };
+        } else if (model.status === 'refunded') {
+        } else {
+          return {
+            error: {
+              error_code: 100,
+              error_msg:
+                'Передано непонятно что вместо chargeable или refunded.',
+              critical: true,
+            },
+          };
+        }
+
+      default:
+        break;
     }
-    res.status(HttpStatus.OK).send('ok');
   }
 }

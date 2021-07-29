@@ -21,6 +21,10 @@ export class Payment {
     type: 'text',
   })
   amount: string;
+  @Column({
+    type: 'text',
+  })
+  voices: string;
 
   @Column({
     type: 'timestamp',
@@ -31,11 +35,13 @@ export class Payment {
 
   constructor(
     amount: string,
+    voices: string,
     userId: number,
     last_g_sync: string | null = null,
   ) {
     this.created = new Date();
     this.amount = amount;
+    this.voices = voices;
     this.user_id = userId;
     this.last_g_sync = last_g_sync ? new Date(last_g_sync) : null;
   }

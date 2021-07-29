@@ -6,10 +6,6 @@ const getPaymentInfoDataState = createSelector(
   getStateUi,
   (ui) => (ui.fetchingDatas[FetchingStateName.PaymentInfo] ?? {}) as FetchingDataType<boolean>
 );
-const getPaymentProccessDataState = createSelector(
-  getStateUi,
-  (ui) => (ui.fetchingDatas[FetchingStateName.PaymentProccess] ?? {}) as FetchingDataType<boolean>
-);
 
 const getLastGoogleSyncProccessDataState = createSelector(
   getStateUi,
@@ -18,9 +14,7 @@ const getLastGoogleSyncProccessDataState = createSelector(
 
 export const isPaymentUpdating = createSelector(
   getPaymentInfoDataState,
-  getPaymentProccessDataState,
-  (info, proccess) =>
-    info.status === FetchingStatus.Updating || proccess.status === FetchingStatus.Updating
+  (info) => info.status === FetchingStatus.Updating
 );
 
 export const hasUserPremium = createSelector(

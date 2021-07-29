@@ -22,7 +22,7 @@ export class PaymentService {
   ) {}
 
   async hasUserPremium(vkUserId: number) {
-    const cacheHas = await this.cache.get<boolean>(
+    const cacheHas = await this.cache.get<number>(
       cacheKey.hasPremium(vkUserId),
     );
 
@@ -30,46 +30,45 @@ export class PaymentService {
       return cacheHas;
     }
 
-    const has =
-      (await this.tablePayment.count({
-        where: [
-          {
-            user_id: vkUserId,
-            amount: premiumPrice.toString(),
-          },
-        ],
-      })) > 0;
+    const pay = await this.tablePayment.findOne({
+      where: [
+        {
+          user_id: vkUserId,
+          amount: premiumPrice.toString(),
+        },
+      ],
+    });
 
-    await this.cache.set(cacheKey.hasPremium(vkUserId), has, {
+    await this.cache.set(cacheKey.hasPremium(vkUserId), pay?.id, {
       ttl: dayTTL,
     });
 
-    return has;
+    return pay?.id;
   }
 
-  async makePremium(vkUserId: number, amount: number) {
-    if (await this.hasUserPremium(vkUserId)) {
+  async makePremium(vkUserId: number, voices: string) {
+    const id = await this.hasUserPremium(vkUserId);
+    if (id) {
       this.logger.log(`User ${vkUserId} already bought the premium`);
-      return;
+      return id;
     }
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const amountToNormal = `${amount / 1000}`;
-      const newPayment = new Payment(amountToNormal, vkUserId);
+      const newPayment = new Payment(`${premiumPrice}`, voices, vkUserId);
       await queryRunner.manager.save(newPayment);
 
       await queryRunner.commitTransaction();
 
-      this.logger.log(`User ${vkUserId} made a premium for ${amountToNormal}`);
+      this.logger.log(`User ${vkUserId} made a premium for voices: ${voices}`);
 
       await this.cache.del(cacheKey.hasPremium(vkUserId));
 
       EventBus.emit(BusEvents.PAYMENT_COMPLETE, vkUserId);
 
-      return true;
+      return newPayment.id;
     } catch (err) {
       this.logger.error(errMap(err));
       await queryRunner.rollbackTransaction();
