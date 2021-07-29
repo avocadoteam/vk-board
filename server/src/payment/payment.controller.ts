@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -60,10 +61,12 @@ export class PaymentController {
 
   @Post('/ordered')
   async orderedPayment(
+    @Req() req: any,
     @Body()
     model: PaymentVoice,
   ) {
     console.debug(model);
+    console.debug(req.body);
     const { sig, ...newToSort } = model;
 
     const signString =
