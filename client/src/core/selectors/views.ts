@@ -8,7 +8,7 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
     return MainView.Offline;
   }
 
-  if (ui.isAppUser) {
+  if (!ui.isAppUser) {
     return MainView.Welcome;
   }
 
