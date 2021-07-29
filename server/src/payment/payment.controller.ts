@@ -66,25 +66,16 @@ export class PaymentController {
     console.debug(model);
     const { sig, ...newToSort } = model;
 
-    const ordered = Object.keys(newToSort)
-      .sort()
-      .reduce((obj, key) => {
-        obj[key] = (model as any)[key];
-        return obj;
-      }, {} as any);
+    const signString =
+      Object.keys(newToSort)
+        .sort()
+        .map((k) => `${k}=${(newToSort as any)[k]}`)
+        .join('') + this.config.vkSecretKey;
 
-    let str = '';
-    for (const key in ordered) {
-      const value = ordered[key];
-      str = str + `${key}=${value}`;
-    }
+    const hash = createHash('md5').update(signString).digest('hex');
 
-    const hash = createHash('md5')
-      .update(str + this.config.vkSecretKey)
-      .digest('hex');
-
-    console.debug(str);
-    console.debug(ordered);
+    console.debug(signString);
+    console.debug(newToSort);
     this.logger.debug(`Lets check hash ${hash}`);
     this.logger.debug(`Lets check sig ${sig}`);
 
