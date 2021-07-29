@@ -89,7 +89,7 @@ export class PaymentController {
       case NotificationType.GetItemTest:
         return {
           response: {
-            title: 'Премиум подписка',
+            title: 'Премиум подписка навсегда',
             price: 100,
             discount: 50,
           },
