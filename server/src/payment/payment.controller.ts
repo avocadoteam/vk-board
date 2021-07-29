@@ -63,6 +63,7 @@ export class PaymentController {
     @Body()
     model: PaymentVoice,
   ) {
+    console.debug(model);
     const { sig, ...newToSort } = model;
 
     const ordered = Object.keys(newToSort)
