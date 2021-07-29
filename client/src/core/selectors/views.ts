@@ -1,14 +1,14 @@
 import { createSelector } from 'reselect';
 import { getStateUi } from './common';
 import { getLocationMainPath, getLocationSubPath } from './router';
-import { MainView, ActiveModal, WelcomeView } from 'core/models';
+import { MainView, ActiveModal, WelcomeView, isDev } from 'core/models';
 
 export const getActiveMainView = createSelector(getStateUi, getLocationMainPath, (ui, mainPath) => {
   if (!ui.online) {
     return MainView.Offline;
   }
 
-  if (!ui.isAppUser) {
+  if (!isDev && !ui.isAppUser) {
     return MainView.Welcome;
   }
 

@@ -39,7 +39,7 @@ export class PaymentService {
       ],
     });
 
-    await this.cache.set(cacheKey.hasPremium(vkUserId), pay?.id, {
+    await this.cache.set(cacheKey.hasPremium(vkUserId), pay?.id ?? 0, {
       ttl: dayTTL,
     });
 
