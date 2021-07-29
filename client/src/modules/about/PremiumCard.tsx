@@ -7,6 +7,7 @@ import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
 import {
   getLastGoogleSyncHrs,
+  hasUserPremium,
   isLastGoogleSyncUpdating,
   isPaymentUpdating,
 } from 'core/selectors/payment';
@@ -50,7 +51,7 @@ export const PremiumCard = React.memo(() => {
   const dark = useSelector(isThemeDrak);
   const q = useSelector(getQToQuery);
   const updating = useSelector(isPaymentUpdating);
-  const hasPremium = false; //useSelector(hasUserPremium);
+  const hasPremium = useSelector(hasUserPremium);
   const gUpdating = useSelector(isLastGoogleSyncUpdating);
   const gHrs = useSelector(getLastGoogleSyncHrs);
   const gClicked = useSelector((state) => state.ui.googleSyncClicked);
