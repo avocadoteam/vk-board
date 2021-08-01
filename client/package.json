@@ -13,6 +13,7 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "homepage": "./",
   "devDependencies": {
     "@types/history": "^4.7.7",
     "@types/react": "^16.9.45",
