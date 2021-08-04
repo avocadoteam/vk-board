@@ -1826,11 +1826,12 @@
   resolved "https://registry.yarnpkg.com/@vkontakte/vk-bridge/-/vk-bridge-2.2.8.tgz#5f89f489e90265c151908f021ad2d932bb376f25"
   integrity sha512-1Ky2592PoJRETScOnO0QwrryCIQLAe8gGiYwci4uPVKMlYp/ynTc/AF6Fr/jd/0RxEyGLal8cBwCzfrqCuzA+w==
 
-"@vkontakte/vk-miniapps-deploy@^0.0.19":
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/@vkontakte/vk-miniapps-deploy/-/vk-miniapps-deploy-0.0.19.tgz#470dc31aef76067a13874373204488ea0be69f4f"
-  integrity sha512-wAYRht7HdEQpC4QD+q4Djh5k/Q1XwR4sezQkT/ZoaBHTLMDByoh3hDGN/wx4v8Zd+GFkU/gks/Axb5kE6530qQ==
+"@vkontakte/vk-miniapps-deploy@^0.0.25":
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/@vkontakte/vk-miniapps-deploy/-/vk-miniapps-deploy-0.0.25.tgz#7d783c1d8f653f9e4c35ee5efb3e222ac4b0418a"
+  integrity sha512-5rNg/pNzBgtUDe7vsQsSsC7uRjQfiDzoZTSZYQGz8FbZlXn8aiwVg5XtzTBY2d9JU0y9nN5C6IrIoTk27VoJ+g==
   dependencies:
+    async "^3.2.0"
     chalk "^3.0.0"
     configstore "^5.0.0"
     form-data "^3.0.0"
@@ -2385,6 +2386,11 @@ async@^2.6.2, async@^2.6.3:
   integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
   dependencies:
     lodash "^4.17.14"
+
+async@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.0.tgz#b3a2685c5ebb641d3de02d161002c60fc9f85720"
+  integrity sha512-TR2mEZFVOj2pLStYxLht7TyfuRzaydfpxr3k9RpHIzMgw7A64dzsdqCxH1WJyQdoe8T10nDXd9wnEigmiuHIZw==
 
 asynckit@^0.4.0:
   version "0.4.0"
