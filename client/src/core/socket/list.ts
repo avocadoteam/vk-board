@@ -3,9 +3,9 @@ import { initCallbacks } from './callbacks';
 import { store } from 'core/store';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getUserId } from 'core/selectors/user';
-import { FetchingStateName } from 'core/models';
+import { FetchingStateName, isDev } from 'core/models';
 
-const listNs = '/selectedList';
+const listNs = isDev ? '/selectedList' : 'https://stuffvk.app-dich.com/selectedList';
 
 let selectedListConnected = false;
 
