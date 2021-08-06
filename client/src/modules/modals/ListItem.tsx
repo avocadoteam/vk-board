@@ -45,6 +45,7 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
   const goToMembership = React.useCallback(() => {
     goForward(MainView.ListMembership);
     if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: null });
       dispatch({ type: 'SET_MAIN_VIEW', payload: MainView.ListMembership });
     } else {
       dispatch(push(`/${MainView.ListMembership}${search}`) as any);

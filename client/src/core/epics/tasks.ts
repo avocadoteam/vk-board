@@ -81,7 +81,7 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                   ...actions.map((a) => of(a)),
                   of(
                     isPlatformIOS()
-                      ? ({ type: 'SET_MAIN_VIEW', payload: MainView.Board } as AppDispatch)
+                      ? ({ type: 'SET_MODAL', payload: null } as AppDispatch)
                       : (goBack() as any)
                   ),
                   of({
