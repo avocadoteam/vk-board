@@ -9,7 +9,7 @@ import { Button } from 'atoms/Button';
 import { getSearch, push } from 'connected-react-router';
 import { ActiveModal, AppDispatchActions, FetchingStateName, MainView } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
-import { getNotifications } from 'core/selectors/settings';
+import { getNotifications, isPlatformIOS } from 'core/selectors/settings';
 import {
   getSelectedTaskInfo,
   isTaskDeleteUpdating,
@@ -46,11 +46,19 @@ export const SelectedTask = React.memo(() => {
   };
 
   const deleteTask = React.useCallback(() => {
-    dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteTask}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.DeleteTask });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteTask}${search}`) as any);
+    }
   }, [dispatch, search]);
 
   const editTask = React.useCallback(() => {
-    dispatch(push(`/${MainView.Board}/${ActiveModal.EditTask}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.EditTask });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.EditTask}${search}`) as any);
+    }
   }, [dispatch, search]);
 
   const handleChangeNotif = () => {

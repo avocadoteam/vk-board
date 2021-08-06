@@ -24,6 +24,7 @@ import { getSearch, push, replace } from 'connected-react-router';
 import { getBoardListData } from 'core/selectors/board';
 import { getPreviewMembershipData } from 'core/selectors/membership';
 import { useTapticEpic } from './addons';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 const dropMembershipEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -118,7 +119,11 @@ const getPreviewMembershipListEpic: AppEpic = (action$, state$) =>
                       data: r?.data,
                     },
                   } as AppDispatch),
-                  of(push(`/${MainView.ListSharePreview}${q}`) as any)
+                  of(
+                    isPlatformIOS()
+                      ? { type: 'SET_MAIN_VIEW', payload: MainView.ListSharePreview }
+                      : (push(`/${MainView.ListSharePreview}${q}`) as any)
+                  )
                 );
               })
             );
@@ -166,7 +171,11 @@ const saveMembershipEpic: AppEpic = (action$, state$) =>
                       data: true,
                     },
                   } as AppDispatch),
-                  of(replace(`/${q}`) as any),
+                  of(
+                    isPlatformIOS()
+                      ? ({ type: 'SET_MAIN_VIEW', payload: MainView.Board } as AppDispatch)
+                      : (replace(`/${q}`) as any)
+                  ),
                   useTapticEpic('success')
                 );
               })

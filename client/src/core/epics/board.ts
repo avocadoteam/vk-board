@@ -8,6 +8,7 @@ import {
   FetchingStateName,
   FetchReadyAction,
   FetchResponse,
+  MainView,
   Skeys,
 } from 'core/models';
 import { editBoardList, getBoard, newBoardList } from 'core/operations/board';
@@ -23,6 +24,7 @@ import { setStorageValueEpic, useTapticEpic } from './addons';
 import { safeCombineEpics } from './combine';
 import { captureFetchError, captureFetchErrorWithTaptic } from './errors';
 import { getBoardListData } from 'core/selectors/board';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 const fetchBoardEpic: AppEpic = (action$, state$) =>
   action$.pipe(
@@ -314,7 +316,7 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
       return {
         q: getQToQuery(state),
         listName: state.ui.board.firstBoardListName,
-        mainView: getLocationMainPath(state),
+        mainView: isPlatformIOS() ? state.ui.mainView : getLocationMainPath(state),
       };
     }),
     switchMap(({ q, listName, mainView }) =>
@@ -346,7 +348,11 @@ const firstBoardListEpic: AppEpic = (action$, state$) =>
                     payload: true,
                   } as AppDispatch),
                   useTapticEpic('success'),
-                  of(replace(`/${mainView}${q}`) as any),
+                  of(
+                    isPlatformIOS()
+                      ? ({ type: 'SET_MAIN_VIEW', payload: MainView.Board } as AppDispatch)
+                      : (replace(`/${mainView}${q}`) as any)
+                  ),
                   setStorageValueEpic(Skeys.appUser, AppUser.Yes)
                 );
               })

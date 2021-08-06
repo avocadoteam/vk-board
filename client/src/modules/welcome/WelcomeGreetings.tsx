@@ -4,7 +4,8 @@ import { Button } from 'atoms/Button';
 import { getSearch, push } from 'connected-react-router';
 import { AppDispatchActions, WelcomeView, MainView } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
-import { getLocationMainPath } from 'core/selectors/router';
+import { getLocationMainPath, getMainView } from 'core/selectors/router';
+import { isPlatformIOS } from 'core/selectors/settings';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,12 +15,15 @@ export const WelcomeGreetings = React.memo<{ goForward: (v: WelcomeView) => void
     const { css } = useFela();
     const dark = useSelector(isThemeDrak);
     const dispatch = useDispatch<AppDispatchActions>();
-    const mainView = useSelector(getLocationMainPath) || MainView.Board;
+    const mainView =
+      useSelector(isPlatformIOS() ? getMainView : getLocationMainPath) || MainView.Board;
     const search = useSelector(getSearch);
 
     const nextView = React.useCallback(() => {
       goForward(WelcomeView.TaskCreation);
-      dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
+      if (!isPlatformIOS()) {
+        dispatch(push(`/${mainView}/${WelcomeView.TaskCreation}${search}`) as any);
+      }
     }, [dispatch, search, goForward, mainView]);
 
     return (

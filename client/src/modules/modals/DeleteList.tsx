@@ -4,8 +4,9 @@ import { useFela } from 'react-fela';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { ActiveModal, AppDispatchActions, FetchingStateName } from 'core/models';
 import { goBack } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const DeleteList = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
@@ -13,7 +14,11 @@ export const DeleteList = React.memo<{ id: string }>(({ id }) => {
   const dispatch = useDispatch<AppDispatchActions>();
 
   const back = React.useCallback(() => {
-    dispatch(goBack() as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
+    } else {
+      dispatch(goBack() as any);
+    }
   }, [dispatch]);
 
   const deleteList = React.useCallback(() => {
@@ -37,7 +42,7 @@ export const DeleteList = React.memo<{ id: string }>(({ id }) => {
               '>div': {
                 display: 'block',
               },
-              userSelect: 'none'
+              userSelect: 'none',
             } as any)}`}
           >
             {'Вы уверены?'}

@@ -4,6 +4,7 @@ import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatchActions, BoardTaskItem, MainView, ActiveModal } from 'core/models';
 import { getSearch, push } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 type Props = {
   task: BoardTaskItem;
@@ -35,7 +36,11 @@ export const TaskCheckLabel = React.memo<Props>(({ task }) => {
       type: 'SELECT_TASK',
       payload: task,
     });
-    dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.SelectedTask });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
+    }
   };
 
   return (

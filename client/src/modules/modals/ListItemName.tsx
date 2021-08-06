@@ -48,7 +48,11 @@ export const ListItemName: React.FC<Props> = ({ listItem }) => {
     if (selectedBoardListId !== listItem.id) {
       dispatch({ type: 'SELECT_BOARD_LIST', payload: { id: listItem.id, data: listItem } });
       dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.Tasks });
-      dispatch(goBack() as any);
+      if (isPlatformIOS()) {
+        dispatch({ type: 'SET_MODAL', payload: null });
+      } else {
+        dispatch(goBack() as any);
+      }
     }
   };
 

@@ -7,6 +7,7 @@ import { Button } from 'atoms/Button';
 import { AppDispatchActions, FetchingStateName } from 'core/models';
 import { getUserFirstNameToDelete } from 'core/selectors/membership';
 import { goBack } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const DropMember = React.memo<{ id: string }>(({ id }) => {
   const { css } = useFela();
@@ -15,7 +16,11 @@ export const DropMember = React.memo<{ id: string }>(({ id }) => {
   const name = useSelector(getUserFirstNameToDelete);
 
   const closeModal = React.useCallback(() => {
-    dispatch(goBack() as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: null });
+    } else {
+      dispatch(goBack() as any);
+    }
   }, [dispatch]);
 
   const dropMember = React.useCallback(() => {
@@ -39,7 +44,7 @@ export const DropMember = React.memo<{ id: string }>(({ id }) => {
               '>div': {
                 display: 'block',
               },
-              userSelect: 'none'
+              userSelect: 'none',
             } as any)}`}
           >
             {'Вы уверены?'}

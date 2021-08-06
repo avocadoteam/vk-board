@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { ActiveModal, AppDispatchActions, FetchingStateName } from 'core/models';
 import {
   FormLayout,
   Input,
@@ -21,6 +21,7 @@ import { getEditTaskInfo } from 'core/selectors/task';
 import { safeTrim } from 'core/utils';
 import { goBack } from 'connected-react-router';
 import { isAdmin } from 'core/selectors/user';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 const nextDay = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
@@ -84,7 +85,11 @@ const EditTaskPC = React.memo<Props>(({ updateModalHeight, setHighlight }) => {
   };
 
   const back = React.useCallback(() => {
-    dispatch(goBack() as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.SelectedTask });
+    } else {
+      dispatch(goBack() as any);
+    }
   }, [dispatch]);
 
   const showError = wrongDate && <FormStatus header={errorName} mode="error" />;

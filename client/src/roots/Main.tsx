@@ -15,6 +15,7 @@ import { MembershipPreview } from 'modules/membership-preview';
 import { Welcome } from 'modules/welcome';
 import { SnakbarsErr } from 'modules/snaks';
 import { getActiveMainView } from 'core/selectors/views';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const Main = React.memo(() => {
   const activeView = useSelector(getActiveMainView);
@@ -25,7 +26,11 @@ export const Main = React.memo(() => {
 
   const handleBack = React.useCallback(() => {
     swipeBack();
-    dispatch(goBack() as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MAIN_VIEW', payload: MainView.Board });
+    } else {
+      dispatch(goBack() as any);
+    }
   }, [swipeBack, dispatch]);
 
   return (

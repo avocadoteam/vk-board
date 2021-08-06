@@ -2,6 +2,7 @@ import { Panel, View } from '@vkontakte/vkui';
 import { goBack } from 'connected-react-router';
 import { useViewChange } from 'core/hooks';
 import { AppDispatchActions, WelcomeView } from 'core/models';
+import { isPlatformIOS } from 'core/selectors/settings';
 import { getWelcomeView } from 'core/selectors/views';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,12 +11,19 @@ import { WelcomeGreetings } from './WelcomeGreetings';
 
 export const Welcome = React.memo(() => {
   const dispatch = useDispatch<AppDispatchActions>();
-  const { goForward, goBack: swipeBack, history } = useViewChange(WelcomeView, 'Greetings', true);
-  const activeView = useSelector(getWelcomeView);
+  const {
+    goForward,
+    goBack: swipeBack,
+    history,
+    activeView: welcomeView,
+  } = useViewChange(WelcomeView, 'Greetings', true);
+  const activeView = isPlatformIOS() ? welcomeView : useSelector(getWelcomeView);
 
   const back = React.useCallback(() => {
     swipeBack();
-    dispatch(goBack() as any);
+    if (!isPlatformIOS()) {
+      dispatch(goBack() as any);
+    }
   }, [dispatch, swipeBack]);
 
   return (

@@ -8,6 +8,7 @@ import {
   FetchResponse,
   FetchUpdateAction,
   FINISH_TASK_TIMER_VALUE,
+  MainView,
   NewTaskModel,
   TaskInfo,
   UNFINISH_TASK_TIMER_VALUE,
@@ -16,6 +17,7 @@ import * as ops from 'core/operations/task';
 import { getEditTaskValues, getNewTaskValues } from 'core/selectors/board';
 import { getSelectedList, getSelectedListId } from 'core/selectors/boardLists';
 import { getBoardUiState } from 'core/selectors/common';
+import { isPlatformIOS } from 'core/selectors/settings';
 import { getSelectedTaskId, getSelectedTaskNotification } from 'core/selectors/task';
 import { getQToQuery } from 'core/selectors/user';
 import { timeBasedOnTz } from 'core/utils/time';
@@ -77,7 +79,11 @@ const postNewTaskEpic: AppEpic = (action$, state$) =>
                 }
                 return concat(
                   ...actions.map((a) => of(a)),
-                  of(goBack() as any),
+                  of(
+                    isPlatformIOS()
+                      ? ({ type: 'SET_MAIN_VIEW', payload: MainView.Board } as AppDispatch)
+                      : (goBack() as any)
+                  ),
                   of({
                     type: 'RESET_NEW_TASK',
                     payload: null,
@@ -240,7 +246,14 @@ const deleteTaskEpic: AppEpic = (action$, state$) =>
               });
             }
 
-            return concat(...actions.map((a) => of(a)), of(goBack() as any));
+            return concat(
+              ...actions.map((a) => of(a)),
+              of(
+                isPlatformIOS()
+                  ? ({ type: 'SET_MAIN_VIEW', payload: MainView.Board } as AppDispatch)
+                  : (goBack() as any)
+              )
+            );
           } else {
             throw new Error(`Http ${response.status} on ${response.url}`);
           }

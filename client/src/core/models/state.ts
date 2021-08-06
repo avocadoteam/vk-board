@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { LocationChangeAction, RouterState } from 'connected-react-router';
 import { BoardState, TaskInfo, BoardListItem, BoardTaskItem } from './board';
 import { MembershipState } from './membership';
-import { ActiveModal } from './enums';
+import { ActiveModal, MainView } from './enums';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -32,7 +32,8 @@ export type AppState = {
     errorsQueue: string[];
     snackVisible: boolean;
     googleSyncClicked: boolean;
-    tasksToBeFinishedTimer: number,
+    tasksToBeFinishedTimer: number;
+    mainView: MainView;
   };
   router: RouterState;
 };
@@ -50,6 +51,7 @@ export type AppDispatch =
   | { type: 'SET_APP_USER'; payload: boolean }
   | { type: 'HANDLE_ACTIVATE_INIT'; payload: boolean }
   | { type: 'SET_MODAL'; payload: ActiveModal | null }
+  | { type: 'SET_MAIN_VIEW'; payload: MainView }
   | SelectBoardListAction
   | { type: 'SET_BOARD_TASKS'; payload: BoardTaskItem[] }
   | { type: 'OPEN_BOARD_LIST'; payload: number }

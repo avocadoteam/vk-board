@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { getStateUi } from './common';
 import { getLocationMainPath, getLocationSubPath } from './router';
 import { MainView, ActiveModal, WelcomeView, isDev } from 'core/models';
+import { isPlatformIOS } from './settings';
 
 export const getActiveMainView = createSelector(getStateUi, getLocationMainPath, (ui, mainPath) => {
   if (!ui.online) {
@@ -10,6 +11,10 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
 
   if (!isDev && !ui.isAppUser) {
     return MainView.Welcome;
+  }
+
+  if (isPlatformIOS()) {
+    return ui.mainView;
   }
 
   if (mainPath === null) {
@@ -32,9 +37,14 @@ export const getActiveMainView = createSelector(getStateUi, getLocationMainPath,
 export const getActiveModalRoute = createSelector(
   getActiveMainView,
   getLocationSubPath,
-  (mainView, subPath) => {
+  getStateUi,
+  (mainView, subPath, ui) => {
     if (mainView !== MainView.Board && mainView !== MainView.ListMembership) {
       return null;
+    }
+
+    if (isPlatformIOS()) {
+      return ui.activeModal;
     }
 
     switch (subPath) {

@@ -1,7 +1,7 @@
-import { appId, AppState } from 'core/models';
+import { appId } from 'core/models';
 import { matchPath } from 'react-router';
-import { createSelector, createStructuredSelector } from 'reselect';
-import { getStateRouter } from './common';
+import { createSelector } from 'reselect';
+import { getStateRouter, getStateUi } from './common';
 
 export const getLocationNotificationEnabled = createSelector(
   getStateRouter,
@@ -31,10 +31,4 @@ export const getLocationSubPath = createSelector(getLocationPathName, (pathName)
   return match ? match.params.sub : null;
 });
 
-export const getLocationPathes = createStructuredSelector<
-  AppState,
-  { main: string | null; sub: string | null }
->({
-  main: getLocationMainPath,
-  sub: getLocationSubPath,
-});
+export const getMainView = createSelector(getStateUi, (ui) => ui.mainView);

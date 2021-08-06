@@ -1,5 +1,5 @@
 import * as models from 'core/models';
-import { FetchingStatus, ClientTheme, appId, FINISH_TASK_TIMER_VALUE } from 'core/models';
+import { FetchingStatus, ClientTheme, appId, FINISH_TASK_TIMER_VALUE, MainView } from 'core/models';
 
 const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
 
@@ -15,6 +15,7 @@ export const initialState: models.AppState['ui'] = {
   isAppUser: true,
   onlineHandleActivate: true,
   activeModal: null,
+  mainView: MainView.Board,
   board: {
     selectedList: {
       data: {
@@ -169,6 +170,12 @@ export const reducer = (
       return {
         ...state,
         activeModal: dispatch.payload,
+      };
+    }
+    case 'SET_MAIN_VIEW': {
+      return {
+        ...state,
+        mainView: dispatch.payload,
       };
     }
     case 'SELECT_BOARD_LIST': {

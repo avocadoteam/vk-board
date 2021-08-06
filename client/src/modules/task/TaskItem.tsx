@@ -2,6 +2,7 @@ import { Card, CardGrid } from '@vkontakte/vkui';
 import { getSearch, push } from 'connected-react-router';
 import { ActiveModal, AppDispatchActions, BoardTaskItem, MainView } from 'core/models';
 import { isThemeDrak } from 'core/selectors/common';
+import { isPlatformIOS } from 'core/selectors/settings';
 import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +31,11 @@ export const TaskItem = React.memo<{ task: BoardTaskItem }>(({ task }) => {
       type: 'SELECT_TASK',
       payload: task,
     });
-    dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.SelectedTask });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.SelectedTask}${search}`) as any);
+    }
   }, [dispatch, search, task]);
   return (
     <animated.div style={style}>

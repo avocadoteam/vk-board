@@ -11,7 +11,7 @@ import Icon28DeleteOutlineAndroid from '@vkontakte/icons/dist/28/delete_outline_
 import { push, getSearch } from 'connected-react-router';
 import { isDeleteListUpdating } from 'core/selectors/boardLists';
 import { vkBridge } from 'core/vk-bridge/instance';
-import { getAppId } from 'core/selectors/settings';
+import { getAppId, isPlatformIOS } from 'core/selectors/settings';
 import { ListItemName } from './ListItemName';
 import { hasUserPremium } from 'core/selectors/payment';
 import { isOnlyOneListLeft } from 'core/selectors/board';
@@ -35,12 +35,20 @@ export const ListItem: React.FC<Props> = ({ goForward, listItem }) => {
 
   const deleteList = React.useCallback(() => {
     dispatch({ type: 'SET_DELETE_BOARD_LIST_ID', payload: boardListOpenId });
-    dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteList}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.DeleteList });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.DeleteList}${search}`) as any);
+    }
   }, [dispatch, boardListOpenId, search]);
 
   const goToMembership = React.useCallback(() => {
     goForward(MainView.ListMembership);
-    dispatch(push(`/${MainView.ListMembership}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MAIN_VIEW', payload: MainView.ListMembership });
+    } else {
+      dispatch(push(`/${MainView.ListMembership}${search}`) as any);
+    }
   }, [dispatch, goForward, search]);
 
   const sharePost = React.useCallback(

@@ -18,6 +18,7 @@ import { SelectedTask } from './SelectedTask';
 import { SelectedTaskHeader } from './SelectedTaskHeader';
 import { DeleteTask } from './DeleteTask';
 import { EditTaskHeader } from './EditTaskHeader';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const RootModals = React.memo<{ goForward: (activePanel: MainView) => void }>(
   ({ goForward }) => {
@@ -31,13 +32,21 @@ export const RootModals = React.memo<{ goForward: (activePanel: MainView) => voi
 
     const closeModal = React.useCallback(() => {
       if (mainView === MainView.Board || mainView === MainView.ListMembership) {
-        dispatch(goBack() as any);
+        if (isPlatformIOS()) {
+          dispatch({ type: 'SET_MODAL', payload: null });
+        } else {
+          dispatch(goBack() as any);
+        }
       }
     }, [dispatch, mainView]);
 
     const goToAbout = React.useCallback(() => {
       goForward(MainView.About);
-      dispatch(push(`/${MainView.About}${search}`) as any);
+      if (isPlatformIOS()) {
+        dispatch({ type: 'SET_MAIN_VIEW', payload: MainView.About });
+      } else {
+        dispatch(push(`/${MainView.About}${search}`) as any);
+      }
     }, [dispatch, goForward, search]);
 
     if (activeModal === null) {

@@ -5,9 +5,10 @@ import { ListShareRabbit } from 'assets/svg/ListShareRabbit';
 import { useSelector, useDispatch } from 'react-redux';
 import { isThemeDrak } from 'core/selectors/common';
 import { Button } from 'atoms/Button';
-import { AppDispatchActions, FetchingStateName } from 'core/models';
+import { AppDispatchActions, FetchingStateName, MainView } from 'core/models';
 import { isSaveMembershipUpdating, getPreviewMembershipData } from 'core/selectors/membership';
 import { replace, getSearch } from 'connected-react-router';
+import { isPlatformIOS } from 'core/selectors/settings';
 
 export const MembershipPreview = React.memo(() => {
   const { css } = useFela();
@@ -22,7 +23,11 @@ export const MembershipPreview = React.memo(() => {
   }, [dispatch]);
 
   const goToMain = React.useCallback(() => {
-    dispatch(replace(`/${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MAIN_VIEW', payload: MainView.Board });
+    } else {
+      dispatch(replace(`/${search}`) as any);
+    }
   }, [dispatch, search]);
 
   return (

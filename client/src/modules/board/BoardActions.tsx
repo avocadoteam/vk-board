@@ -7,6 +7,7 @@ import { ActiveModal, AppDispatchActions, MainView } from 'core/models';
 import { isBoardUpdating } from 'core/selectors/board';
 import { getSelectedListId } from 'core/selectors/boardLists';
 import { getBoardUiState } from 'core/selectors/common';
+import { isPlatformIOS } from 'core/selectors/settings';
 import { getActiveMainView } from 'core/selectors/views';
 import { ListProgress } from 'modules/board-list';
 import React from 'react';
@@ -45,11 +46,19 @@ export const BoardActions = React.memo(() => {
   }, [mainView]);
 
   const openListsModal = React.useCallback(() => {
-    dispatch(push(`/${MainView.Board}/${ActiveModal.Lists}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.Lists });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.Lists}${search}`) as any);
+    }
   }, [dispatch, search]);
 
   const openNewTaskModal = React.useCallback(() => {
-    dispatch(push(`/${MainView.Board}/${ActiveModal.NewTask}${search}`) as any);
+    if (isPlatformIOS()) {
+      dispatch({ type: 'SET_MODAL', payload: ActiveModal.NewTask });
+    } else {
+      dispatch(push(`/${MainView.Board}/${ActiveModal.NewTask}${search}`) as any);
+    }
   }, [dispatch, search]);
 
   return (
