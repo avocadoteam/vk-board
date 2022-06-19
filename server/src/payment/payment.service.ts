@@ -1,35 +1,38 @@
-import { Injectable, Inject, CACHE_MANAGER, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  CACHE_MANAGER,
+  Logger,
+  HttpService,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/db/tables/payment';
 import { Repository, Connection } from 'typeorm';
 import { premiumPrice, syncRestrictionHours } from 'src/constants/premium';
 import { CacheManager } from 'src/custom-types/cache';
-import { cacheKey, dayTTL } from 'src/contracts/cache';
+import { cacheKey } from 'src/contracts/cache';
 import * as moment from 'moment';
 import { EventBus } from 'src/events/events.bus';
 import { BusEvents } from 'src/contracts/enum';
 import { errMap } from 'src/utils/errors';
+import integrationConfig from 'src/config/integration.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
 
   constructor(
+    private httpService: HttpService,
     @InjectRepository(Payment)
     private tablePayment: Repository<Payment>,
     private connection: Connection,
     @Inject(CACHE_MANAGER) private cache: CacheManager,
+    @Inject(integrationConfig.KEY)
+    private config: ConfigType<typeof integrationConfig>,
   ) {}
 
   async hasUserPremium(vkUserId: number) {
-    const cacheHas = await this.cache.get<number>(
-      cacheKey.hasPremium(vkUserId),
-    );
-
-    if (cacheHas) {
-      return cacheHas;
-    }
-
     const pay = await this.tablePayment.findOne({
       where: [
         {
@@ -39,11 +42,26 @@ export class PaymentService {
       ],
     });
 
-    await this.cache.set(cacheKey.hasPremium(vkUserId), pay?.id ?? 0, {
-      ttl: dayTTL,
-    });
+    const avo = await this.hasUserAvocadoPlus(vkUserId);
 
-    return pay?.id;
+    return pay?.id || avo;
+  }
+  private async hasUserAvocadoPlus(vkUserId: number) {
+    try {
+      const { data } = await this.httpService
+        .get(`https://vk.app-dich.com/public-api/donut/${vkUserId}`, {
+          headers: {
+            authorization: this.config.avoToken,
+          },
+        })
+        .toPromise();
+
+      return !!data?.data?.vkUserId;
+    } catch (error) {
+      this.logger.log(`hasUserAvocadoPlus error`);
+      this.logger.error(errMap(error));
+      return false;
+    }
   }
 
   async makePremium(vkUserId: number, voices: string) {
@@ -63,8 +81,6 @@ export class PaymentService {
       await queryRunner.commitTransaction();
 
       this.logger.log(`User ${vkUserId} made a premium for voices: ${voices}`);
-
-      await this.cache.del(cacheKey.hasPremium(vkUserId));
 
       EventBus.emit(BusEvents.PAYMENT_COMPLETE, vkUserId);
 
