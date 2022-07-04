@@ -1,3 +1,4 @@
+import { ChangeFragmentResponse } from '@vkontakte/vk-bridge';
 import { ClientTheme, FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getUserId } from 'core/selectors/user';
@@ -26,12 +27,6 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   }
 
   if (type === 'VKWebAppViewRestore') {
-    const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
-    store.dispatch({
-      type: 'SET_HASH',
-      payload: hashListGUID ?? null,
-    });
-
     store.dispatch({
       type: 'SET_UPDATING_DATA',
       payload: FetchingStateName.PaymentInfo,
@@ -46,6 +41,14 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
     const { listguid } = selectedBoardListInfo(state);
     const userId = getUserId(state);
     joinRoom(userId, listguid);
+  }
+  
+  if (type === 'VKWebAppChangeFragment') {
+    const hashListGUID = (data as ChangeFragmentResponse).location;
+    store.dispatch({
+      type: 'SET_HASH',
+      payload: hashListGUID ?? null,
+    });
   }
 
   if (type === 'VKWebAppViewHide') {
