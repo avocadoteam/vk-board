@@ -16,7 +16,7 @@ window.addEventListener('online', function (e) {
 
 window.addEventListener('message', e => {
   try {
-    if (!e.data) return;
+    if (!e.data || typeof e.data !== 'string') return;
     const data = JSON.parse(e.data);
 
     if (data.payload) {
