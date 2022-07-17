@@ -44,7 +44,7 @@ export class PaymentService {
 
     const avo = await this.hasUserAvocadoPlus(vkUserId);
 
-    return pay?.id || avo;
+    return !!pay?.id || avo;
   }
   private async hasUserAvocadoPlus(vkUserId: number) {
     try {

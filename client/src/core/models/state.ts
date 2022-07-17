@@ -3,6 +3,7 @@ import { LocationChangeAction, RouterState } from 'connected-react-router';
 import { BoardState, TaskInfo, BoardListItem, BoardTaskItem } from './board';
 import { MembershipState } from './membership';
 import { ActiveModal, MainView } from './enums';
+import { AppearanceSchemeType } from '@vkontakte/vk-bridge';
 
 declare module 'react-redux' {
   export interface DefaultRootState extends AppState {}
@@ -10,7 +11,7 @@ declare module 'react-redux' {
 
 export type AppState = {
   ui: {
-    theme: ClientTheme;
+    theme: AppearanceSchemeType;
     fetchingDatas: {
       [key in FetchingStateName]?: {
         status: FetchingStatus;
@@ -42,7 +43,7 @@ export type AppDispatch =
   | FetchUpdateAction
   | FetchReadyAction
   | { type: 'SET_ERROR_DATA'; payload: { name: FetchingStateName; error: any } }
-  | { type: 'SET_THEME'; payload: ClientTheme }
+  | { type: 'SET_THEME'; payload: AppearanceSchemeType  }
   | { type: 'SET_NOTIFICATIONS'; payload: boolean }
   | { type: 'SET_APPID'; payload: number }
   | SetHashAction
@@ -142,11 +143,3 @@ export type FetchResponse<T> = {
 export type FetchigReadyPayload = { name: FetchingStateName; data: any };
 export type EditBoardNamePayload = { name: string; id?: number };
 
-export enum ClientTheme {
-  /**
-   * @deprecated
-   */
-  oldLight = 'client_light',
-  Light = 'bright_light',
-  Dark = 'space_gray',
-}

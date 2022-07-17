@@ -31,7 +31,16 @@ export const About = React.memo(() => {
           textAlign: 'center',
         })}`}
       >
-        Версия {appV}, avocado
+        Версия {appV},{' '}
+        <a
+          href="https://vk.com/avocadoteam"
+          target="_blank"
+          className={css({
+            color: 'inherit',
+          })}
+        >
+          avocado
+        </a>
       </Text>
     </Div>
   );

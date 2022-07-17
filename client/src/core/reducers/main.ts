@@ -1,10 +1,10 @@
 import * as models from 'core/models';
-import { FetchingStatus, ClientTheme, appId, FINISH_TASK_TIMER_VALUE, MainView } from 'core/models';
+import { appId, FetchingStatus, FINISH_TASK_TIMER_VALUE, MainView } from 'core/models';
 
 const hashListGUID = window.location.hash ? window.location.hash.split('#').pop() : null;
 
 export const initialState: models.AppState['ui'] = {
-  theme: ClientTheme.Light,
+  theme: 'space_gray',
   errorsQueue: [],
   fetchingDatas: {},
   notifications: false,

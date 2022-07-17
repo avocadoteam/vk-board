@@ -1,5 +1,5 @@
-import { ChangeFragmentResponse } from '@vkontakte/vk-bridge';
-import { ClientTheme, FetchingStateName } from 'core/models';
+import { AppearanceSchemeType, ChangeFragmentResponse } from '@vkontakte/vk-bridge';
+import { FetchingStateName } from 'core/models';
 import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getUserId } from 'core/selectors/user';
 import { joinRoom } from 'core/socket/list';
@@ -11,14 +11,14 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   if (type === 'VKWebAppUpdateConfig') {
     const schemeAttribute = document.createAttribute('scheme');
     const unknownData = data as any;
-    const theme = unknownData.scheme ? unknownData.scheme : 'client_light';
+    const theme: AppearanceSchemeType = unknownData.scheme ? unknownData.scheme : 'client_light';
     schemeAttribute.value = theme;
     document.body.attributes.setNamedItem(schemeAttribute);
 
     store.dispatch({ type: 'SET_THEME', payload: theme });
 
     if (vkBridge.supports('VKWebAppSetViewSettings')) {
-      const isLight = theme !== ClientTheme.Dark;
+      const isLight = theme === 'bright_light' || theme === 'vkcom_light';
       vkBridge.send('VKWebAppSetViewSettings', {
         status_bar_style: isLight ? 'dark' : 'light',
         action_bar_color: isLight ? '#ffffff' : '#191919',
@@ -42,7 +42,7 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
     const userId = getUserId(state);
     joinRoom(userId, listguid);
   }
-  
+
   if (type === 'VKWebAppChangeFragment') {
     const hashListGUID = (data as ChangeFragmentResponse).location;
     store.dispatch({

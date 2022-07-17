@@ -70,7 +70,7 @@ export const PremiumCard = React.memo(() => {
 
   const buyButton = hasPremium ? (
     <a
-      href={gSyncDisabled ? undefined : `/gt/auth${q}&dark=${dark ? 1 : 0}`}
+      href={gSyncDisabled ? undefined : `https://stuffvk.app-dich.com/gt/auth${q}&dark=${dark ? 1 : 0}`}
       target="_blank"
       className={css({
         textDecoration: 'none',
@@ -109,7 +109,7 @@ export const PremiumCard = React.memo(() => {
 
   return (
     <>
-      <PremiumSub />
+      {!hasPremium ? <PremiumSub /> : null}
       <CardGrid
         className={css({
           padding: 0,
