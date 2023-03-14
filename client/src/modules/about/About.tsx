@@ -33,7 +33,7 @@ export const About = React.memo(() => {
       >
         Версия {appV},{' '}
         <a
-          href="https://vk.com/avocadoteam"
+          href="https://vk.com/avocado"
           target="_blank"
           className={css({
             color: 'inherit',

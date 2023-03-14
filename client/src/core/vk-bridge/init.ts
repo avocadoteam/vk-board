@@ -11,14 +11,16 @@ vkBridge.subscribe(({ detail: { type, data } }) => {
   if (type === 'VKWebAppUpdateConfig') {
     const schemeAttribute = document.createAttribute('scheme');
     const unknownData = data as any;
-    const theme: AppearanceSchemeType = unknownData.scheme ? unknownData.scheme : 'client_light';
+    let theme: AppearanceSchemeType = unknownData.scheme ? unknownData.scheme : 'bright_light';
+    theme =
+      theme === 'vkcom_dark' ? 'space_gray' : theme === 'vkcom_light' ? 'bright_light' : theme;
     schemeAttribute.value = theme;
     document.body.attributes.setNamedItem(schemeAttribute);
 
     store.dispatch({ type: 'SET_THEME', payload: theme });
 
     if (vkBridge.supports('VKWebAppSetViewSettings')) {
-      const isLight = theme === 'bright_light' || theme === 'vkcom_light';
+      const isLight = theme === 'bright_light';
       vkBridge.send('VKWebAppSetViewSettings', {
         status_bar_style: isLight ? 'dark' : 'light',
         action_bar_color: isLight ? '#ffffff' : '#191919',
