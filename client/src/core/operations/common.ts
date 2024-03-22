@@ -1,7 +1,7 @@
 import { fromFetch } from 'rxjs/fetch';
 
 export const request = <T = {}>(url: string, method: Method, data?: T) =>
-  fromFetch(`/api${url}`, {
+  fromFetch(`https://stuffvk.app-dich.com/api${url}`, {
     headers: {
       'Content-Type': 'application/json; charset=UTF-8',
     },

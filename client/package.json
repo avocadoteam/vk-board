@@ -6,13 +6,14 @@
   "proxy": "http://localhost:3000",
   "scripts": {
     "start": "cross-env PORT=10888 react-scripts start",
-    "build": "cross-env INLINE_RUNTIME_CHUNK=false react-scripts build && rm -rf ../server/public && mv build ../server/public",
+    "build": "cross-env INLINE_RUNTIME_CHUNK=false react-scripts build",
     "predeploy": "yarn build",
     "deploy": "vk-miniapps-deploy"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "homepage": "./",
   "devDependencies": {
     "@types/history": "^4.7.7",
     "@types/react": "^16.9.45",

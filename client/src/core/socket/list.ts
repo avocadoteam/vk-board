@@ -5,7 +5,7 @@ import { selectedBoardListInfo } from 'core/selectors/boardLists';
 import { getUserId } from 'core/selectors/user';
 import { FetchingStateName } from 'core/models';
 
-const listNs = '/selectedList';
+const listNs = 'https://stuffvk.app-dich.com/selectedList';
 
 let selectedListConnected = false;
 
@@ -26,7 +26,6 @@ export const connectListSocket = (query: string) => {
     const userId = getUserId(state);
     joinRoom(userId, listguid);
     store.dispatch({ type: 'SET_UPDATING_DATA', payload: FetchingStateName.PaymentInfo });
-
   });
   socket.on('disconnect', () => {
     console.debug('list ws disconnected');
