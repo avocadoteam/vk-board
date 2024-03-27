@@ -68,7 +68,9 @@ const procceedToPreviewMembershipListEpic: AppEpic = (action$, state$) =>
     ofType('SET_HASH'),
     filter<SetHashAction>(
       ({ payload }) =>
-        payload !== null && !getBoardListData(state$.value).find((l) => l.listguid === payload)
+        payload !== null &&
+        !getBoardListData(state$.value).find((l) => l.listguid === payload) &&
+        payload.length > 30
     ),
     map(({ payload }) => ({
       q: getSearch(state$.value),
