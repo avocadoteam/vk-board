@@ -7,7 +7,7 @@ import { isThemeDrak } from 'core/selectors/common';
 import {
   getLastGoogleSyncHrs,
   hasUserPremium,
-  isLastGoogleSyncUpdating
+  isLastGoogleSyncUpdating,
 } from 'core/selectors/payment';
 import { isPlatformIOS } from 'core/selectors/settings';
 import { getQToQuery } from 'core/selectors/user';
@@ -15,14 +15,13 @@ import React from 'react';
 import { useFela } from 'react-fela';
 import { useDispatch, useSelector } from 'react-redux';
 
-
 const PremiumSub = () => {
   const dark = useSelector(isThemeDrak);
   const appearance = dark ? 'dark' : 'light';
 
   return (
     <iframe
-      src={`https://avocadoteam.github.io/app-sub-modal/?appearance=${appearance}&app=stuff`}
+      src={`https://vksub.mmm.work/?appearance=${appearance}&app=stuff`}
       style={{ height: 'calc(75vh)', border: 0 }}
       width="100%"
     />
@@ -67,10 +66,11 @@ export const PremiumCard = React.memo(() => {
     }, 200);
   }, [dispatch]);
 
-
   const buyButton = hasPremium ? (
     <a
-      href={gSyncDisabled ? undefined : `https://stuffvk.app-dich.com/gt/auth${q}&dark=${dark ? 1 : 0}`}
+      href={
+        gSyncDisabled ? undefined : `https://stuffvk.app-dich.com/gt/auth${q}&dark=${dark ? 1 : 0}`
+      }
       target="_blank"
       className={css({
         textDecoration: 'none',
@@ -100,8 +100,6 @@ export const PremiumCard = React.memo(() => {
       </Button>
     </a>
   ) : null;
-
-
 
   if (isPlatformIOS() && !hasPremium) {
     return null;
